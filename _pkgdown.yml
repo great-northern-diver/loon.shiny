@@ -1,3 +1,23 @@
+home:
+  strip_header: true
+
+
+navbar:
+  type: default
+
+  left:
+    - text: Intro
+      href: articles/introduction.html
+
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/great-northern-diver/loon.shiny
+
+development:
+  mode: release
+
+destination: ./docs/
+
 reference:
 
   - title: Main Function
