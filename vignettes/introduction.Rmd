@@ -1,0 +1,222 @@
+---
+title: "Introduction to loon.shiny"
+author: "Zehao Xu"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to loon.shiny}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r, include = FALSE}
+library(knitr)
+library(grid)
+library(gridExtra)
+knitr::opts_chunk$set(echo = TRUE)
+imageDirectory <- "./img/introduction"
+dataDirectory <- "./data"
+path_concat <- function(path1, path2, sep="/") {paste(path1, path2, sep = sep)}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+```{r library_loon_shiny, eval = TRUE, echo = TRUE, fig.align="center", fig.width = 6, fig.height = 4, out.width = "75%", warning=FALSE, message=FALSE}
+library(loon.shiny)
+```
+
+### `Shiny`
+
+[`Shiny`](https://shiny.rstudio.com/) provides interactive web applications in R. `JavaScript`, `CSS` and `Html` are wrapped in `r` functions. Users with zero experience on such areas can also build **fantastic** and **responsive** web pages. 
+
+A `shiny` application is composed of two components, a `ui` (user interface) and a `server` function. This `ui`/`server` pair are passed as arguments to the `shinyApp` function that creates a `shiny` app. The `ui` is a web document that the user gets to see. It is responsible for creating the layout of the app, moreover, it can be considered as a guidance telling users what objects can be manipulated on such application. The `server` function is an inner function to react the modifications on `ui`. It is responsible for the logic of the app. When user interacts with the page, `server` function will arrange the changes immediately to realize the interactivity.
+
+### `Loon`
+
+[`Loon`](https://great-northern-diver.github.io/loon/index.html) is an interactive toolkit engaged in an open-ended, creative and unscripted data exploration. Designed for interactive exploratory data analysis, `loon` provides **true direct manipulations**. It can be horizontally/vertically panned, horizontally/vertically zoomed, and have plot elements linked to one another to effect such coordinated display behavior as the selection of points, brushing, etc. 
+
+`Loon` has a GUI based operator, **`loon` inspector**. Any manipulation on this interface can result corresponding changes on the `loon` plots. Besides, `loon` inspector is a singleton which means there is only one instance of it. Each kind of graphics (scatterplots, graphs, histograms, serial axes plots, etc) has its own specified inspector. The shown one depends on which display receives the last mouse gesture input or window focus event.
+
+### `Loon.shiny`
+
+`Loon.shiny` is created to transform `loon` widgets to a `shiny` web app. 
+
+* For `shiny` users, although `shiny` has already simplified the procedure to create a web app, users still need much work to invent a powerful and useful data analysis toolkit, such as how to arrange the `html` layouts to meet aesthetics, how to set `server` function to best achieve the interactivity, etc. Package `loon` has already created powerful inspector that involves almost all essential components for interactive graphics. With `loon.shiny`, this powerful interface can be carried in `shiny` seamlessly for free. 
+
+* For `loon` users, this transmission is extremely useful in presentation. In interactive data analysis, one of the major difficulties is to reproduce and present analysis procedure. With `loon.shiny`, analysis in `loon` is no longer necessary to be fixed and static. Analysts who explore data in `loon` now can present their interactive graphics in `Rmarkdown` which can help other users to explore some other possibilities even to draw different conclusions. 
+
+In `loon.shiny`, `loon` widgets are transformed to static `loonGrob`s which are created by the base graphical package [`grid`](https://stat.ethz.ch/R-manual/R-devel/library/grid/doc/grid.pdf) providing low-level, general purpose graphics functions. Note that, a `loonGrob` contains all elements of a `loon` plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty `grob` possessing the relevant arguments to drawing them. When the `server` function is fired, the interactivity is realized by editing these `loonGrob`s
+
+## Basic Usage
+
+Let's look at the `iris` data set.
+```{r, iris basic, eval = FALSE, echo = TRUE, fig.align="center", warning=FALSE, message=FALSE}
+library(loon)
+library(shiny)
+library(dplyr)
+library(magrittr)
+# Loon scatterplot
+p <- with(iris,
+  l_plot(x = Petal.Width, 
+         y = Sepal.Width, 
+         color = Species)
+)
+# Modify glyph to radial axes glyph.
+p['glyph'] <- l_glyph_add_serialaxes(p, data = iris)
+# Fit a linear regression on each group (species)
+for(s in unique(iris$Species)) {
+  # sub data set
+  subdata <- iris %>%
+    filter(Species == s)
+  # fitted line
+  fit <- lm(Sepal.Width ~ Petal.Width, data = subdata)
+  x <- subdata$Petal.Width
+  pred <- predict(fit, interval = "confidence")
+  ord <- order(x)
+  # Loon pipe model (connected with %T>%)
+  # Check ```help(`%T>%`)``` for more details
+  p <- p %T>% 
+    # fitted line
+    l_layer_line(x = x[ord], 
+                 y = pred[, "fit"][ord], 
+                 color = "firebrick",
+                 linewidth = 1.5,
+                 index = "end") %T>%
+    # confidence interval
+    l_layer_line(x = c(x[ord], rev(x[ord]), x[ord][1]),
+                 y = c(pred[, "lwr"][ord], rev(pred[, "upr"][ord]), pred[, "lwr"][ord][1]),
+                 color = "grey50",
+                 linewidth = 2,
+                 index = "end")
+}
+shiny.loon(p, plotWidth = "400px")
+```
+
+```{r shiny basic, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 5, fig.height = 4, fig.align = "center", out.width = "80%"}
+include_graphics(path_concat(imageDirectory, "loon_shiny_scatterplot.PNG"))
+```
+
+The left panel is a scatterplot and mouse can be utilized for direct manipulations. The right panel is an inspector, mainly for indirect manipulations. Compared with the `loon` one, it is different that is composed of a world view window and six buttons (`Plot`, `Linking`, `Select`, `Modify`, `Layer` and `Glyph`). Each channel will be popped up by pressing the corresponding button. Due to very limited layout space, such design can make the inspector look fresh. 
+
+```{r inspector, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.show = "hold", out.width = "30%", fig.align = "center"}
+include_graphics(path_concat(imageDirectory, "inspector_analysis.PNG"))
+```
+
+* `Plot` panel: 
+
+  + Zooming and Panning: In `loon`,  they both are realized by direct manipulation with cooperation of mouse and modifier keys `<shift>`. While, in `shiny`, function `plotOutput()` cannot trace right click and scrolling yet. Hence, we build two slider bars to control `x` and `y` limits.
+
+  + Axes: channel `axes` is a central control of non-data elements display, such as turning on/off labels, scales and guides or flipping the horizontal and vertical axes. 
+
+  + Scale to: channel `scale to`  re-scales the plot interior to some range: range of `selected` points, range of all points in the `plot` and range of all plots objects in all layers (`world`). 
+
+```{r plot panel, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "30%"}
+include_graphics(path_concat(imageDirectory, "plot_panel.PNG"))
+```
+
+* `Linking` panel: since we only have one graph, no linking is required here. We will talk more about this in next section.
+
+* `Select` panel: channel `select` is mainly utilized to modify points selection. There are two main channels, `static` and `dynamic`.
+
+  + For `static`, there are three buttons, `all`, `none` and `invert` indicating to select all visible points, deselect all points and invert the current selection status respectively. 
+
+  + For `dynamic`, it is often used to switch the selection mode. 
+
+    - `select`: the brushing box is used for highlighting points
+
+    - `deselect`: any highlighted points fall into brushing box will be downlighted;
+
+    - `invert`: the status of points sweeped by brushing box will be inverted, highlighted to downlighted, downlighted to highlighted. 
+
+There are several noticeable difference here:
+
+  + The `select` panel in `loon.shiny` does not involve a `by` channel. In `loon`, users can select by either `brushing` or `sweeping`. However, in `shiny`, the mode `brushing` or `sweeping` is pre-defined in function `plotOutput()` and there is no way to update it. Once the app is rendered, the select mode is set and cannot be switched. 
+  
+  + `Loon.shiny` has a `sticky` radio box. It is the same with `<shift>` key in `loon` (the usage of `<shift>` key in loon can be found in [`loon` vignette](https://great-northern-diver.github.io/loon/articles/introduction.html) or [`loon` talk](https://www.math.uwaterloo.ca/~rwoldfor/talks/loonTutorial/userSlides/Intro.pdf)). This is because `shiny` does not include trace functions to record key press so far. 
+  
+  + `by color` channel is replaced by check box in `shiny`, since `shiny` does not include functions to automatically generate new buttons in `server` function. However, such changes give an unexpected benefit, color names can be detected easily.
+
+```{r select panel, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "30%"}
+include_graphics(path_concat(imageDirectory, "select_panel.PNG"))
+```
+
+* `Modify` panel: Except the layout, `modify` panel largely restores the design of the `loon`.
+  
+  + `Color`: `color` buttons are used to modify element colors and the color picker widget provides users more choice.
+  
+  + `Activate`: `activate` helps to deactivate or reactivate elements. `Deactivate` buttons turn selected objects invisible and `reactivate` buttons reactivate all deactivated points.
+  
+  + `Move`: `Move` selected points to common horizontal position, to vertical position, and etc (see [`loon` talk](https://www.math.uwaterloo.ca/~rwoldfor/talks/loonTutorial/userSlides/Intro.pdf) for more details). 
+  
+  + `Glyph`: Change the shape of the points.
+  
+  + `Size`: Decrease or increase point size.
+  
+```{r modify panel, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "30%"}
+include_graphics(path_concat(imageDirectory, "modify_panel.PNG"))
+```
+
+* `Layer` panel: this panel a simplified version of [`loon` layer tab](https://github.com/z267xu/loon.shiny/blob/master/vignettes/img/introduction/inspector_layer.PNG). The top select box indicates which layer is under activation and the buttons below are used to, move layer up or down a level, make layer visible or invisible, add layer group (deprecated now), delete layer and scale plot region to layer. The last command is to customize the layer label.
+
+```{r layer panel, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "30%"}
+include_graphics(path_concat(imageDirectory, "layer_panel.PNG"))
+```
+
+* `Glyph` panel: it is to modify the appearance of glyphs. Note that different glyphs have very different glyph settings. For example, the settings of serial axes glyphs include whether to show enclosing box, display axes labels and fill the glyph region.
+
+```{r glyph panel, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "30%"}
+include_graphics(path_concat(imageDirectory, "glyph_panel.PNG"))
+```
+
+## Compound Plots
+
+Arbitrarily many plots may be created and linked in `loon`. Package `loon.shiny` successfully inherits such facility.
+
+Following graph illustrates compound plots. The three graphs are histogram of variable `Sepal.Length`, scatterplot of `Sepal.Width` versus `Sepal.Length` and swapped histogram of variable `Sepal.Width` (from top to bottom, from left to right). They are colored by species and linked each other.
+
+```{r linking, eval = FALSE, echo = TRUE, fig.align="center", warning=FALSE, message=FALSE}
+p1 <- l_plot(iris, linkingGroup = "iris", 
+             showLabels = FALSE)
+p2 <- l_hist(iris$Sepal.Length, linkingGroup = "iris",
+             showLabels = FALSE, 
+             showStackedColors = TRUE)
+p3 <- l_hist(iris$Sepal.Width, color = iris$Species, 
+             linkingGroup = "iris", 
+             showLabels = FALSE,  swapAxes = TRUE, 
+             showStackedColors = TRUE)
+shiny.loon(list(p1, p2, p3), 
+           layout_matrix = matrix(c(2,NA,1,3), nrow = 2, byrow = TRUE),
+           plotWidth = "400px")
+```
+  
+```{r compound_plot, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "80%"}
+include_graphics(path_concat(imageDirectory, "compound_plot.PNG"))
+```
+
+### Inspector Activation
+
+`Loon` inspector is a singleton which means there is only one instance of it. Each kind of graphics (scatterplots, graphs, histograms, serial axes plots, etc) has its own specified inspector. The shown one depends on which display receives the last mouse gesture input or window focus event. However, such design in `shiny` can be very complex. Instead, we build a navigation bar menu. The inspector can be switched by **toggling tabpanel** on the bar menu or the **last mouse gesture (<`double click`>) input**.
+
+### Linking
+
+If we brush on any of these plots, the corresponding elements on the rest will be highlighted instantaneously. Linking status can be checked via `linking` panel.
+
+```{r linking panel, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "30%"}
+include_graphics(path_concat(imageDirectory, "linking_panel.PNG"))
+```
+
+* The principal feature of `loon` plots which effect the linking of displays is the setting of a common `linkingGroup`. `LinkingGroup` is used to identify which group this plot joins. If it is set as "none", then this plot will **not** be linked with any of them.
+
+* `LinkingStates` are states to be linked in the same `linkingGroup`. Unlike `loon`, programming is forbidden once the app is rendered. Thus, we list all the states can be modified in the `linking` panel. All elements in these three pictures share the same selected/checked states. Suppose one un-checks the `selected` check box in scatterplot `linking` panel, and then brushes the points on scatterplot, the corresponding elements in other two histograms will not be highlighted anymore.
+
+
+
+
+
+
+
+
