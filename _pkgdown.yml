@@ -1,0 +1,6 @@
+reference:
+
+  - title: Main Function
+    desc: Package `loon.shiny` only exports one function `shiny.loon()` which takes a `loon` widget, or a list of loon widgets
+    contents:
+    - shiny.loon 
