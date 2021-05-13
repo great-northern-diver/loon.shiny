@@ -1,0 +1,11 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+man-roxygen
+cran-comments.md
+.DS_Store
+.gitignore
+.Rhistory
+_pkgdown.yml  
+codecov.yml
+docs/*
+pkgdown/*
