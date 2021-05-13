@@ -12,6 +12,8 @@
 
    In interactive data analysis, one of the major difficulties is to reproduce and present analysis procedure. Package `loon.shiny` transforms `loon` widgets into `shiny` web apps. The benefit is that the presentation of `loon` is not necessary to be fixed. The `loon` widgets can be rendered to an html file by `Rmarkdown` so that analysts who explore data in `loon` now can present their interactive graphics in `Rmarkdown` which can help other users to explore some other possibilities even to draw different conclusions. 
 
+Online documentation [here](http://great-northern-diver.github.io/loon.shiny/)
+
 ## Installation
 
    ```r
