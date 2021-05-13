@@ -11,7 +11,10 @@ navbar:
 
   right:
     - icon: fa-github fa-lg
-      href: https://github.com/great-northern-diver/loon
+      href: https://github.com/great-northern-diver/loon.shiny
+
+development:
+  mode: release
 
 destination: ./docs/
 
