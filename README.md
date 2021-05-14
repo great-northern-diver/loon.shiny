@@ -6,25 +6,23 @@ loon.shiny <img src="man/figures/logo.png" align="right" width="120" />
 
 ## Display loon widgets in shiny app
 
+The [`shiny`](https://shiny.rstudio.com/) `R` package simplifies the creation of interactive analysis web pages. 
+`Shiny` apps facilitate sharing data analyses while simultaneously allowing, even encouraging, some interactive 
+exploration by the viewer.  An example would be the shiny app
+that allows viewers to explore interesting features of
+U.S. Secretary of State Clinton's emails at [https://shiny.math.uwaterloo.ca/sas/clinton/](https://shiny.math.uwaterloo.ca/sas/clinton/).
+Such *curated* interaction is immensely important for both sharing analytic results and encouraging exploration. 
 
-[`Shiny`](https://shiny.rstudio.com/) provides interactive web applications in R. `JavaScript`, `CSS` and `Html` are wrapped in `r` functions. Users with zero experience on such areas can also build **fantastic**, **responsive** and **powerful** web pages. A `shiny` application is composed of two components, a `ui` (user interface) object and a `server` function. This UI/server pair are passed as arguments to the `shinyApp` function that creates a `shiny` app object.
+In contrast, the [`loon`](https://great-northern-diver.github.io/loon/) `R` package provides an interactive visualization toolkit for unconstrained, unscripted, and open-ended data exploration.
+It is intended for data analysts themselves.  
 
-[`Loon`](https://cran.r-project.org/web/packages/loon/vignettes/introduction.html) is an uncurated interactive toolkit engaged in an open-ended, creative and unscripted data exploration. Designed for interactive exploratory data analysis, `Loon` provides **true direct manipulations**. It can be horizontally/vertically panned, horizontally/vertically zoomed, and have plot elements linked to one another to effect such coordinated display behaviour as the selection of points, brushing, etc.
+The  [`loon.shiny`](http://great-northern-diver.github.io/loon.shiny/) `R` package enables `loon` plots and `loon` style interaction (e.g., brushing, linked plots, panning, zooming, etc., as well as a `shiny` version of `loon` inspectors) to be incorporated into a `shiny` application (including an `RMarkdown` file).  The `loon` widgets are rendered into an html file by `Rmarkdown` so that analysts who explore data in `loon` now can present their interactive graphics in `Rmarkdown`.
+Other users can then explore the data online using the rich set of visual interactions available in `loon` as provided by the
+creator of the curated analysis.
 
-   In interactive data analysis, one of the major difficulties is to reproduce and present analysis procedure. Package `loon.shiny` transforms `loon` widgets into `shiny` web apps. The benefit is that the presentation of `loon` is not necessary to be fixed. The `loon` widgets can be rendered to an html file by `Rmarkdown` so that analysts who explore data in `loon` now can present their interactive graphics in `Rmarkdown` which can help other users to explore some other possibilities even to draw different conclusions. 
+A single function, `shiny.loon()`, does the work.
 
-Online documentation [here](http://great-northern-diver.github.io/loon.shiny/)
-
-## Installation
-
-   ```r
-   # From CRAN
-   install.packages("loon.shiny")
-   # Or from github
-   devtools::install_github("great-northern-diver/loon.shiny")
-   # Or as part of the diveR suite of loon related packages
-   install.packages("diveR")
-   ```
+-----
 
 ## 1. Basic `shiny` app
 
@@ -33,14 +31,15 @@ library(loon.shiny)
 p <- with(mtcars, l_plot(hp, mpg, color = cyl, size = wt))
 shiny.loon(p)
 ```
-produces a web based shiny app of a loon plot with a loon inspector:
+produces a web based shiny app containing the `loon` plot `p`  together with its `loon` inspector:
 
 ![](man/figures/loonShiny.gif)
 
 ## 2. Several linked plots in a `shiny` app
 
-This is the more typical case. Here we show three plots
-appearing as the output of knitting an RMarkdown file.
+Here we show three plots
+appearing as the output of knitting an `RMarkdown` file.
+This is the more typical case. 
 
 ![](man/figures/shinyDemo.gif)
 
@@ -60,6 +59,7 @@ shiny.loon(list(p1, p2, p3),
            plot_width = "400px")
 ```    
 
+Note that the plots are linked and the inspector is shared by/addresses all three plots (see tabs on the inspector).
 
 ## 3. Start with ggplot --> loon --> shiny
 
@@ -88,8 +88,25 @@ Compared to `ggplot` to `shiny`, `ggplot` --> `loon` --> `shiny` extends the app
 
 With several plots, linking allows brushing across several plots.
 
+-----
 
+## Installation
+
+   ```r
+   # From CRAN
+   install.packages("loon.shiny")
+   # Or from github
+   devtools::install_github("great-northern-diver/loon.shiny")
+   # Or as part of the diveR suite of loon related packages
+   install.packages("diveR")
+   ```
+   
 ### To report issues
 
 [https://github.com/great-northern-diver/loon.shiny/issues](https://github.com/great-northern-diver/loon.shiny/issues)
 
+-----
+
+## The `diveR` suite
+
+`loon`, `loon.shiny`, and `loon.ggplot` are all part of the `diver` suite of packages ([https://great-northern-diver.github.io/diveR/](https://great-northern-diver.github.io/diveR/)), the `looniverse` for **d**irect **i**nteractive **v**isual **e**xploration in **`R`**.

@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+## Overview of the three packages
 
 ```{r library_loon_shiny, eval = TRUE, echo = TRUE, fig.align="center", fig.width = 6, fig.height = 4, out.width = "75%", warning=FALSE, message=FALSE}
 library(loon.shiny)
@@ -31,32 +31,34 @@ library(loon.shiny)
 
 ### `Shiny`
 
-[`Shiny`](https://shiny.rstudio.com/) provides interactive web applications in R. `JavaScript`, `CSS` and `Html` are wrapped in `r` functions. Users with zero experience on such areas can also build **fantastic** and **responsive** web pages. 
+The [`shiny`](https://shiny.rstudio.com/) `R` package simplifies the creation of interactive analysis web pages. 
 
-A `shiny` application is composed of two components, a `ui` (user interface) and a `server` function. This `ui`/`server` pair are passed as arguments to the `shinyApp` function that creates a `shiny` app. The `ui` is a web document that the user gets to see. It is responsible for creating the layout of the app, moreover, it can be considered as a guidance telling users what objects can be manipulated on such application. The `server` function is an inner function to react the modifications on `ui`. It is responsible for the logic of the app. When user interacts with the page, `server` function will arrange the changes immediately to realize the interactivity.
+A `shiny` application is composed of two components, a `ui` (user interface) and a `server` function. This `ui`/`server` pair are passed as arguments to the `shinyApp` function that creates a `shiny` app. The `ui` (user interface) creates the layout of the app, guiding its users about the analysis by determining the objects that appear and how they can be manipulated on such application. The `server` function *reacts* to modifications on the `ui`, defining the logic of the app. As the user interacts with the page, the `server` function reacts to make changes in the display.
 
 ### `Loon`
 
-[`Loon`](https://great-northern-diver.github.io/loon/index.html) is an interactive toolkit engaged in an open-ended, creative and unscripted data exploration. Designed for interactive exploratory data analysis, `loon` provides **true direct manipulations**. It can be horizontally/vertically panned, horizontally/vertically zoomed, and have plot elements linked to one another to effect such coordinated display behavior as the selection of points, brushing, etc. 
+The [`loon`](https://great-northern-diver.github.io/loon/) `R` package provides an interactive visualization toolkit for unconstrained, unscripted, and open-ended data exploration.
+It is intended for data analysts themselves.  
 
-`Loon` has a GUI based operator, **`loon` inspector**. Any manipulation on this interface can result corresponding changes on the `loon` plots. Besides, `loon` inspector is a singleton which means there is only one instance of it. Each kind of graphics (scatterplots, graphs, histograms, serial axes plots, etc) has its own specified inspector. The shown one depends on which display receives the last mouse gesture input or window focus event.
+An important part of `loon`'s interactivity is the **loon inspector** which can can make changes specialized to different `loon` plots.  Typically, the `loon` inspector has a single instance.   The inspector will adapt its display to whichever of the different base `loon` graphics  (scatterplots, graphs, histograms, serial axe plots, etc) is its focus (e.g., the graphic display that last received a mouse or window focus event.
+
+For `loon` users, it is a challenge to provide a *curated* analysis that is still somewhat interactive.  Snapshots of different steps of the analysis are easily accommodated via `RMarkdown`, etc. but interaction is not.
 
 ### `Loon.shiny`
 
-`Loon.shiny` is created to transform `loon` widgets to a `shiny` web app. 
+`Loon.shiny` transforms `loon` widgets to appear (with their inspector) in a `shiny` web app. 
 
-* For `shiny` users, although `shiny` has already simplified the procedure to create a web app, users still need much work to invent a powerful and useful data analysis toolkit, such as how to arrange the `html` layouts to meet aesthetics, how to set `server` function to best achieve the interactivity, etc. Package `loon` has already created powerful inspector that involves almost all essential components for interactive graphics. With `loon.shiny`, this powerful interface can be carried in `shiny` seamlessly for free. 
+* `loon` has a powerful inspector involving almost many of the components considered essential for interaction on each graphic. With `loon.shiny`, this powerful interface can be inserted into a `shiny` app to provide a multitude of interactions at once. 
 
-* For `loon` users, this transmission is extremely useful in presentation. In interactive data analysis, one of the major difficulties is to reproduce and present analysis procedure. With `loon.shiny`, analysis in `loon` is no longer necessary to be fixed and static. Analysts who explore data in `loon` now can present their interactive graphics in `Rmarkdown` which can help other users to explore some other possibilities even to draw different conclusions. 
+* `loon.shiny` provides analysts who explore data in `loon` the ability to incorporate selected interactive components of that analysis in `Rmarkdown`.  In addition to extending the possibilities for reproducible research, this can further empower the viewer of that research to explore other possibilities within the document itself. 
 
-In `loon.shiny`, `loon` widgets are transformed to static `loonGrob`s which are created by the base graphical package [`grid`](https://stat.ethz.ch/R-manual/R-devel/library/grid/doc/grid.pdf) providing low-level, general purpose graphics functions. Note that, a `loonGrob` contains all elements of a `loon` plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty `grob` possessing the relevant arguments to drawing them. When the `server` function is fired, the interactivity is realized by editing these `loonGrob`s
+**The idea behind the implementation:** In `loon.shiny`, `loon` widgets are transformed to static `loonGrob`s created by the `R` base  [`grid`](https://cran.r-project.org/web/packages/gridGraphics/gridGraphics.pdf) package to provide  low-level, general purpose graphics functions. Note that, a `loonGrob` contains all elements of a `loon` plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty `grob` possessing the  argument values necessary to draw them. When the `server` function is fired, the interactivity is realized by editing and redisplaying these `loonGrob`s.
 
 ## Basic Usage
 
-Let's look at the `iris` data set.
+Consider the classic `iris` data set.
 ```{r, iris basic, eval = FALSE, echo = TRUE, fig.align="center", warning=FALSE, message=FALSE}
-library(loon)
-library(shiny)
+library(loon.shiny)
 library(dplyr)
 library(magrittr)
 # Loon scatterplot
@@ -100,7 +102,7 @@ shiny.loon(p, plotWidth = "400px")
 include_graphics(path_concat(imageDirectory, "loon_shiny_scatterplot.PNG"))
 ```
 
-The left panel is a scatterplot and mouse can be utilized for direct manipulations. The right panel is an inspector, mainly for indirect manipulations. Compared with the `loon` one, it is different that is composed of a world view window and six buttons (`Plot`, `Linking`, `Select`, `Modify`, `Layer` and `Glyph`). Each channel will be popped up by pressing the corresponding button. Due to very limited layout space, such design can make the inspector look fresh. 
+The left panel is a scatterplot which receives mouse can be utilized for direct manipulations. The right panel is an inspector, mainly for indirect manipulations. Compared with the `loon` one, it is different that is composed of a world view window and six buttons (`Plot`, `Linking`, `Select`, `Modify`, `Layer` and `Glyph`). Each channel will be popped up by pressing the corresponding button. Due to very limited layout space, such design can make the inspector look fresh. 
 
 ```{r inspector, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.show = "hold", out.width = "30%", fig.align = "center"}
 include_graphics(path_concat(imageDirectory, "inspector_analysis.PNG"))
