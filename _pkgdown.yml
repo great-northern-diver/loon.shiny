@@ -1,13 +1,14 @@
 home:
   strip_header: true
 
-
 navbar:
   type: default
 
   left:
-    - text: Intro
-      href: articles/introduction.html
+    - text: Articles
+      menu:
+      - text: Introduction
+        href: articles/introduction.html
 
   right:
     - icon: fa-github fa-lg
@@ -20,7 +21,7 @@ destination: ./docs/
 
 reference:
 
-  - title: Main Function
-    desc: Package `loon.shiny` only exports one function `shiny.loon()` which takes a `loon` widget, or a list of loon widgets
+  - title: Function
+    desc: shiny.loon does all the work
     contents:
     - shiny.loon 
