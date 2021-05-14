@@ -1,6 +1,7 @@
-# loon.shiny <img src="man/figures/logo.png" align="right" width="120" />
+loon.shiny <img src="man/figures/logo.png" align="right" width="120" />
 
 [![Travis build status](https://travis-ci.org/z267xu/loon.shiny.svg?branch=master)](https://travis-ci.org/z267xu/loon.shiny)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/loon.shiny)](https://cran.r-project.org/package=loon.shiny)
 [![Codecov test coverage](https://codecov.io/gh/z267xu/loon.shiny/branch/master/graph/badge.svg)](https://codecov.io/gh/z267xu/loon.shiny?branch=master)
 
 ## Display loon widgets in shiny app
