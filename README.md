@@ -1,6 +1,6 @@
 # loon.shiny 
 
-[![Travis build status](https://travis-ci.org/z267xu/loon.shiny.svg?branch=master)](https://travis-ci.org/z267xu/loon.shiny)
+[![Travis build status](https://travis-ci.org/great-northern-diver/loon.shiny.svg?branch=master)](https://travis-ci.org/great-northern-diver/loon.shiny)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/loon.shiny)](https://cran.r-project.org/package=loon.shiny)
 <img src="man/figures/logo.png" align="right" width="120" />
 
@@ -100,6 +100,24 @@ With several plots, linking allows brushing across several plots.
    # Or as part of the diveR suite of loon related packages
    install.packages("diveR")
    ```
+   
+## Rmarkdown
+
+An R Markdown file containing Shiny widgets and outputs is an interactive document. To make an R Markdown document interactive in two steps:
+
+- add `runtime: shiny` to the document's YAML header. For example, 
+
+   ```r
+   ---
+   title: "My Title"
+   author: "You"
+   date: "15/05/2021"
+   output: html_document
+   runtime: shiny
+   ---
+   ```
+
+- add Shiny widgets and Shiny render functions to the file's R code chunks. Note that, in a single R markdown file, more than one apps can be added. 
    
 ### To report issues
 

@@ -162,7 +162,7 @@ include_graphics(path_concat(imageDirectory, "select_panel.PNG"))
 include_graphics(path_concat(imageDirectory, "modify_panel.PNG"))
 ```
 
-* `Layer` panel: this panel a simplified version of [`loon` layer tab](https://github.com/z267xu/loon.shiny/blob/master/vignettes/img/introduction/inspector_layer.PNG). The top select box indicates which layer is under activation and the buttons below are used to, move layer up or down a level, make layer visible or invisible, add layer group (deprecated now), delete layer and scale plot region to layer. The last command is to customize the layer label.
+* `Layer` panel: this panel a simplified version of [`loon` layer tab](https://github.com/great-northern-diver/loon.shiny/blob/master/vignettes/img/introduction/inspector_layer.PNG). The top select box indicates which layer is under activation and the buttons below are used to, move layer up or down a level, make layer visible or invisible, add layer group (deprecated now), delete layer and scale plot region to layer. The last command is to customize the layer label.
 
 ```{r layer panel, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 2, fig.height = 2, fig.align = "center", out.width = "30%"}
 include_graphics(path_concat(imageDirectory, "layer_panel.PNG"))
