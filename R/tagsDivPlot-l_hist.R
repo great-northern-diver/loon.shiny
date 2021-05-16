@@ -1,34 +1,34 @@
-tagsDivPlot.l_hist <- function(loon_grob, tabPanelName, 
-                               loonWidgets_info, 
+tagsDivPlot.l_hist <- function(loon_grob, tabPanelName,
+                               loonWidgets_info,
                                linkingGroup, linkingGroups) {
-  
+
   viewPort <- get_viewPort(loon_grob)
-  
+
   if(loonWidgets_info$swap_in_loon) {
-    
+
     xlim <- round(viewPort[[2]]$yscale, 2)
     ylim <- round(viewPort[[2]]$xscale, 2)
-    
+
   } else {
-    
+
     xlim <- round(viewPort[[2]]$xscale, 2)
     ylim <- round(viewPort[[2]]$yscale, 2)
   }
-  
+
   worldView_xlim <- round(range(c(loonWidgets_info$worldView_xlim, xlim)),2)
   worldView_ylim <- round(range(c(loonWidgets_info$worldView_ylim, ylim)),2)
-  
-  step_x <- log_ceiling(xlim)
-  step_y <- log_ceiling(ylim)
-  
+
+  step_x <- log_ceiling(diff(xlim))
+  step_y <- log_ceiling(diff(ylim))
+
   step_origin_binwidth <- step_x
-  max_binwidth <- xlim[2]
-  
+  max_binwidth <- diff(xlim)
+
   min_origin <- xlim[1] - diff(xlim)
   max_origin <- xlim[2] + diff(xlim)
-  
+
   tags$div(
-    id = paste0(tabPanelName, 'Plot'),  
+    id = paste0(tabPanelName, 'Plot'),
     class="collapse",
     h6(""),
     do.call(
@@ -69,7 +69,7 @@ tagsDivPlot.l_hist <- function(loon_grob, tabPanelName,
                  selected = c(if(loonWidgets_info$swap_in_shiny) "swap",
                               if(loonWidgets_info$showScales) "scales"),
                  inline = TRUE)
-            
+
           ),
           do.call(
             checkboxGroupInput,
