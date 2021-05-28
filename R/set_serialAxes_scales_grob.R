@@ -1,67 +1,69 @@
-set_serialAxes_scales_grob <- function(loon_grob, pointsTree_name, glyph_name, set_axes, swap, which_is_deactive) {
-  
-  newGrob <- getGrob(loon_grob, pointsTree_name)
-  
-  serialaxes_and_active <- setdiff(which(str_detect(glyph_name, "serialaxes")), which_is_deactive)
-  
+set_serialAxes_scales_grob <- function(loon.grob, pointsTreeName,
+                                       glyphNames, showAxes,
+                                       swap, whichIsDeactive) {
+
+  newGrob <- grid::getGrob(loon.grob, pointsTreeName)
+
+  serialaxes_and_active <- setdiff(which(grepl(glyphNames, pattern = "serialaxes")), whichIsDeactive)
+
   if(length(serialaxes_and_active) > 0) {
-    
+
     lapply(serialaxes_and_active,
            function(i) {
              serialaxes_tree <- newGrob$children[[i]]
-             
+
              # radial serialaxes
-             axes_grob <- getGrob(serialaxes_tree, "axes")
-             if(is.null(axes_grob)) {
-               axes_grob <- getGrob(serialaxes_tree, "axes: polylineGrob arguments")
-               axes_grob_name <- "axes: polylineGrob arguments"
+             axesGrob <- grid::getGrob(serialaxes_tree, "axes")
+             if(is.null(axesGrob)) {
+               axesGrob <- grid::getGrob(serialaxes_tree, "axes: polylineGrob arguments")
+               axesGrob_name <- "axes: polylineGrob arguments"
              } else {
-               axes_grob_name <- "axes"
+               axesGrob_name <- "axes"
              }
-             
-             newGrob$children[[i]] <<- if(set_axes) {
-               setGrob(
+
+             newGrob$children[[i]] <<- if(showAxes) {
+               grid::setGrob(
                  gTree = newGrob$children[[i]],
-                 gPath = axes_grob_name,
+                 gPath = axesGrob_name,
                  newGrob = do.call(
-                   polylineGrob,
-                   args = getGrobArgs(axes_grob)
+                   grid::polylineGrob,
+                   args = getGrobArgs(axesGrob)
                  )
                )
              } else {
-               setGrob(
+               grid::setGrob(
                  gTree = newGrob$children[[i]],
-                 gPath = axes_grob_name,
+                 gPath = axesGrob_name,
                  newGrob = do.call(
                    grob,
-                   args = getGrobArgs(axes_grob)
+                   args = getGrobArgs(axesGrob)
                  )
                )
              }
-             
-             if(swap & set_axes) {
-               
-               newGrob$children[[i]] <<- setGrob(
+
+             if(swap & showAxes) {
+
+               newGrob$children[[i]] <<- grid::setGrob(
                    gTree = newGrob$children[[i]],
-                   gPath = axes_grob_name,
+                   gPath = axesGrob_name,
                    newGrob = editGrob(
-                     grob = getGrob(newGrob$children[[i]], axes_grob_name),
-                     y = get_unit(axes_grob$x, as.numeric = FALSE) + 
-                       get_unit(axes_grob$y, is.unit = FALSE, as.numeric = FALSE),
-                     x =  get_unit(axes_grob$y, as.numeric = FALSE) + 
-                       get_unit(axes_grob$x, is.unit = FALSE, as.numeric = FALSE)
+                     grob = grid::getGrob(newGrob$children[[i]], axesGrob_name),
+                     y = get_unit(axesGrob$x, as.numeric = FALSE) +
+                       get_unit(axesGrob$y, is.unit = FALSE, as.numeric = FALSE),
+                     x =  get_unit(axesGrob$y, as.numeric = FALSE) +
+                       get_unit(axesGrob$x, is.unit = FALSE, as.numeric = FALSE)
                    )
                  )
              }
            }
     )
-    
-    
+
+
   } else NULL # serialaxes glyphs are all deactive; no changes are necessary
-  
-  setGrob(
-    gTree = loon_grob,
-    gPath = pointsTree_name,
+
+  grid::setGrob(
+    gTree = loon.grob,
+    gPath = pointsTreeName,
     newGrob = newGrob
   )
 }

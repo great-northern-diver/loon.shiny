@@ -1,18 +1,18 @@
-loon_default_serialaxes_args <- function() {
+loon_defaultSerialaxesSettings_args <- function() {
   list(
-    title_fontsize = 18,
-    parallel_xlim = c(-0.1, 1.12),
-    parallel_ylim = c(-0.1, 1.12),
-    radial_xlim = c(-0.2, 1.2),
-    radial_ylim = c(-0.2, 1.2),
+    titleFontsize = 18,
+    parallelXlim = c(-0.1, 1.12),
+    parallelYlim = c(-0.1, 1.12),
+    radialXlim = c(-0.2, 1.2),
+    radialYlim = c(-0.2, 1.2),
     radius = 0.2,
-    guides_background = loon::l_getOption("canvas_bg_guides"),
-    line_color1 = loon::l_getOption("background"),
-    line_color2 = loon::l_getOption("foreground"),
-    guideLine_width = 2,
-    label_fontsize = 9,
-    linewidth_default = 1,
-    radius_offset = 0.1,
+    guidesBackground = loon::l_getOption("canvas_bg_guides"),
+    lineColor1 = loon::l_getOption("background"),
+    lineColor2 = loon::l_getOption("foreground"),
+    guideLineWidth = 2,
+    labelFontsize = 9,
+    linewidthDefault = 1,
+    radiusOffset = 0.1,
     margins = rep(0,4)
   )
 }

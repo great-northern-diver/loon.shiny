@@ -1,10 +1,10 @@
-get_noneInteractiveGrobs_index <- function(loon_grobs) {
+get_noneInteractiveGrobs_index <- function(loon.grobs) {
 
-  n <- length(loon_grobs)
+  n <- length(loon.grobs)
   id <- sapply(1:n,
                function(i){
-                 loon_grob <- loon_grobs[[i]]
-                 if(stringr::str_detect(grid::grobName(loon_grob), "gTree")) NA else i
+                 loon.grob <- loon.grobs[[i]]
+                 if(grepl(grid::grobName(loon.grob), pattern = "gTree")) NA else i
                }
   )
   id[which(!is.na(id))]

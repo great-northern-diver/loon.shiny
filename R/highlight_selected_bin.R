@@ -1,18 +1,18 @@
 
-highlight_selected_bin_grob <- function (loon_grob, yshows, active, selected,
+highlight_selected_bin_grob <- function (loon.grob, yshows, active, selected,
                                          binId, binX, binHeight, binwidth,
                                          n, swapAxes, showStackedColors, showOutlines,
-                                         color, colorFill, colorOutline, loon_color){
+                                         color, colorFill, colorOutline, loonColor){
   
-  brush_id <- intersect(which(selected), which(active))
-  if(length(brush_id) > 0) {
+  brushId <- intersect(which(selected), which(active))
+  if(length(brushId) > 0) {
     
-    histGrob <- getGrob(loon_grob, "histogram")
-    which_bin_is_affected <- which(sapply(binId, function(bi) any(bi %in% brush_id)))
+    histGrob <- grid::getGrob(loon.grob, "histogram")
+    which_bin_is_affected <- which(sapply(binId, function(bi) any(bi %in% brushId)))
     
     colorOrder <- as.character(levels(as.factor(color)))
     
-    sel_color <- loon_color$select_color[1]
+    sel_color <- select_color()
     
     lapply(which_bin_is_affected,
            function(i) {
@@ -55,7 +55,7 @@ highlight_selected_bin_grob <- function (loon_grob, yshows, active, selected,
                  
                  cumsumColorBinHeight <- c(0, cumsum(colorBinHeight))
                  
-                 histGrob <<- setGrob(
+                 histGrob <<- grid::setGrob(
                    gTree = histGrob,
                    gPath = binName,
                    newGrob = gTree(
@@ -71,7 +71,7 @@ highlight_selected_bin_grob <- function (loon_grob, yshows, active, selected,
                                                                     cumsumColorBinHeight[i+1])), "native")
                                                    width <- unit(colorBinHeight[i], "native")
                                                  }
-                                                 rectGrob(
+                                                 grid::rectGrob(
                                                    x = x, y = y, 
                                                    width = width, height = height, 
                                                    gp = gpar(fill = names(colorBinHeight)[i], 
@@ -84,7 +84,7 @@ highlight_selected_bin_grob <- function (loon_grob, yshows, active, selected,
                  )
                } else {
                  
-                 binGrob <- rectGrob(
+                 binGrob <- grid::rectGrob(
                    x = x, y = y, 
                    width = width, height = height, 
                    gp = gpar(fill = colorFill, 
@@ -109,13 +109,13 @@ highlight_selected_bin_grob <- function (loon_grob, yshows, active, selected,
                    width <- unit(binSelected, "native")
                  }
                  
-                 histGrob <<- setGrob(
+                 histGrob <<- grid::setGrob(
                    gTree = histGrob,
                    gPath = binName,
                    newGrob = gTree(
                      children = gList(
                        binGrob,
-                       rectGrob(
+                       grid::rectGrob(
                          x = x, y = y, 
                          width = width, height = height, 
                          gp = gpar(fill = sel_color, 
@@ -130,10 +130,10 @@ highlight_selected_bin_grob <- function (loon_grob, yshows, active, selected,
            }
     )
     
-    setGrob(
-      gTree = loon_grob,
+    grid::setGrob(
+      gTree = loon.grob,
       gPath = "histogram",
       newGrob = histGrob
     )
-  } else loon_grob
+  } else loon.grob
 }

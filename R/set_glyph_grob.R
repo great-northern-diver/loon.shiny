@@ -1,65 +1,63 @@
-set_glyph_grob <- function(loon_grob, index, new_pch, tmp, ...) {
+set_glyph_grob <- function(loon.grob, index, newPch, tmp, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("set_glyph_grob", obj)
 }
 
-set_glyph_grob.l_plot <- function(loon_grob, index, new_pch, tmp, ...) {
+set_glyph_grob.l_plot <- function(loon.grob, index, newPch, tmp, ...) {
 
   args <- list(...)
-  pointsTree_name <- args$pointsTree_name
+  pointsTreeName <- args$pointsTreeName
 
-  if(pointsTree_name != "points: missing glyphs" & length(index) > 0) {
-    
+  if(pointsTreeName != "points: missing glyphs" & length(index) > 0) {
+
     color <- args$color
     size <- args$size
     pch <- args$pch
     grob_index <- args$grob_index
-    
-    newGrob <- getGrob(loon_grob, pointsTree_name)
 
-    loon_color <- args$loon_color
+    newGrob <- grid::getGrob(loon.grob, pointsTreeName)
     point_size <- loon_default_size()[["point_size"]]
 
     lapply(index,
            function(i) {
 
-             if(str_detect(newGrob$children[[i]]$name, "primitive_glyph")) {
-               
-               newGrob$children[[i]] <<- editGrob(
+             if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
+
+               newGrob$children[[i]] <<- grid::editGrob(
                  grob = newGrob$children[[i]],
-                 gp = if(new_pch %in% 21:24 & !(pch[i] %in% 21:24)) {
-                   gpar(
-                     fill = if(tmp) loon_color$select_color[1] else color[i],
+                 gp = if(newPch %in% 21:24) {
+                   grid::gpar(
+                     fill = if(tmp) select_color() else color[i],
                      cex = size[i],
-                     col = loon_color$foreground_color[1]
+                     col = bounder_color()
                    )
                  } else {
-                   gpar(
-                     col = if(tmp) loon_color$select_color[1] else color[i],
+                   grid::gpar(
+                     col = if(tmp) select_color() else color[i],
                      cex = size[i]
                    )
                  },
-                 pch = new_pch
+                 pch = newPch
                )
              } else {
-               
+
                x <- args$x
                y <- args$y
-               
+
                newGrob$children[[i]] <<- pointsGrob(
                  x = unit(x[i], "native"),
                  y = unit(y[i], "native"),
-                 pch = new_pch,
-                 gp = if(new_pch %in% 21:24) {
-                   gpar(
-                     fill = if(tmp) loon_color$select_color[1] else color[i],
+                 pch = newPch,
+                 gp = if(newPch %in% 21:24) {
+                   grid::gpar(
+                     fill = if(tmp) select_color() else color[i],
                      cex = size[i] ,
-                     col = loon_color$foreground_color[1]
+                     col = bounder_color()
                    )
                  } else {
-                   gpar(
-                     col = if(tmp) loon_color$select_color[1] else color[i],
+                   grid::gpar(
+                     col = if(tmp) select_color() else color[i],
                      cex = size[i]
                    )
                  },
@@ -69,59 +67,57 @@ set_glyph_grob.l_plot <- function(loon_grob, index, new_pch, tmp, ...) {
            }
     )
 
-    setGrob(
-      gTree = loon_grob,
-      gPath = pointsTree_name,
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = pointsTreeName,
       newGrob = newGrob
     )
   } else {
-    loon_grob
+    loon.grob
   }
 }
 
 
-set_glyph_grob.l_graph <- function(loon_grob, index, new_pch, tmp, ...) {
+set_glyph_grob.l_graph <- function(loon.grob, index, newPch, tmp, ...) {
 
   if(length(index) > 0) {
-    
+
     args <- list(...)
     pch <- args$pch
     size <- args$size
     color <- args$color
-    
-    newGrob <- getGrob(loon_grob, "graph nodes")
-    
-    loon_color <- args$loon_color
+
+    newGrob <- grid::getGrob(loon.grob, "graph nodes")
     # point_size <- loon_default_size()[["point_size"]]
-    
+
     lapply(index,
            function(i) {
-             
-             newGrob$children[[i]] <<- editGrob(
+
+             newGrob$children[[i]] <<- grid::editGrob(
                grob = newGrob$children[[i]],
-               gp = if(new_pch %in% 21:24 & !(pch[i] %in% 21:24)) {
-                 gpar(
-                   fill = if(tmp) loon_color$select_color[1] else color[i],
+               gp = if(newPch %in% 21:24) {
+                 grid::gpar(
+                   fill = if(tmp) select_color() else color[i],
                    cex = size[i],
-                   col = loon_color$foreground_color[1]
+                   col = bounder_color()
                  )
                } else {
-                 gpar(
-                   col = if(tmp) loon_color$select_color[1] else color[i],
+                 grid::gpar(
+                   col = if(tmp) select_color() else color[i],
                    cex = size[i]
                  )
                },
-               pch = new_pch
+               pch = newPch
              )
            }
     )
-    
-    setGrob(
-      gTree = loon_grob,
+
+    grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph nodes",
       newGrob = newGrob
     )
   } else {
-    loon_grob
+    loon.grob
   }
 }

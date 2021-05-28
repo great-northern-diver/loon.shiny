@@ -1,19 +1,19 @@
-set_node_labels_grob <- function(loon_grob, which_is_deactive) {
+set_node_labelsGrob <- function(loon.grob, whichIsDeactive) {
 
-  newGrob <- getGrob(loon_grob, "graph labels")
-  which_is_active <- setdiff(1:length(newGrob$children), which_is_deactive)
+  newGrob <- grid::getGrob(loon.grob, "graph labels")
+  which_is_active <- setdiff(1:length(newGrob$children), whichIsDeactive)
 
   lapply(which_is_active,
          function(i){
            newGrob$children[[i]] <<- do.call(
-             textGrob,
+             grid::textGrob,
              getGrobArgs(newGrob$children[[i]])
            )
          }
   )
 
-  setGrob(
-    gTree = loon_grob,
+  grid::setGrob(
+    gTree = loon.grob,
     gPath = "graph labels",
     newGrob = newGrob
   )

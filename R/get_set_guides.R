@@ -1,42 +1,42 @@
-get_showGuides <- function(loon_grob) {
+get_showGuides <- function(loon.grob) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("get_showGuides", obj)
 }
 
-get_showGuides.default <- function(loon_grob) {
-  guides_grob <- getGrob(loon_grob, "guides")
-  !all(str_detect(guides_grob$childrenOrder, ":"))
+get_showGuides.default <- function(loon.grob) {
+  guidesGrob <- grid::getGrob(loon.grob, "guides")
+  !all(grepl(guidesGrob$childrenOrder, pattern = ":"))
 }
 
-get_showGuides.l_serialaxes <- function(loon_grob) {
-  guides_grob <- getGrob(loon_grob, "guides")
-  "bounding box" %in% guides_grob$childrenOrder
+get_showGuides.l_serialaxes <- function(loon.grob) {
+  guidesGrob <- grid::getGrob(loon.grob, "guides")
+  "bounding box" %in% guidesGrob$childrenOrder
 }
 
-set_guides_grob <- function(loon_grob, xaxis, yaxis, loon_color) {
+set_guidesGrob <- function(loon.grob, xaxis, yaxis, loonColor) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
-  UseMethod("set_guides_grob", obj)
+  class(obj) <- names(loon.grob$children)
+  UseMethod("set_guidesGrob", obj)
 }
 
-set_guides_grob.default <- function(loon_grob, xaxis, yaxis, loon_color) {
+set_guidesGrob.default <- function(loon.grob, xaxis, yaxis, loonColor) {
 
-  setGrob(
-    gTree = loon_grob,
+  grid::setGrob(
+    gTree = loon.grob,
     gPath = "guides",
     newGrob = gTree(
       children = gList(
-        rectGrob(gp = gpar(col = NA,
-                           fill = loon_color$guidesbackground_color)
+        grid::rectGrob(gp = gpar(col = NA,
+                                 fill = loonColor$guidesbackground_color)
         ),
         do.call(
           gList,
           lapply(xaxis,
                  function(xax) {
-                   linesGrob(x = unit(rep(xax, 2), "native"),
-                             y =  unit(c(0, 1), "npc"),
-                             gp = gpar(col = loon_color$guideslines_color, lwd = 2))
+                   grid::linesGrob(x = unit(rep(xax, 2), "native"),
+                                   y =  unit(c(0, 1), "npc"),
+                                   gp = gpar(col = loonColor$guideslines_color, lwd = 2))
 
                  }
           )
@@ -45,9 +45,9 @@ set_guides_grob.default <- function(loon_grob, xaxis, yaxis, loon_color) {
           gList,
           lapply(yaxis,
                  function(yax) {
-                   linesGrob(x = unit(c(0, 1), "npc") ,
-                             y =  unit(rep(yax,2), "native"),
-                             gp = gpar(col = loon_color$guideslines_color, lwd = 2))
+                   grid::linesGrob(x = unit(c(0, 1), "npc") ,
+                                   y =  unit(rep(yax,2), "native"),
+                                   gp = gpar(col = loonColor$guideslines_color, lwd = 2))
 
                  }
           )

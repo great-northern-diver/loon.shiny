@@ -1,270 +1,392 @@
-update_limitSliderInput <- function(loon_grob, ...) {
+update_limitSliderInput <- function(loon.grob, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("update_limitSliderInput", obj)
 }
 
-update_limitSliderInput.default <- function(loon_grob, loonWidgets_info, input, session, buttons, tabPanelName,
-                                            brush_id) {
-  
-  swap_in_loon <- loonWidgets_info$swap_in_loon
-  swap_in_shiny <- "swap" %in% input[[paste0(tabPanelName, "plot_axes1")]]
-  swap <- ((swap_in_shiny & !swap_in_loon) | (!swap_in_shiny & swap_in_loon))
-  
-  worldView_xlim <- loonWidgets_info$worldView_xlim 
-  worldView_ylim <- loonWidgets_info$worldView_ylim 
-  
-  plotView_xlim <- loonWidgets_info$plotView_xlim
-  plotView_ylim <- loonWidgets_info$plotView_ylim
-  
-  minX <- min(worldView_xlim) - diff(worldView_xlim)
-  maxX <- max(worldView_xlim) + diff(worldView_xlim)
-  
-  minY <- min(worldView_ylim) - diff(worldView_ylim)
-  maxY <- max(worldView_ylim) + diff(worldView_ylim)
-  
-  if(buttons$scale_to_button$plot != 0) {
+update_limitSliderInput.default <- function(loon.grob, loonWidgetsInfo, input, session, buttons, tabPanelName,
+                                            brushId) {
+
+  swapInLoon <- loonWidgetsInfo$swapInLoon
+  swapInShiny <- "swap" %in% input[[paste0(tabPanelName, "plotAxes1")]]
+  swap <- ((swapInShiny & !swapInLoon) | (!swapInShiny & swapInLoon))
+
+  plotViewXlim <- loonWidgetsInfo$plotViewXlim
+  plotViewYlim <- loonWidgetsInfo$plotViewYlim
+
+  layerMinus <- input[[paste0(tabPanelName, "layerMinus")]]
+  currentLayerName <- input[[paste0(tabPanelName, "layer")]]
+  layers <- loonWidgetsInfo$layers
+  currentLayer <- layers[which(names(layers) == currentLayerName)]
+
+  if(layerMinus > buttons["layerMinus"]) {
+
+    if(currentLayer == "scatterplot") {
+      warning("`model` layer is a descendant of layer `model` and can not be deleted.",
+              call. = FALSE)
+
+      worldViewXlim <- loonWidgetsInfo$worldViewXlim
+      worldViewYlim <- loonWidgetsInfo$worldViewYlim
+
+    } else {
+
+      loon.grob <- grid::setGrob(
+        gTree = loon.grob,
+        gPath = currentLayer,
+        newGrob = nullGrob(name = currentLayer)
+      )
+
+      # update choices
+      shiny::updateSelectInput(
+        session,
+        inputId = paste0(tabPanelName, "layer"),
+        choices = setdiff(layers, currentLayer)
+      )
+
+      worldView <- get_worldViewPort(loon.grob = loon.grob, parent = "scatterplot",
+                                     parentExcluded = TRUE)
+
+      worldViewXlim <- range(c(plotViewXlim, worldView$xlim))
+      worldViewYlim <- range(c(plotViewYlim, worldView$ylim))
+    }
+  } else {
+    worldViewXlim <- loonWidgetsInfo$worldViewXlim
+    worldViewYlim <- loonWidgetsInfo$worldViewYlim
+  }
+
+  minX <- min(worldViewXlim) - diff(worldViewXlim)
+  maxX <- max(worldViewXlim) + diff(worldViewXlim)
+
+  minY <- min(worldViewYlim) - diff(worldViewYlim)
+  maxY <- max(worldViewYlim) + diff(worldViewYlim)
+
+  scaleToSelect <- input[[paste0(tabPanelName, "scaleToSelect")]]
+  scaleToPlot <- input[[paste0(tabPanelName, "scaleToPlot")]]
+  scaleToWorld <- input[[paste0(tabPanelName, "scaleToWorld")]]
+  scaleToLayer <- input[[paste0(tabPanelName, "scaleToLayer")]]
+
+  if(scaleToPlot > buttons["plot"]) {
 
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
       label = if(swap) "ylim" else "xlim",
-      step = log_ceiling(plotView_xlim),
-      value = plotView_xlim,
+      step = loonWidgetsInfo$stepX,
+      value = plotViewXlim,
       min = minX,
       max = maxX
     )
-    
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "ylim"),
       label = if(swap) "xlim" else "ylim",
-      step = log_ceiling(plotView_ylim),
-      value = plotView_ylim,
+      step = loonWidgetsInfo$stepY,
+      value = plotViewYlim,
       min = minY,
       max = maxY
     )
-    
-  } else if(buttons$scale_to_button$world != 0) {
-    
+
+  } else if(scaleToWorld > buttons["world"]) {
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
       label = if(swap) "ylim" else "xlim",
-      step = log_ceiling(worldView_xlim),
-      value = worldView_xlim,
+      step = loonWidgetsInfo$stepX,
+      value = worldViewXlim,
       min = minX,
       max = maxX
     )
-    
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "ylim"),
       label = if(swap) "xlim" else "ylim",
-      step = log_ceiling(worldView_ylim),
-      value = worldView_ylim,
+      step = loonWidgetsInfo$stepY,
+      value = worldViewYlim,
       min = minY,
       max = maxY
     )
-    
-  } else if(buttons$scale_to_button$select != 0) {
-    
-    if(length(brush_id) > 0) {
+
+  } else if(scaleToSelect > buttons["select"]) {
+
+    if(length(brushId) > 0) {
       shiny::updateSliderInput(
         session,
         inputId = paste0(tabPanelName, "xlim"),
         label = if(swap) "ylim" else "xlim",
-        step = loonWidgets_info$step_x,
-        value = grDevices::extendrange(
+        step = loonWidgetsInfo$stepX,
+        value = range(
           c(
-            min(loonWidgets_info$x[brush_id]) - loonWidgets_info$step_x/2,
-            max(loonWidgets_info$x[brush_id]) + loonWidgets_info$step_x/2
+            min(loonWidgetsInfo$x[brushId]) - loonWidgetsInfo$stepX/2,
+            max(loonWidgetsInfo$x[brushId]) + loonWidgetsInfo$stepX/2
           )
         ),
         min = minX,
         max = maxX
       )
-      
+
       shiny::updateSliderInput(
         session,
         inputId = paste0(tabPanelName, "ylim"),
         label = if(swap) "xlim" else "ylim",
-        step = loonWidgets_info$step_y,
-        value =  grDevices::extendrange(
+        step = loonWidgetsInfo$stepY,
+        value =  range(
           c(
-            min(loonWidgets_info$y[brush_id]) - loonWidgets_info$step_y/2,
-            max(loonWidgets_info$y[brush_id]) + loonWidgets_info$step_y/2
+            min(loonWidgetsInfo$y[brushId]) - loonWidgetsInfo$stepY/2,
+            max(loonWidgetsInfo$y[brushId]) + loonWidgetsInfo$stepY/2
           )
         ),
         min = minY,
         max = maxY
       )
     }
-  } else if (buttons$layer_button$scale_to != 0) {
-    
+  } else if (scaleToLayer > buttons["scaleToLayer"] && length(currentLayer) > 0) {
+
+    layerLimits <- get_layer_worldView(loon.grob, layer = currentLayer)
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
       label = if(swap) "ylim" else "xlim",
-      step = loonWidgets_info$step_x,
-      value = loonWidgets_info$xlim,
+      step = loonWidgetsInfo$stepX,
+      value = layerLimits$xlim,
       min = minX,
       max = maxX
     )
-    
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "ylim"),
       label = if(swap) "xlim" else "ylim",
-      step = loonWidgets_info$step_y,
-      value = loonWidgets_info$ylim,
+      step = loonWidgetsInfo$stepY,
+      value = layerLimits$ylim,
       min = minY,
       max = maxY
     )
-    
+
   } else {
-    
-    shiny::updateSliderInput(
-      session,
-      inputId = paste0(tabPanelName, "ylim"),
-      label = if(swap) "xlim" else "ylim",
-      min = minY,
-      max = maxY
-    )
-    
+
+    xscale <- isolate(input[[paste0(tabPanelName, "xlim")]])
+    step <- NULL
+    if(minX > xscale[1] || xscale[2] > maxX) {
+      xscale <- plotViewXlim
+      step <- log_ceiling(diff(plotViewXlim))
+    }
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
       label = if(swap) "ylim" else "xlim",
+      value = xscale,
+      step = step,
       min = minX,
       max = maxX
+    )
+
+    yscale <- isolate(input[[paste0(tabPanelName, "ylim")]])
+    step <- NULL
+    if(minY > yscale[1] || yscale[2] > maxY) {
+      yscale <- plotViewYlim
+      step <- log_ceiling(diff(plotViewYlim))
+    }
+
+    shiny::updateSliderInput(
+      session,
+      inputId = paste0(tabPanelName, "ylim"),
+      label = if(swap) "xlim" else "ylim",
+      value = yscale,
+      step = step,
+      min = minY,
+      max = maxY
     )
   }
 }
 
-update_limitSliderInput.l_hist <- function(loon_grob, loonWidgets_info, input, session, buttons, tabPanelName) {
-  
-  swap_in_loon <- loonWidgets_info$swap_in_loon
-  swap_in_shiny <- "swap" %in% input[[paste0(tabPanelName, "plot_axes1")]]
-  
-  # plot view
-  plotView_xlim <- loonWidgets_info$plotView_xlim
-  plotView_ylim <- loonWidgets_info$plotView_ylim
-  
+update_limitSliderInput.l_hist <- function(loon.grob, loonWidgetsInfo, input, session, buttons, tabPanelName) {
+
+  swapInLoon <- loonWidgetsInfo$swapInLoon
+  swapInShiny <- "swap" %in% input[[paste0(tabPanelName, "plotAxes1")]]
+
+  layerXlim <- loonWidgetsInfo$layerXlim
+  layerYlim <- loonWidgetsInfo$layerYlim
+
   yshows <- input[[paste0(tabPanelName, "yshows")]]
-  origin <- input[[paste0(tabPanelName, "origin")]]
+  origin <- input[[paste0(tabPanelName, "origin")]] - 1e-8 # a hack
   binwidth <- input[[paste0(tabPanelName, "binwidth")]]
-  
-  scale_to_button <- list(
-    plot = buttons$scale_to_button$plot,
-    world = buttons$scale_to_button$world
-  )
-  
-  if(loonWidgets_info$yshowsIsModified && yshows == "density") {
-    scale_to_button$plot <- 1
+
+  rangeChangedBydensity <- FALSE
+  if(yshows == "density") {
+    if(abs(buttons["binwidth"] - binwidth) > 1e-6 || abs(buttons["origin"] - origin) > 1e-6)
+      rangeChangedBydensity <- TRUE
   }
-  
-  if((loonWidgets_info$binwidthIsModified || loonWidgets_info$originIsModified) && yshows == "density") {
-    scale_to_button$world <- 1
+
+  active <- loonWidgetsInfo$active
+  binInfo <- get_binInfo(data = loonWidgetsInfo$x,
+                         origin = origin, active = active,
+                         binwidth = binwidth, yshows = yshows)
+  binId <- binInfo$binId
+  binX <- binInfo$binX
+  binHeight <- binInfo$binHeight
+
+  binxy <- get_binxy(binX = binX, binId = binId, binwidth = binwidth,
+                     yshows = yshows, color = loonWidgetsInfo$color,
+                     n = sum(active))
+
+  plotViewXlim <- grDevices::extendrange(c(binxy$xmin, binxy$xmax))
+  plotViewYlim <- grDevices::extendrange(c(binxy$ymin, binxy$ymax))
+
+  layerMinus <- input[[paste0(tabPanelName, "layerMinus")]]
+  currentLayerName <- input[[paste0(tabPanelName, "layer")]]
+  layers <- loonWidgetsInfo$layers
+  currentLayer <- layers[which(names(layers) == currentLayerName)]
+
+  if(layerMinus > buttons["layerMinus"]) {
+
+    if(currentLayer == "histogram") {
+
+      warning("`model` layer is a descendant of layer `model` and can not be deleted.",
+              call. = FALSE)
+
+    } else {
+
+      loon.grob <- grid::setGrob(
+        gTree = loon.grob,
+        gPath = currentLayer,
+        newGrob = nullGrob(name = currentLayer)
+      )
+
+      worldView <-get_worldViewPort(loon.grob = loon.grob,
+                                    parent = "histogram",
+                                    parentExcluded = TRUE)
+
+      layerXlim <- worldView$xlim
+      layerYlim <- worldView$ylim
+    }
   }
-  
-  if(swap_in_loon) {
-    
-    worldView_xlim <- range(c(plotView_xlim, loonWidgets_info$worldView_ylim))
-    worldView_ylim <- range(c(plotView_ylim, loonWidgets_info$worldView_xlim))
+
+  if(swapInLoon) {
+
+    worldViewXlim <- range(c(plotViewXlim, layerYlim))
+    worldViewYlim <- range(c(plotViewYlim, layerXlim))
   } else {
-    
-    worldView_xlim <- range(c(plotView_xlim, loonWidgets_info$worldView_xlim))
-    worldView_ylim <- range(c(plotView_ylim, loonWidgets_info$worldView_ylim))
+
+    worldViewXlim <- range(c(plotViewXlim, layerXlim))
+    worldViewYlim <- range(c(plotViewYlim, layerYlim))
   }
-  
-  minX <- min(worldView_xlim) - diff(worldView_xlim)
-  maxX <- max(worldView_xlim) + diff(worldView_xlim)
-  
-  minY <- min(worldView_ylim) - diff(worldView_ylim)
-  maxY <- max(worldView_ylim) + diff(worldView_ylim)
-  
+
+  minX <- min(worldViewXlim) - diff(worldViewXlim)
+  maxX <- max(worldViewXlim) + diff(worldViewXlim)
+
+  minY <- min(worldViewYlim) - diff(worldViewYlim)
+  maxY <- max(worldViewYlim) + diff(worldViewYlim)
+
+  scaleToPlot <- input[[paste0(tabPanelName, "scaleToPlot")]]
+  scaleToWorld <- input[[paste0(tabPanelName, "scaleToWorld")]]
+  scaleToLayer <- input[[paste0(tabPanelName, "scaleToLayer")]]
+
   # update sliderInput
-  if(scale_to_button$plot != 0) {
-    
+  if(scaleToPlot > buttons["plot"] || rangeChangedBydensity) {
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
-      label = if(swap_in_shiny) "ylim" else "xlim",
+      label = if(swapInShiny) "ylim" else "xlim",
       min = minX,
       max = maxX,
-      value = plotView_xlim,
-      step = log_ceiling(plotView_xlim)
+      step = log_ceiling(diff(plotViewXlim)),
+      value = plotViewXlim
     )
-    
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "ylim"),
-      label = if(swap_in_shiny) "xlim" else "ylim",
+      label = if(swapInShiny) "xlim" else "ylim",
       min = minY,
       max = maxY,
-      value = plotView_ylim,
-      step = log_ceiling(plotView_ylim)
+      step = log_ceiling(diff(plotViewYlim)),
+      value = plotViewYlim
     )
-    
-  } else if (scale_to_button$world != 0) {
-    
+
+  } else if (scaleToWorld > buttons["world"]) {
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
-      label = if(swap_in_shiny) "ylim" else "xlim",
+      label = if(swapInShiny) "ylim" else "xlim",
       min = minX,
       max = maxX,
-      value = worldView_xlim,
-      step = log_ceiling(worldView_xlim)
+      step = log_ceiling(diff(worldViewXlim)),
+      value = worldViewXlim
     )
-    
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "ylim"),
-      label = if(swap_in_shiny) "xlim" else "ylim",
+      label = if(swapInShiny) "xlim" else "ylim",
       min = minY,
       max = maxY,
-      value = worldView_ylim,
-      step = log_ceiling(worldView_ylim)
+      step = log_ceiling(diff(worldViewYlim)),
+      value = worldViewYlim
     )
-    
-  }  else if (buttons$layer_button$scale_to != 0) {
-    
+
+  }  else if (scaleToLayer > buttons["scaleToLayer"] && length(currentLayer) > 0) {
+
+    layerLimits <- get_layer_worldView(loon.grob, layer = currentLayer)
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
-      label = if(swap_in_shiny) "ylim" else "xlim",
+      label = if(swapInShiny) "ylim" else "xlim",
       min = minX,
       max = maxX,
-      step = log_ceiling(worldView_xlim),
-      value = loonWidgets_info$xlim
+      step = log_ceiling(diff(layerLimits$xlim)),
+      value = layerLimits$xlim
     )
-    
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "ylim"),
-      label = if(swap_in_shiny) "xlim" else "ylim",
+      label = if(swapInShiny) "xlim" else "ylim",
       min = minY,
       max = maxY,
-      step = log_ceiling(worldView_ylim),
-      value = loonWidgets_info$ylim
+      step = log_ceiling(diff(layerLimits$xlim)),
+      value = layerLimits$ylim
     )
-    
+
   } else {
-    
+
+    xscale <- isolate(input[[paste0(tabPanelName, "xlim")]])
+    step <- NULL
+    if(minX > xscale[1] || xscale[2] > maxX) {
+      xscale <- plotViewXlim
+      step <- log_ceiling(diff(plotViewXlim))
+    }
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "xlim"),
-      label = if(swap_in_shiny) "ylim" else "xlim",
+      label = if(swapInShiny) "ylim" else "xlim",
+      value = xscale,
+      step = step,
       min = minX,
       max = maxX
     )
-    
+
+    yscale <- isolate(input[[paste0(tabPanelName, "ylim")]])
+    step <- NULL
+    if(minY > yscale[1] || yscale[2] > maxY) {
+      yscale <- plotViewYlim
+      step <- log_ceiling(diff(plotViewYlim))
+    }
+
     shiny::updateSliderInput(
       session,
       inputId = paste0(tabPanelName, "ylim"),
-      label = if(swap_in_shiny) "xlim" else "ylim",
+      label = if(swapInShiny) "xlim" else "ylim",
+      value = yscale,
+      step = step,
       min = minY,
       max = maxY
     )

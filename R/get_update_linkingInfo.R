@@ -1,54 +1,42 @@
-get_linkingInfo <- function(linkingGroups, loonWidgets_info, tabPanelNames) {
-  
-  unique_linkingGroups <- unique(linkingGroups)
+get_linkingInfo <- function(linkingGroups, loonWidgetsInfo,
+                            tabPanelNames, n) {
+
+  linkingKey <- lapply(seq(n),
+                       function(i){
+                         loonWidgetsInfo[[i]]$linkingKey
+                       }
+  )
+  uniqueLinkingKey <- unique(unlist(linkingKey))
+  N <- length(uniqueLinkingKey)
+
+  uniqueLinkingGroups <- unique(linkingGroups)
 
   linkingInfo <- setNames(
-    lapply(seq(length(unique_linkingGroups)),
+    lapply(seq(length(uniqueLinkingGroups)),
            function(j) {
 
-             if(unique_linkingGroups[j] != "none") {
-               which_group <- which(linkingGroups == unique_linkingGroups[j])
-               
-               linkingKey <- setNames(
-                 lapply(which_group, 
-                        function(jj){
-                          loonWidgets_info[[jj]]$linkingKey
-                        }
-                 ),
-                 tabPanelNames[which_group]
-               )
-               
-               linkingStates <- setNames(
-                 lapply(which_group, 
-                        function(jj){
-                          loonWidgets_info[[jj]]$linkingStates
-                        }
-                 ),
-                 tabPanelNames[which_group]
-               )
-               
-               unique_linkingKey <- unique(unlist(linkingKey))
-               N <- length(unique_linkingKey)
-               
-               selected <- setNames(rep(NA, N), unique_linkingKey)
-               color <- setNames(rep(NA, N), unique_linkingKey)
-               size <- setNames(rep(NA, N), unique_linkingKey)
-               active <- setNames(rep(NA, N), linkingKey)
-               pch <- setNames(rep(NA, N), unique_linkingKey)
-               
+             if(uniqueLinkingGroups[j] != "none") {
+
+               linkedGroup <- which(linkingGroups == uniqueLinkingGroups[j])
+
+               selected <- rep(NA, N)
+               color <- rep(NA, N)
+               size <- rep(NA, N)
+               active <- rep(NA, N)
+               pch <- rep(NA, N)
+
                list(
                  selected = selected,
                  color = color,
                  size = size,
                  active = active,
                  pch = pch,
-                 select_by_color = NULL,
-                 linkingKey = linkingKey,
-                 linkingStates = linkingStates
+                 selectByColor = NULL,
+                 linkingKey = uniqueLinkingKey # linkingKey will not be modified once the plot is rendered
                )
              } else "no linkingInfo"
            }
-    ), unique_linkingGroups
+    ), uniqueLinkingGroups
   )
 
   linkingInfo
@@ -56,158 +44,167 @@ get_linkingInfo <- function(linkingGroups, loonWidgets_info, tabPanelNames) {
 
 
 
-update_linkingInfo <- function(loon_grob,
+update_linkingInfo <- function(loon.grob,
                                tabPanelName,
-                               linkingInfo, 
-                               linkingGroup, 
+                               linkingInfo,
+                               linkingGroup,
                                selected,
                                color,
-                               active, 
-                               select_by_color, 
+                               active,
+                               selectByColor,
                                linkedStates, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("update_linkingInfo", obj)
 }
 
-update_linkingInfo.l_plot <- function(loon_grob, 
+update_linkingInfo.l_plot <- function(loon.grob,
                                       tabPanelName,
-                                      linkingInfo, 
-                                      linkingGroup, 
+                                      # they are the central commendar
+                                      linkingInfo,
+                                      linkingGroup,
+                                      # they are `loon.grob`'s aesthetics
+                                      linkingKey,
                                       selected,
-                                      color, 
-                                      size, 
-                                      pch, 
-                                      active, 
-                                      select_by_color,
+                                      color,
+                                      size,
+                                      pch,
+                                      active,
+                                      selectByColor,
                                       linkedStates) {
-  
+
 
   if(linkingGroup != "none") {
     linkedInfo <- linkingInfo[[linkingGroup]]
-    linkedKey <- linkedInfo$linkingKey[[tabPanelName]]
-    linkedInfo$linkingStates[[tabPanelName]] <- linkedStates
+    linkedKey <- linkedInfo$linkingKey
+
+    # the `linkingKey` is the linkingKey of the `loon.grob`
+    # the `linkedKey` is the linkingKey in this group; they may be different
+    order <- match(linkingKey, linkedKey)
+
     # update linkingInfo
     if("color" %in% linkedStates) {
-      linkedInfo$color[linkedKey] <- color
+      linkedInfo$color[order] <- color
     }
     if("selected" %in% linkedStates) {
-      linkedInfo$selected[linkedKey] <- selected
+      linkedInfo$selected[order] <- selected
     }
     if("active" %in% linkedStates) {
-      linkedInfo$active[linkedKey] <- active
+      linkedInfo$active[order] <- active
     }
     if("size" %in% linkedStates) {
-      linkedInfo$size[linkedKey] <- size
+      linkedInfo$size[order] <- size
     }
     if("glyph" %in% linkedStates) {
-      linkedInfo$pch[linkedKey] <- pch
+      linkedInfo$pch[order] <- pch
     }
-    linkedInfo$select_by_color <- select_by_color
+    linkedInfo$selectByColor <- selectByColor
     linkingInfo[[linkingGroup]] <- linkedInfo
   }
   linkingInfo
 }
 
-update_linkingInfo.l_graph <- function(loon_grob, 
-                                      tabPanelName,
-                                      linkingInfo, 
-                                      linkingGroup, 
-                                      selected,
-                                      color, 
-                                      size, 
-                                      pch, 
-                                      active, 
-                                      select_by_color, 
-                                      linkedStates) {
-  
-  
-  if(linkingGroup != "none") {
-    linkedInfo <- linkingInfo[[linkingGroup]]
-    linkedKey <- linkedInfo$linkingKey[[tabPanelName]]
-    linkedInfo$linkingStates[[tabPanelName]] <- linkedStates
-    # update linkingInfo
-    if("color" %in% linkedStates) {
-      linkedInfo$color[linkedKey] <- color
-    }
-    if("selected" %in% linkedStates) {
-      linkedInfo$selected[linkedKey] <- selected
-    }
-    if("active" %in% linkedStates) {
-      linkedInfo$active[linkedKey] <- active
-    }
-    if("size" %in% linkedStates) {
-      linkedInfo$size[linkedKey] <- size
-    }
-    if("glyph" %in% linkedStates) {
-      linkedInfo$pch[linkedKey] <- pch
-    }
-    linkedInfo$select_by_color <- select_by_color
-    linkingInfo[[linkingGroup]] <- linkedInfo
-  }
-  linkingInfo
+update_linkingInfo.l_graph <- function(loon.grob,
+                                       tabPanelName,
+                                       # they are the central commendar
+                                       linkingInfo,
+                                       linkingGroup,
+                                       # they are `loon.grob`'s aesthetics
+                                       linkingKey,
+                                       selected,
+                                       color,
+                                       size,
+                                       pch,
+                                       active,
+                                       selectByColor,
+                                       linkedStates) {
+
+
+  update_linkingInfo.l_plot(loon.grob = loon.grob,
+                            tabPanelName = tabPanelName,
+                            # they are the central commendar
+                            linkingInfo = linkingInfo,
+                            linkingGroup = linkingGroup,
+                            # they are `loon.grob`'s aesthetics
+                            linkingKey = linkingKey,
+                            selected = selected,
+                            color = color,
+                            size = size,
+                            pch = pch,
+                            active = active,
+                            selectByColor = selectByColor,
+                            linkedStates = linkedStates)
 }
 
-update_linkingInfo.l_serialaxes <- function(loon_grob, 
+update_linkingInfo.l_serialaxes <- function(loon.grob,
                                             tabPanelName,
-                                            linkingInfo, 
-                                            linkingGroup, 
+                                            linkingInfo,
+                                            linkingGroup,
+                                            linkingKey,
                                             selected,
-                                            color, 
+                                            color,
                                             active,
                                             size,
-                                            select_by_color, 
+                                            selectByColor,
                                             linkedStates) {
-  
-  
+
+
   if(linkingGroup != "none") {
     linkedInfo <- linkingInfo[[linkingGroup]]
-    linkedKey <- linkedInfo$linkingKey[[tabPanelName]]
-    linkedInfo$linkingStates[[tabPanelName]] <- linkedStates
-    # update linkingInfo
+    linkedKey <- linkedInfo$linkingKey
+
+    # the `linkingKey` is the linkingKey of the `loon.grob`
+    # the `linkedKey` is the linkingKey in this group; they may be different
+    order <- match(linkingKey, linkedKey)
+
     if("color" %in% linkedStates) {
-      linkedInfo$color[linkedKey] <- color
+      linkedInfo$color[order] <- color
     }
     if("selected" %in% linkedStates) {
-      linkedInfo$selected[linkedKey] <- selected
+      linkedInfo$selected[order] <- selected
     }
     if("active" %in% linkedStates) {
-      linkedInfo$active[linkedKey] <- active
+      linkedInfo$active[order] <- active
     }
     if("size" %in% linkedStates) {
-      linkedInfo$size[linkedKey] <- size
+      linkedInfo$size[order] <- size
     }
-    linkedInfo$select_by_color <- select_by_color
+    linkedInfo$selectByColor <- selectByColor
     linkingInfo[[linkingGroup]] <- linkedInfo
   }
   linkingInfo
 }
 
-update_linkingInfo.l_hist <- function(loon_grob, 
+update_linkingInfo.l_hist <- function(loon.grob,
                                       tabPanelName,
-                                      linkingInfo, 
-                                      linkingGroup, 
+                                      linkingInfo,
+                                      linkingGroup,
+                                      linkingKey,
                                       selected,
-                                      color, 
-                                      active, 
-                                      select_by_color, 
+                                      color,
+                                      active,
+                                      selectByColor,
                                       linkedStates) {
-  
+
   if(linkingGroup != "none") {
+
     linkedInfo <- linkingInfo[[linkingGroup]]
-    linkedKey <- linkedInfo$linkingKey[[tabPanelName]]
-    linkedInfo$linkingStates[[tabPanelName]] <- linkedStates
-    # update linkingInfo
+    linkedKey <- linkedInfo$linkingKey
+
+    # the `linkingKey` is the linkingKey of the `loon.grob`
+    # the `linkedKey` is the linkingKey in this group; they may be different
+    order <- match(linkingKey, linkedKey)
+
     if("color" %in% linkedStates) {
-      linkedInfo$color[linkedKey] <- color
+      linkedInfo$color[order] <- color
     }
     if("selected" %in% linkedStates) {
-      linkedInfo$selected[linkedKey] <- selected
+      linkedInfo$selected[order] <- selected
     }
     if("active" %in% linkedStates) {
-      linkedInfo$active[linkedKey] <- active
+      linkedInfo$active[order] <- active
     }
-    linkedInfo$select_by_color <- select_by_color
+    linkedInfo$selectByColor <- selectByColor
     linkingInfo[[linkingGroup]] <- linkedInfo
   }
   linkingInfo

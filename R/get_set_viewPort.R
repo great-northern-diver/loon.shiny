@@ -1,36 +1,36 @@
-get_viewPort <- function(loon_grob) {
+get_viewPort <- function(loon.grob) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("get_viewPort", obj)
 }
 
-get_viewPort.default <- function(loon_grob) {
-  loon_plot_layer <- getGrob(loon_grob, "loon plot")
-  loon_plot_layer$vp
+get_viewPort.default <- function(loon.grob) {
+  loonPlotLayer <- grid::getGrob(loon.grob, "loon plot")
+  loonPlotLayer$vp
 }
 
-get_viewPort.l_serialaxes <- function(loon_grob) {
-  loon_plot_layer <- getGrob(loon_grob, "l_serialaxes")
-  loon_plot_layer$vp
+get_viewPort.l_serialaxes <- function(loon.grob) {
+  loonPlotLayer <- grid::getGrob(loon.grob, "l_serialaxes")
+  loonPlotLayer$vp
 }
 
 
-set_viewPort_grob <- function(loon_grob, margins, xlim, ylim) {
+set_viewPort_grob <- function(loon.grob, margins, xlim, ylim) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("set_viewPort_grob", obj)
 }
 
-set_viewPort_grob.default <- function(loon_grob, margins, xlim, ylim) {
-  
-  setGrob(
-    gTree = loon_grob,
+set_viewPort_grob.default <- function(loon.grob, margins, xlim, ylim) {
+
+  grid::setGrob(
+    gTree = loon.grob,
     gPath = "loon plot",
     newGrob = editGrob(
-      grob = getGrob(loon_grob, "loon plot"),
-      vp = vpStack(
-        plotViewport(margins = margins, name = "plotViewport"),
-        dataViewport(xscale = xlim, yscale = ylim,
+      grob = grid::getGrob(loon.grob, "loon plot"),
+      vp = grid::vpStack(
+        grid::plotViewport(margins = margins, name = "grid::plotViewport"),
+        grid::dataViewport(xscale = xlim, yscale = ylim,
                      name = "dataViewport")
       )
     )

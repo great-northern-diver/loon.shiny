@@ -1,53 +1,53 @@
-move_layer_up_grob <- function(loon_grob, current_layer, parent) {
+move_layerUp_grob <- function(loon.grob, currentLayer, parent) {
 
-  parent_layer <- getGrob(loon_grob, parent)
-  layers_name <- parent_layer$childrenOrder
+  parent_layer <- grid::getGrob(loon.grob, parent)
+  layersName <- parent_layer$childrenOrder
 
-  if(current_layer %in% layers_name) {
+  if(currentLayer %in% layersName) {
 
-    layer_order <- which(layers_name %in% current_layer)
-    len_layers_name <- length(layers_name)
+    layer_order <- which(layersName %in% currentLayer)
+    len_layersName <- length(layersName)
 
   } else {
 
-    parent <- getParent(gTree = parent_layer, current_layer = current_layer)
-    parent_layer <- getGrob(parent_layer, parent)
+    parent <- getParent(gTree = parent_layer, currentLayer = currentLayer)
+    parent_layer <- grid::getGrob(parent_layer, parent)
 
-    layers_name <- parent_layer$childrenOrder
-    layer_order <- which(layers_name %in% current_layer)
-    len_layers_name <- length(layers_name)
+    layersName <- parent_layer$childrenOrder
+    layer_order <- which(layersName %in% currentLayer)
+    len_layersName <- length(layersName)
   }
 
-  if(layer_order == len_layers_name) {
+  if(layer_order == len_layersName) {
 
-    warning(paste("Warning: layer" , current_layer, "cannot be raised any further."))
-    loon_grob
+    warning(paste("Warning: layer" , currentLayer, "cannot be raised any further."))
+    loon.grob
   } else {
 
-    setGrob(
-      gTree = loon_grob,
+    grid::setGrob(
+      gTree = loon.grob,
       gPath = parent,
       newGrob = reorderGrob(
         parent_layer,
-        order = layer_reorder(layer_order, len_layers_name, way = "up")
+        order = layer_reorder(layer_order, len_layersName, way = "up")
       )
     )
   }
 }
 
-layer_reorder <- function(layer_order, len_layers_name, way) {
+layer_reorder <- function(layer_order, len_layersName, way) {
 
   if(way == "up") {
 
-    if(layer_order < len_layers_name) {
-      sequence <- seq(len_layers_name)
+    if(layer_order < len_layersName) {
+      sequence <- seq(len_layersName)
       sequence[layer_order] <- layer_order + 1
       sequence[layer_order+1] <- layer_order
     } else warnings("layer order is larger or equal to the length of layers")
   } else if(way == "down") {
 
     if(layer_order > 1) {
-      sequence <- seq(len_layers_name)
+      sequence <- seq(len_layersName)
       sequence[layer_order] <- layer_order - 1
       sequence[layer_order-1] <- layer_order
     } else warnings("layer order is smaller or equal to 1")
@@ -56,20 +56,20 @@ layer_reorder <- function(layer_order, len_layers_name, way) {
   sequence
 }
 
-getParent <- function(gTree, current_layer) {
+getParent <- function(gTree, currentLayer) {
 
-  if(str_detect(grobName(gTree), 'gTree')) {
+  if(grepl(grobName(gTree), pattern = 'gTree')) {
 
-    layers_name <- gTree$childrenOrder
+    layersName <- gTree$childrenOrder
     layers <- gTree$children
 
-    for(i in 1:length(layers_name)) {
+    for(i in 1:length(layersName)) {
       layer <- layers[[i]]
 
-      if(current_layer %in% layer$childrenOrder) {
+      if(currentLayer %in% layer$childrenOrder) {
         return(layer$name)
         break
-      } else getParent(layer, current_layer)
+      } else getParent(layer, currentLayer)
     }
   }
 }

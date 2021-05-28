@@ -1,58 +1,56 @@
-loon.server <- function(input, output, session, update = TRUE, loon_grobs, gtable = NULL,
-                        layout_matrix, showWorldView = TRUE, nrow = NULL, ncol = NULL,
-                        loonWidgets_info, selectBy = NULL,
-                        arrangeGrobArgs = list()) {
+loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtable = NULL,
+                        showWorldView = TRUE, loonWidgetsInfo, selectBy = NULL,
+                        colorList = loon::l_getColorList(),
+                        plotRegionBackground = "gray92", arrangeGrobArgs = list()) {
 
-  if(length(arrangeGrobArgs) != 0) {
-    if(is.null(names(arrangeGrobArgs))) stop("names cannot be ignored in arrangeGrobArgs")
-    if(!all(names(arrangeGrobArgs) %in% methods::formalArgs(gridExtra::arrangeGrob))) stop("undefined arguments for arrangeGrob")
-  }
+  arrangeGrobArgs <- remove_null(arrangeGrobArgs, as_list = FALSE)
 
-  arrangeGrobArgs$nrow <- nrow
-  arrangeGrobArgs$ncol <- ncol
-  if(!is.null(layout_matrix)) {
-    arrangeGrobArgs$layout_matrix <- layout_matrix
-  }
-  noneInteractiveGrobs_index <- get_noneInteractiveGrobs_index(loon_grobs)
+  noneInteractiveGrobs_index <- get_noneInteractiveGrobs_index(loon.grobs)
 
+  # 1. check whether the layout_matrix, nrow, ncol, widths, heights are valid
+  # 2. rearrange the grobs if widths are heights provided
+  # since in the position specification (next line), no widths and heights are considered
+  # if the layout_matrix is not rearranged, the selection in shiny will not work properly
+  arrangeGrobArgs <- adjust_arrangeGrobArgs(arrangeGrobArgs, n = length(loon.grobs))
   # get each grob position
   positions <- loonGrob_positions(gtable,
-                                  loon_grobs, 
-                                  layout_matrix, 
-                                  nrow = arrangeGrobArgs$nrow, 
-                                  ncol = arrangeGrobArgs$ncol)
+                                  loon.grobs,
+                                  arrangeGrobArgs = arrangeGrobArgs)
 
-  n <- length(loon_grobs)
-  tabPanelNames <- names(loon_grobs)
+  n <- length(loon.grobs)
+  tabPanelNames <- names(loon.grobs)
 
-  output_info <- lapply(1:n, function(j) get_output_info(loon_grobs[[j]], loonWidgets_info[[j]]))
-  output_grobs <- lapply(1:n, function(j) NULL)
-  
-  selectBy <- get_selectBy(selectBy, loonWidgets_info)
-  
-  linkingGroups <- sapply(1:n, function(j) loonWidgets_info[[j]]$linkingGroup)
-  linkingInfo <- get_linkingInfo(linkingGroups, loonWidgets_info, tabPanelNames) 
-  
   runIndex <- seq(n)
+  outputInfo <- lapply(runIndex, function(j) get_outputInfo(loon.grobs[[j]], loonWidgetsInfo[[j]]))
+  output.grobs <- lapply(runIndex, function(j) NULL)
+
+  selectBy <- get_selectBy(selectBy, loonWidgetsInfo)
+
+  linkingGroups <- sapply(runIndex, function(j) loonWidgetsInfo[[j]]$linkingGroup)
+  linkingInfo <- get_linkingInfo(linkingGroups, loonWidgetsInfo, tabPanelNames, n)
 
   server <- function(input, output, session) {
-    
-    # set action buttons  
+
+    # set action buttons
     button_list <- lapply(runIndex,
                           function(j) {
-                            button_values(loon_grob = loon_grobs[[j]],
+                            button_values(loon.grob = loon.grobs[[j]],
                                           tabPanelName = tabPanelNames[j],
                                           input = input,
-                                          colorList = loonWidgets_info[[j]]$colorList)
+                                          colorList = colorList,
+                                          loonWidgetsInfo = loonWidgetsInfo[[j]])
                           }
     )
 
+    # In server function, the order of execution is
+    # `update_sidebarPanel` --> render `plot` --> render `world view` --> `update_sidebarPanel`
+
     # update tab panel
     shiny::observe({
-      
+
       pos <- get_currentSiderBar(positions, input, noneInteractiveGrobs_index)
-      
-      if(length(pos) != 0) {
+
+      if(length(pos) > 0) {
         shiny::updateNavbarPage(
           session, "navBarPage", selected = tabPanelNames[pos]
         )
@@ -61,38 +59,64 @@ loon.server <- function(input, output, session, update = TRUE, loon_grobs, gtabl
       currentSiderBar <- input[["navBarPage"]]
       runIndex <<- c(which(tabPanelNames == currentSiderBar), which(tabPanelNames!= currentSiderBar))
 
+      # update ui
+      # slider bar names (xlim to ylim, vice versa), values, ...
+      # color check box
+      lapply(runIndex,
+             function(j) {
+
+               update_sidebarPanel(
+                 loon.grob = loon.grobs[[j]],
+                 buttons = button_list[[j]],
+                 session,
+                 input,
+                 colorList = colorList,
+                 linkingInfo = linkingInfo,
+                 linkingGroup = linkingGroups[j],
+                 linkingGroups = linkingGroups,
+                 tabPanelName = tabPanelNames[j],
+                 tabPanelNames = tabPanelNames,
+                 outputInfo = outputInfo[[j]]
+               )
+             }
+      )
+
       output$plots <-  shiny::renderPlot({
 
         loon_reactive_grobs <- lapply(runIndex,
                                       function(j) {
-                                        
+
                                         reactive_grobs_info <- loon_reactive(
-                                          loon_grob = loon_grobs[[j]],
-                                          output_grob = output_grobs[[j]],
+                                          loon.grob = loon.grobs[[j]],
+                                          output.grob = output.grobs[[j]],
                                           linkingInfo = linkingInfo,
                                           buttons = button_list[[j]],
                                           position = positions[j, ],
                                           selectBy = selectBy,
                                           linkingGroup = linkingGroups[j],
                                           input,
+                                          colorList = colorList,
                                           tabPanelName = tabPanelNames[j],
-                                          output_info = output_info[[j]]
+                                          outputInfo = outputInfo[[j]]
                                         )
-                                        
+
                                         # loon grobs
-                                        loon_grobs[[j]] <<- reactive_grobs_info$loon_grob
-                                        output_grobs[[j]] <<- reactive_grobs_info$output_grob
-                                        
+                                        loon.grobs[[j]] <<- reactive_grobs_info$loon.grob
+                                        output.grobs[[j]] <<- reactive_grobs_info$output.grob
+
                                         # update output info
-                                        output_info[[j]] <<- reactive_grobs_info$output_info
-                                        
+                                        outputInfo[[j]] <<- reactive_grobs_info$outputInfo
+
                                         # update linking Group
-                                        linkingGroups[j] <<- output_info[[j]]$linkingGroup
-                                        
+                                        linkingGroups[j] <<- outputInfo[[j]]$linkingGroup
+
                                         # update linkingInfo
-                                        linkingInfo <<- output_info[[j]]$linkingInfo
-                                        
-                                        return(reactive_grobs_info$output_grob)
+                                        linkingInfo <<- outputInfo[[j]]$linkingInfo
+
+                                        # update button list
+                                        button_list[[j]] <<- outputInfo[[j]]$buttons
+
+                                        return(reactive_grobs_info$output.grob)
                                       }
         )
         # Update display
@@ -100,49 +124,34 @@ loon.server <- function(input, output, session, update = TRUE, loon_grobs, gtabl
         # since, rather than displays
         # tklabels are packed on the window
         # use the gtable, all tklabels can be preserved.
-        grid::grid.draw(set_grobFromGtable(gtable, 
-                                           newGrobs = loon_reactive_grobs[order(runIndex)], 
+        grid::grid.draw(set_grobFromGtable(gtable,
+                                           newGrobs = loon_reactive_grobs[order(runIndex)],
+                                           plotRegionBackground = plotRegionBackground,
                                            arrangeGrobArgs = arrangeGrobArgs))
       })
 
       if(showWorldView) {
         # only update the current world view
         output[[paste0(currentSiderBar, "plot_world_view")]] <- shiny::renderPlot({
-          
-          id <- which(tabPanelNames %in% currentSiderBar)
-          
-          loon_reactive_worldView_grob <- loon_reactive_worldView(
-            loon_grob = loon_grobs[[id]],
-            buttons = button_list[[id]],
-            input,
-            tabPanelName = currentSiderBar,
-            output_info = output_info[[id]]
-          )
-          
-          grid::grid.draw(loon_reactive_worldView_grob)
-        })  
-      }
-      
-      # update ui
-      # update slider bar names (xlim to ylim, vice versa), values, ...
-      # update color check box
-      lapply(runIndex,
-             function(j) {
 
-               update_sidebarPanel(
-                 loon_grob = loon_grobs[[j]],
-                 buttons = button_list[[j]],
-                 session,
-                 input,
-                 linkingInfo = linkingInfo,
-                 linkingGroup = linkingGroups[j],
-                 linkingGroups = linkingGroups,
-                 tabPanelName = tabPanelNames[j],
-                 tabPanelNames = tabPanelNames,
-                 output_info = output_info[[j]]
-               )
-             }
-      )
+          id <- which(tabPanelNames %in% currentSiderBar)
+
+          # loon_reactive_worldView_grob <- loon_reactive_worldView(
+          #   loon.grob = loon.grobs[[id]],
+          #   buttons = button_list[[id]],
+          #   input,
+          #   tabPanelName = currentSiderBar,
+          #   outputInfo = outputInfo[[id]]
+          # )
+          #
+          # grid::grid.draw(loon_reactive_worldView_grob)
+
+          grid::grid.draw(loon_worldView(output.grobs[[id]],
+                                         input, currentSiderBar,
+                                         colorList = colorList,
+                                         loonWidgetsInfo = outputInfo[[id]]$loonWidgetsInfo))
+        })
+      }
     })
   }
 

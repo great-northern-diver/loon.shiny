@@ -1,5 +1,5 @@
 `%||%` <- function (x, y) {
-  if (is.null(x)) 
+  if (is.null(x))
     y
   else x
 }
@@ -17,6 +17,13 @@ isZero <- function (x, neps = 1, eps = .Machine$double.eps, ...) {
   (abs(x) < neps * eps)
 }
 
+isgTree <- function(x) {
+  inherits(x, "gTree")
+}
+
+select_color <- function() loon::l_getOption("select-color")
+bounder_color <- function() loon::l_getOption("foreground")
+
 log_ceiling <- function(x, base = 2) {
   x <- min(abs(x))
   10^(floor(log10(x + 1e-2)) - base)
@@ -27,7 +34,14 @@ col2hex <- function (cname)  {
   grDevices::rgb(red = colMat[1, ]/255, green = colMat[2, ]/255, blue = colMat[3, ]/255)
 }
 
-compoundbackground_color <- function() loon::l_getOption('guidesBackground')
+remove_null <- function(..., as_list = TRUE) {
+  if(as_list)
+    Filter(Negate(is.null),
+           list(...)
+    )
+  else
+    Filter(Negate(is.null), ...)
+}
 
 # layout_coords
 # layout_coords <- getFromNamespace("layout_coords", "loon.ggplot")
@@ -68,24 +82,26 @@ layout_coords.l_facet_ggplot <- function(target) {
 }
 
 get_unit <- function(x, unit = "native", is.unit = TRUE, as.numeric = FALSE) {
-  
+
+  if(length(x) == 0) return(numeric(0L))
+
   if(getRversion() >= "4.0.0") {
-    
+
     y <- unclass(x)
-    
+
     if(unit == "native" && is.unit) {
-      
+
       unit.y <- y[[1]][[2]]
       unit.x <- grepl(unit, as.character(unit.y))
-      
+
       u <- unit.y[unit.x]
-      
+
     } else {
       for(i in seq(length(y))) {
-        
+
         unit.y <- y[[i]][[2]]
         unit.x <- grepl(unit, as.character(unit.y))
-        
+
         if(i == 1) {
           if(is.unit) {
             u <- unit.y[unit.x]
@@ -105,23 +121,23 @@ get_unit <- function(x, unit = "native", is.unit = TRUE, as.numeric = FALSE) {
   } else {
     unit1 <- x[["arg1"]]
     unit2 <- x[["arg2"]]
-    
+
     u <- if(is.unit) {
       if(grepl(unit, as.character(unit1)))
         unit1
-      else 
+      else
         unit2
     } else {
       if(grepl(unit, as.character(unit1)))
         unit2
-      else 
-        unit1 
+      else
+        unit1
     }
   }
-  
+
   if(as.numeric) return(as.numeric(u))
   u
 }
 
-get_model_display_order <- getFromNamespace("get_model_display_order", "loon")
+get_model_display_order <- utils::getFromNamespace("get_model_display_order", "loon")
 if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "input", "output", "session"))

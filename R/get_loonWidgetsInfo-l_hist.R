@@ -1,43 +1,52 @@
-get_loonWidgets_info.l_hist <- function(widgets, loon_grobs, colorList, ...) {
-  
+get_loonWidgetsInfo.l_hist <- function(widgets, loon.grobs, ...) {
+
   args <- list(...)
   navbarMenuName <- args$navbarMenuName
   # viewport
   swapAxes <- widgets['swapAxes']
-  
+
   panX <- widgets['panX']
   deltaX <- widgets['deltaX']
   zoomX <- widgets['zoomX']
-  
+
   panY <- widgets['panY']
   deltaY <- widgets['deltaY']
   zoomY <- widgets['zoomY']
-  
-  loon_grob <- loon_grobs
-  worldView <-get_worldViewPort(loon_grob = loon_grob, parent = "histogram", parentExcluded = TRUE)
-  worldView_xlim <- worldView$worldView_xlim
-  worldView_ylim <- worldView$worldView_ylim
-  
-  plotView_xlim <- c(panX, panX + deltaX/zoomX)
-  plotView_ylim <- c(panY, panY + deltaY/zoomY)
-  
-  layers <- get_layers(loon_grob)
+
+  loon.grob <- loon.grobs
+
+  # they are un-flipped
+  xlim <- c(panX, panX + deltaX/zoomX)
+  ylim <- c(panY, panY + deltaY/zoomY)
+
+  plotViewXlim <- xlim
+  plotViewYlim <- ylim
+
+  # it is not the world view port
+  # instead, they are the limits of x and y of all dependent layers (not include the model layer)
+  # why so? that is because, for a histogram,
+  # the plot view port varies if the yshows switched bewteen density and frequency
+  worldView <-get_worldViewPort(loon.grob = loon.grob, parent = "histogram",
+                                parentExcluded = TRUE)
+
+  if(swapAxes) {
+    layerYlim <- worldView$xlim
+    layerXlim <- worldView$ylim
+  } else {
+    layerXlim <- worldView$xlim
+    layerYlim <- worldView$ylim
+  }
+
+  layers <- get_layers(loon.grob)
   names(layers) <- layers
-  
+
   list(
     linkingGroup = widgets['linkingGroup'],
     linkingKey = widgets['linkingKey'],
-    loon_default_margins = list(
+    loonDefaultMargins = list(
       minimumMargins = pixels_2_lines(widgets['minimumMargins']),
       labelMargins = pixels_2_lines(widgets['labelMargins']),
       scalesMargins = pixels_2_lines(widgets['scalesMargins'])
-    ),
-    loon_color = list(
-      background_color = loon::hex12tohex6(widgets['background']),
-      foreground_color = loon::hex12tohex6(widgets['foreground']),
-      guidesbackground_color  = loon::hex12tohex6(widgets['guidesBackground']),
-      guideslines_color = loon::hex12tohex6(widgets['guidelines']),
-      select_color = loon::l_getOption("select-color")
     ),
     labels = list(
       xlabel = widgets['xlabel'],
@@ -54,8 +63,8 @@ get_loonWidgets_info.l_hist <- function(widgets, loon_grobs, colorList, ...) {
     selectByLoon = widgets['selectBy'],
     origin = widgets['origin'],
     linkingStates = loon::l_getLinkedStates(widgets),
-    swap_in_shiny = swapAxes,
-    swap_in_loon = swapAxes,
+    swapInShiny = swapAxes,
+    swapInLoon = swapAxes,
     showLabels = widgets['showLabels'],
     showScales = widgets['showScales'],
     showGuides= widgets['showGuides'],
@@ -65,18 +74,23 @@ get_loonWidgets_info.l_hist <- function(widgets, loon_grobs, colorList, ...) {
     ylabel = widgets['ylabel'],
     title = widgets['title'],
     yshows = widgets['yshows'],
+    N = widgets['n'],
     visible = TRUE,
     appear = TRUE,
-    plotView_xlim = plotView_xlim,
-    plotView_ylim = plotView_ylim,
-    worldView_xlim = worldView_xlim,
-    worldView_ylim = worldView_ylim,
+    xlim = xlim,
+    ylim = ylim,
+    plotViewXlim = plotViewXlim,
+    plotViewYlim = plotViewYlim,
+    layerXlim = layerXlim,
+    layerYlim = layerYlim,
     navbarMenuName = navbarMenuName,
     layers = layers,
-    colorList = colorList,
     lastSelection = integer(0),
-    yshowsIsModified = FALSE,
-    originIsModified = FALSE,
-    binwidthIsModified = FALSE
+    loonColor = list(
+      background_color = loon::hex12tohex6(widgets["background"]),
+      foreground_color = loon::hex12tohex6(widgets["foreground"]),
+      guidesbackground_color = loon::hex12tohex6(widgets["guidesBackground"]),
+      guideslines_color = loon::hex12tohex6(widgets["guidelines"])
+    )
   )
 }

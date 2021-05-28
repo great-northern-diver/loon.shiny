@@ -1,9 +1,9 @@
-get_hist_grob <- function(loon_grob, yshows, binId, binX, binHeight, binwidth, n, swapAxes, showStackedColors, showOutlines, 
+get_hist_grob <- function(loon.grob, yshows, binId, binX, binHeight, binwidth, n, swapAxes, showStackedColors, showOutlines, 
                           color, colorFill, colorOutline) {
   
   colorOrder <- as.character(levels(as.factor(color)))
   
-  histGrob <- grid::gTree(
+  histGrob <- gTree(
     children = do.call (
       grid::gList,
       lapply(seq(length(binHeight)),
@@ -38,7 +38,7 @@ get_hist_grob <- function(loon_grob, yshows, binId, binX, binHeight, binwidth, n
                    
                    cumsumColorBinHeight <- c(0, cumsum(colorBinHeight))
                    
-                   grid::gTree(
+                   gTree(
                      children =   do.call(
                        grid::gList, 
                        lapply(seq(length(colorBinHeight)), 
@@ -80,7 +80,7 @@ get_hist_grob <- function(loon_grob, yshows, binId, binX, binHeight, binwidth, n
   )
   
   grid::setGrob(
-    gTree = loon_grob,
+    gTree = loon.grob,
     gPath = "histogram",
     newGrob = histGrob
   )

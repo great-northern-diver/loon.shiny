@@ -1,4 +1,4 @@
-get_selectBy <- function(selectBy = NULL, loonWidgets_info){
+get_selectBy <- function(selectBy = NULL, loonWidgetsInfo){
   
   selectBy <- if(is.null(selectBy)) {
     "sweeping" # default setting
@@ -6,7 +6,7 @@ get_selectBy <- function(selectBy = NULL, loonWidgets_info){
     if(!selectBy %in% c("byDefault", "brushing", "sweeping")) stop("selectBy must be one of `byDefault`, `brushing` and `sweeping`") else selectBy[1]
   }
   
-  n <- length(loonWidgets_info)
+  n <- length(loonWidgetsInfo)
   
   if(selectBy == "byDefault") {
     
@@ -16,7 +16,7 @@ get_selectBy <- function(selectBy = NULL, loonWidgets_info){
           unlist(
             lapply(1:n,
                    function(i) {
-                     loonWidgets_info[[i]]$selectByLoon
+                     loonWidgetsInfo[[i]]$selectByLoon
                    })
           )
         ),decreasing=TRUE
