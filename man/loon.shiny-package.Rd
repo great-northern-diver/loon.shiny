@@ -2,8 +2,8 @@
 % Please edit documentation in R/loon.shiny-package.R
 \docType{package}
 \name{loon.shiny-package}
-\alias{loon.shiny}
 \alias{loon.shiny-package}
+\alias{_PACKAGE}
 \title{loon.shiny: Automatically Create a 'Shiny' App Based on Interactive 'Loon' Widgets}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
