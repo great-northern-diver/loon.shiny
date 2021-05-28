@@ -1,7 +1,7 @@
 Package: loon.shiny
 Type: Package
 Title: Automatically Create a 'Shiny' App Based on Interactive 'Loon' Widgets
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
   person('Zehao', 'Xu', email = 'z267xu@uwaterloo.ca', role = c('aut', 'cre')),
   person('R. Wayne', 'Oldford', email = 'rwoldford@uwaterloo.ca', role = c('aut'))
@@ -17,14 +17,13 @@ Depends:
 Imports:
     stats,
     grDevices,
-    magrittr,
     grid,
     gridExtra,
-    stringr,
     loon.ggplot (>= 1.1.0),
     colourpicker,
     base64enc
 Suggests:
+    magrittr,
     dplyr,
     ggmulti,
     tools,
