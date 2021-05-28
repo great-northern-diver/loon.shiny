@@ -22,6 +22,6 @@ destination: ./docs/
 reference:
 
   - title: Function
-    desc: shiny.loon does all the work
+    desc: loon.shiny does all the work
     contents:
-    - shiny.loon 
+    - loon.shiny
