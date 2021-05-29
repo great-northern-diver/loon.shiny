@@ -1,62 +1,62 @@
-reorder_grob <- function(loon_grob, number = NULL, index, ...) {
+reorder_grob <- function(loon.grob, number = NULL, index, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("reorder_grob", obj)
 }
 
-reorder_grob.l_plot <- function(loon_grob, number = NULL, index, ...) {
-  
-  if(length(index) == 0) return(loon_grob)
-  
+reorder_grob.l_plot <- function(loon.grob, number = NULL, index, ...) {
+
+  if(length(index) == 0) return(loon.grob)
+
   args <- list(...)
-  pointsTree_name <- args$pointsTree_name
-  
-  points_grob <- getGrob(loon_grob, pointsTree_name)
+  pointsTreeName <- args$pointsTreeName
+
+  points_grob <- grid::getGrob(loon.grob, pointsTreeName)
   if(is.null(number)) number <- length(points_grob$children)
-  
-  setGrob(
-    gTree = loon_grob,
-    gPath = pointsTree_name,
-    newGrob = reorderGrob(
-      getGrob(loon_grob, pointsTree_name),
-      order = c(setdiff(1:number, index), index)
+
+  grid::setGrob(
+    gTree = loon.grob,
+    gPath = pointsTreeName,
+    newGrob = grid::reorderGrob(
+      points_grob,
+      c(setdiff(seq(number), index), index)
     )
   )
 }
 
-reorder_grob.l_graph <- function(loon_grob, number = NULL, index) {
-  
-  if(length(index) == 0) return(loon_grob)
-  
-  nodes_grob <- getGrob(loon_grob, "graph nodes")
+reorder_grob.l_graph <- function(loon.grob, number = NULL, index) {
+
+  if(length(index) == 0) return(loon.grob)
+
+  nodes_grob <- grid::getGrob(loon.grob, "graph nodes")
   if(is.null(number)) number <- length(nodes_grob$children)
-  
-  setGrob(
-    gTree = loon_grob,
+
+  grid::setGrob(
+    gTree = loon.grob,
     gPath = "graph nodes",
-    newGrob = reorderGrob(
-      getGrob(loon_grob, "graph nodes"),
+    newGrob = grid::reorderGrob(
+      nodes_grob,
       order = c(setdiff(1:number, index), index)
     )
   )
 }
 
 
-reorder_grob.l_serialaxes <- function(loon_grob, number = NULL, index, ...) {
-  
-  if(length(index) == 0) return(loon_grob)
-  
+reorder_grob.l_serialaxes <- function(loon.grob, number = NULL, index, ...) {
+
+  if(length(index) == 0) return(loon.grob)
+
   args <- list(...)
-  axes_gPath <- args$axes_gPath
-  
-  axes_grob <- getGrob(loon_grob, axes_gPath)
-  if(is.null(number)) number <- length(axes_grob$children)
-  
-  setGrob(
-    gTree = loon_grob,
-    gPath = axes_gPath,
-    newGrob = reorderGrob(
-      axes_grob,
+  axesGpath <- args$axesGpath
+
+  axesGrob <- grid::getGrob(loon.grob, axesGpath)
+  if(is.null(number)) number <- length(axesGrob$children)
+
+  grid::setGrob(
+    gTree = loon.grob,
+    gPath = axesGpath,
+    newGrob = grid::reorderGrob(
+      axesGrob,
       order = c(setdiff(1:number, index), index)
     )
   )

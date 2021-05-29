@@ -1,27 +1,6 @@
-home:
-  strip_header: true
-
-navbar:
-  type: default
-
-  left:
-    - text: Articles
-      menu:
-      - text: Introduction
-        href: articles/introduction.html
-
-  right:
-    - icon: fa-github fa-lg
-      href: https://github.com/great-northern-diver/loon.shiny
-
-development:
-  mode: release
-
-destination: ./docs/
-
 reference:
 
   - title: Function
-    desc: shiny.loon does all the work
+    desc: loon.shiny does all the work
     contents:
-    - shiny.loon 
+    - loon.shiny

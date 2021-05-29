@@ -1,978 +1,1109 @@
-loon_reactive.l_graph <- function(loon_grob, output_grob, linkingInfo, buttons, position, selectBy,
-                                  linkingGroup, input, tabPanelName, output_info) {
-  
-  input$plot_brush
-  input$plot_click
-  
-  if(!is.null(output_grob) & input[["navBarPage"]] != tabPanelName) {
-    
-    loonWidgets_info <- output_info$loonWidgets_info
-    
+loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, position, selectBy,
+                                  linkingGroup, input, colorList, tabPanelName, outputInfo) {
+
+  # for loon_reactive.l_graph
+  # most logics are identical
+  input$plotBrush
+  input$plotClick
+
+  if(!is.null(output.grob) && input[["navBarPage"]] != tabPanelName) {
+
+    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+
     if(linkingGroup != "none") {
-      
-      grobs <- set_linking_grobs(
-        loon_grob = loon_grob,
-        output_grob = output_grob,
-        linkedInfo = linkingInfo[[linkingGroup]],
+
+      linkedInfo <- linkingInfo[[linkingGroup]]
+      order <- match(loonWidgetsInfo$linkingKey, linkedInfo$linkingKey)
+
+      modifiedLinkingInfo <- set_linkingInfo(
+        loon.grob = loon.grob,
+        output.grob = output.grob,
+        linkedInfo = linkedInfo,
+        linkedStates = input[[paste0(tabPanelName, "linkedStates")]],
         tabPanelName = tabPanelName,
-        loon_color = loonWidgets_info$loon_color,
-        graph_edges = loonWidgets_info$graph_edges,
-        swap_in_loon = loonWidgets_info$swap_in_loon,
-        swap_in_shiny = loonWidgets_info$swap_in_shiny
+        order = order,
+        loonWidgetsInfo = loonWidgetsInfo,
+        graph_edges = loonWidgetsInfo$graph_edges,
+        swapInLoon = loonWidgetsInfo$swapInLoon,
+        swapInShiny = loonWidgetsInfo$swapInShiny
       )
-      
-      selected <- linkingInfo[[linkingGroup]]$selected
-      brush_id <- which(selected)
-      select_by_color <- linkingInfo[[linkingGroup]]$select_by_color
-      
-      output_grob <- grobs$output_grob
-      loon_grob <- grobs$loon_grob
-      
-      loonWidgets_info <- update_loonWidgets_info(loonWidgets_info, 
-                                                  linkedInfo = linkingInfo[[linkingGroup]],         
-                                                  tabPanelName = tabPanelName)
-      
+
+      selected <- linkedInfo$selected
+      brushId <- which(selected)
+      selectByColor <- linkedInfo$selectByColor
+
+      output.grob <- modifiedLinkingInfo$output.grob
+      loon.grob <- modifiedLinkingInfo$loon.grob
+      loonWidgetsInfo <- modifiedLinkingInfo$loonWidgetsInfo
+
     } else {
-      
-      brush_id <- output_info$brush_id
-      select_by_color <- output_info$select_by_color
+
+      brushId <- outputInfo$brushId
+      selectByColor <- outputInfo$selectByColor
     }
   } else {
-    
-    isFirst_draw <- is.null(output_grob)
-    output_grob <- loon_grob
-    loonWidgets_info <- output_info$loonWidgets_info
-    
+
+    isFirstDraw <- is.null(output.grob)
+    output.grob <- loon.grob
+    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+    loonColor <- loonWidgetsInfo$loonColor
+
     # interactive ------------------------------------------------------
-    plot_axes1 <- input[[paste0(tabPanelName, "plot_axes1")]]
-    plot_axes2 <- input[[paste0(tabPanelName, "plot_axes2")]]
-    
-    # plot scale to
-    scale_to_button <- list(
-      select = buttons$scale_to_button$select,
-      plot = buttons$scale_to_button$plot,
-      world = buttons$scale_to_button$world
-    )
-    
+    plotAxes1 <- input[[paste0(tabPanelName, "plotAxes1")]]
+    plotAxes2 <- input[[paste0(tabPanelName, "plotAxes2")]]
+
     # swap, showScales, showLabels and showGuides -------------------------------------
-    swap_in_loon <- loonWidgets_info$swap_in_loon
-    swap_in_shiny <- loonWidgets_info$swap_in_shiny <- "swap" %in% plot_axes1
-    swap <- ((swap_in_shiny & !swap_in_loon) | (!swap_in_shiny & swap_in_loon))
-    
-    N <- length(loonWidgets_info$linkingKey)
-    
-    brush_id <- if(isFirst_draw) {
-      
-      output_info$brush_id
-    } else {
-      if(is.null(input$plot_brush) & is.null(input$plot_click)) {
-        
-        output_info$brush_id
-      } else {
-        
-        get_brush_id(
-          loon_grob = output_grob,
-          coord = list(
-            x = loonWidgets_info$x,
-            y = loonWidgets_info$y
-          ),
-          swap_in_shiny = swap_in_shiny,
-          swap_in_loon = swap_in_loon,
-          position = position,
-          brush_info = input$plot_brush,
-          vp = get_viewPort(loon_grob = output_grob),
-          click_info = input$plot_click
-        )
-      }
-    }
-    
-    #labels <- get_labels(output_grob)
-    labels <- loonWidgets_info$labels
+    swapInLoon <- loonWidgetsInfo$swapInLoon
+    swapInShiny <- loonWidgetsInfo$swapInShiny <- "swap" %in% plotAxes1
+    swap <- ((swapInShiny & !swapInLoon) | (!swapInShiny & swapInLoon))
+
+    N <- loonWidgetsInfo$N
+    whichIsDeactive <- which(!loonWidgetsInfo$active)
+
+    output.grob <- set_deactive_grob(
+      loon.grob = output.grob,
+      index = whichIsDeactive
+    )
+
+    loon.grob <- set_deactive_grob(
+      loon.grob = loon.grob,
+      index = whichIsDeactive
+    )
+
+    #labels <- get_labels(output.grob)
+    labels <- loonWidgetsInfo$labels
     title <- labels$title
-    if(swap) {
-      
-      if(scale_to_button$select != 0) {
-        
-        if(length(brush_id) == 0) {
-          message("no points selected")
-          
-          loonWidgets_info$ylim <- input[[paste0(tabPanelName, "xlim")]]
-          loonWidgets_info$xlim <- input[[paste0(tabPanelName, "ylim")]]
-        } else {
-          
-          loonWidgets_info$ylim <- c(
-            min(loonWidgets_info$x[brush_id]) - loonWidgets_info$step_x/2,
-            max(loonWidgets_info$x[brush_id]) + loonWidgets_info$step_x/2
-          )
-          loonWidgets_info$xlim <- c(
-            min(loonWidgets_info$y[brush_id]) - loonWidgets_info$step_y/2,
-            max(loonWidgets_info$y[brush_id]) + loonWidgets_info$step_y/2
-          )
-          
-        } 
-      } else if(scale_to_button$plot != 0) {
-        
-        loonWidgets_info$ylim <- loonWidgets_info$plotView_xlim
-        loonWidgets_info$xlim <- loonWidgets_info$plotView_ylim
-      } else if(scale_to_button$world != 0) {
-        
-        loonWidgets_info$ylim <- loonWidgets_info$worldView_xlim
-        loonWidgets_info$xlim <- loonWidgets_info$worldView_ylim
+
+    layerSet <- input[[paste0(tabPanelName, "layerSet")]]
+    currentLayer <- input[[paste0(tabPanelName, "layer")]]
+    newLayerLabel <- isolate(input[[paste0(tabPanelName, "newLayerLabel")]])
+
+    if(layerSet > buttons["layerSet"]) {
+
+      buttons["layerSet"] <- layerSet
+
+      if(newLayerLabel == "") {
+        message("no valid label")
+
+        layers <- loonWidgetsInfo$layers
+        layersName <- names(layers)
+
+        currentLayer <- layers[which(layersName == currentLayer)]
+
       } else {
-        
-        loonWidgets_info$ylim <- input[[paste0(tabPanelName, "xlim")]]
-        loonWidgets_info$xlim <- input[[paste0(tabPanelName, "ylim")]]
+        layers <- loonWidgetsInfo$layers
+        layersName <- names(layers)
+        whichLayerIsEdited <- which(layersName == currentLayer)
+
+        layersName[whichLayerIsEdited] <- newLayerLabel
+        names(layers) <- layersName
+        loonWidgetsInfo$layers <- layers
+
+        currentLayer <- layers[whichLayerIsEdited]
       }
-      
+    } else {
+
+      layers <- loonWidgetsInfo$layers
+      layersName <- names(layers)
+
+      currentLayer <- layers[which(layersName == currentLayer)]
+    }
+
+    layerMinus <- input[[paste0(tabPanelName, "layerMinus")]]
+    if(layerMinus > buttons["layerMinus"]) {
+
+      buttons["layerMinus"] <- layerMinus
+
+      loon.grob <- grid::setGrob(
+        gTree = loon.grob,
+        gPath = currentLayer,
+        newGrob = nullGrob(name = currentLayer)
+      )
+
+      output.grob <- grid::setGrob(
+        gTree = loon.grob,
+        gPath = currentLayer,
+        newGrob = nullGrob(name = currentLayer)
+      )
+
+      # update layers
+      newLayers <- setdiff(layers, currentLayer)
+      newLayersName <- setdiff(layersName, currentLayerName)
+      names(newLayers) <- newLayersName
+      loonWidgetsInfo$layers <- newLayers
+
+      worldView <- get_worldViewPort(loon.grob = loon.grob,
+                                     parentExcluded = TRUE)
+      loonWidgetsInfo$worldViewXlim <- range(c(loonWidgetsInfo$plotViewXlim,
+                                               worldView$xlim))
+      loonWidgetsInfo$worldViewYlim <- range(c(loonWidgetsInfo$plotViewYlim,
+                                               worldView$ylim))
+    }
+
+    # plot scale to
+    scaleToSelect <- input[[paste0(tabPanelName, "scaleToSelect")]]
+    scaleToPlot <- input[[paste0(tabPanelName, "scaleToPlot")]]
+    scaleToWorld <- input[[paste0(tabPanelName, "scaleToWorld")]]
+    scaleToLayer <- input[[paste0(tabPanelName, "scaleToLayer")]]
+
+    sliderxlim <- input[[paste0(tabPanelName, "xlim")]]
+    sliderylim <- input[[paste0(tabPanelName, "ylim")]]
+
+    # brushId <- if(isFirstDraw) {
+    #
+    #   outputInfo$brushId
+    # } else {
+    #   if(is.null(input$plotBrush) & is.null(input$plotClick)) {
+    #
+    #     outputInfo$brushId
+    #   } else {
+    #
+    #     get_brushId(
+    #       loon.grob = output.grob,
+    #       coord = list(
+    #         x = loonWidgetsInfo$x,
+    #         y = loonWidgetsInfo$y
+    #       ),
+    #       swapInShiny = swapInShiny,
+    #       swapInLoon = swapInLoon,
+    #       position = position,
+    #       brushInfo = input$plotBrush,
+    #       vp = get_viewPort(loon.grob = output.grob),
+    #       clickInfo = input$plotClick
+    #     )
+    #   }
+    # }
+    brushId <- outputInfo$brushId
+
+    if(swap) {
+
+      if(scaleToSelect > buttons["select"]) {
+
+        buttons["select"] <- scaleToSelect
+
+        if(length(brushId) == 0) {
+          message("no points selected")
+
+          loonWidgetsInfo$ylim <- sliderxlim
+          loonWidgetsInfo$xlim <- sliderylim
+        } else {
+
+          loonWidgetsInfo$ylim <- grDevices::extendrange(
+            c(
+              min(loonWidgetsInfo$x[brushId]) - loonWidgetsInfo$stepX/2,
+              max(loonWidgetsInfo$x[brushId]) + loonWidgetsInfo$stepX/2
+            )
+          )
+          loonWidgetsInfo$xlim <- grDevices::extendrange(
+            c(
+              min(loonWidgetsInfo$y[brushId]) - loonWidgetsInfo$stepY/2,
+              max(loonWidgetsInfo$y[brushId]) + loonWidgetsInfo$stepY/2
+            )
+          )
+        }
+      } else if(scaleToPlot > buttons["plot"]) {
+
+        buttons["plot"] <- scaleToPlot
+
+        loonWidgetsInfo$ylim <- loonWidgetsInfo$plotViewXlim
+        loonWidgetsInfo$xlim <- loonWidgetsInfo$plotViewYlim
+
+      } else if(scaleToWorld > buttons["world"]) {
+
+        buttons["world"] <- scaleToWorld
+
+        loonWidgetsInfo$ylim <- loonWidgetsInfo$worldViewXlim
+        loonWidgetsInfo$xlim <- loonWidgetsInfo$worldViewYlim
+
+      } else if (scaleToLayer > buttons["scaleToLayer"]  && length(currentLayer) > 0) {
+
+        buttons["scaleToLayer"] <- scaleToLayer
+
+        if(currentLayer == "graph") {
+          loonWidgetsInfo$ylim <- loonWidgetsInfo$plotViewXlim
+          loonWidgetsInfo$xlim <- loonWidgetsInfo$plotViewYlim
+        } else {
+          layerLimits <- get_layer_worldView(loon.grob, layer = currentLayer)
+          loonWidgetsInfo$ylim <-layerLimits$xlim
+          loonWidgetsInfo$xlim <- layerLimits$ylim
+        }
+
+      } else {
+
+        loonWidgetsInfo$ylim <- sliderxlim
+        loonWidgetsInfo$xlim <- sliderylim
+      }
+
       # swap label
       ylabel <- labels$xlabel
       xlabel <- labels$ylabel
-      
+
       # swap output grob
-      output_grob <- swapCoords_grob(output_grob, 
-                                     x = loonWidgets_info$y, 
-                                     y = loonWidgets_info$x, 
+      output.grob <- swapCoords_grob(output.grob,
+                                     x = loonWidgetsInfo$y,
+                                     y = loonWidgetsInfo$x,
                                      reactive = FALSE)
       # swap layer
-      output_grob <- swap_layer_grob(output_grob, parent = "graph")
+      output.grob <- swap_layer_grob(output.grob, parent = "graph")
     } else {
-      
-      if(scale_to_button$select != 0) {
-        
-        if(length(brush_id) == 0) {
+
+      if(scaleToSelect > buttons["select"]) {
+
+        buttons["select"] <- scaleToSelect
+
+        if(length(brushId) == 0) {
           message("no points selected")
-          loonWidgets_info$xlim <- input[[paste0(tabPanelName, "xlim")]]
-          loonWidgets_info$ylim <- input[[paste0(tabPanelName, "ylim")]]
+          loonWidgetsInfo$xlim <- sliderxlim
+          loonWidgetsInfo$ylim <- sliderylim
         } else {
-          
-          loonWidgets_info$xlim <- c(
-            min(loonWidgets_info$x[brush_id]) - loonWidgets_info$step_x/2,
-            max(loonWidgets_info$x[brush_id]) + loonWidgets_info$step_x/2
+
+          loonWidgetsInfo$xlim <- grDevices::extendrange(
+            c(
+              min(loonWidgetsInfo$x[brushId]) - loonWidgetsInfo$stepX/2,
+              max(loonWidgetsInfo$x[brushId]) + loonWidgetsInfo$stepX/2
+            )
           )
-          loonWidgets_info$ylim <- c(
-            min(loonWidgets_info$y[brush_id]) - loonWidgets_info$step_y/2,
-            max(loonWidgets_info$y[brush_id]) + loonWidgets_info$step_y/2
+          loonWidgetsInfo$ylim <- grDevices::extendrange(
+            c(
+              min(loonWidgetsInfo$y[brushId]) - loonWidgetsInfo$stepY/2,
+              max(loonWidgetsInfo$y[brushId]) + loonWidgetsInfo$stepY/2
+            )
           )
         }
-      } else if(scale_to_button$plot != 0) {
-        
-        loonWidgets_info$xlim <- loonWidgets_info$plotView_xlim
-        loonWidgets_info$ylim <- loonWidgets_info$plotView_ylim
-      } else if(scale_to_button$world != 0) {
-        
-        loonWidgets_info$xlim <- loonWidgets_info$worldView_xlim
-        loonWidgets_info$ylim <- loonWidgets_info$worldView_ylim
-      } else {        
-        loonWidgets_info$xlim <- input[[paste0(tabPanelName, "xlim")]]
-        loonWidgets_info$ylim <- input[[paste0(tabPanelName, "ylim")]]
+      } else if(scaleToPlot > buttons["plot"]) {
+
+        buttons["plot"] <- scaleToPlot
+
+        loonWidgetsInfo$xlim <- loonWidgetsInfo$plotViewXlim
+        loonWidgetsInfo$ylim <- loonWidgetsInfo$plotViewYlim
+      } else if(scaleToWorld > buttons["world"]) {
+
+        buttons["world"] <- scaleToWorld
+
+        loonWidgetsInfo$xlim <- loonWidgetsInfo$worldViewXlim
+        loonWidgetsInfo$ylim <- loonWidgetsInfo$worldViewYlim
+      } else if(scaleToLayer > buttons["scaleToLayer"]  && length(currentLayer) > 0) {
+
+        buttons["scaleToLayer"] <- scaleToLayer
+
+        if(currentLayer == "graph") {
+          loonWidgetsInfo$xlim <- loonWidgetsInfo$plotViewXlim
+          loonWidgetsInfo$ylim <- loonWidgetsInfo$plotViewYlim
+        } else {
+          layerLimits <- get_layer_worldView(loon.grob, layer = currentLayer)
+          loonWidgetsInfo$xlim <-layerLimits$xlim
+          loonWidgetsInfo$ylim <- layerLimits$ylim
+        }
+
+      } else {
+        loonWidgetsInfo$xlim <- sliderxlim
+        loonWidgetsInfo$ylim <- sliderylim
       }
-      
+
       xlabel <- labels$xlabel
       ylabel <- labels$ylabel
     }
-    
-    xaxis <- grid.pretty(loonWidgets_info$xlim)
-    yaxis <- grid.pretty(loonWidgets_info$ylim)
-    
+
+    xaxis <- grid::grid.pretty(loonWidgetsInfo$xlim)
+    yaxis <- grid::grid.pretty(loonWidgetsInfo$ylim)
+
     # reset margins
-    loon_margins <- loonWidgets_info$loon_default_margins
+    loonMargins <- loonWidgetsInfo$loonDefaultMargins
     margins <- rep(0, 4)
-    
-    if("scales" %in% plot_axes2) {
-      
-      output_grob <- set_scales_grob(loon_grob = output_grob,
+
+    if("scales" %in% plotAxes2) {
+
+      output.grob <- set_scales_grob(loon.grob = output.grob,
                                      xaxis = xaxis,
                                      yaxis = yaxis)
-      
-      margins <- margins + loon_margins$scalesMargins
-      
-      loonWidgets_info$showScales <- TRUE
-      
+
+      margins <- margins + loonMargins$scalesMargins
+
+      loonWidgetsInfo$showScales <- TRUE
+
     } else {
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "axes",
         newGrob = nullGrob(name = "axes")
       )
-      
-      loonWidgets_info$showScales <- FALSE
+
+      loonWidgetsInfo$showScales <- FALSE
     }
-    
-    if("labels" %in% plot_axes1) {
-      
-      output_grob <- set_labels_grob(
-        loon_grob = output_grob,
-        showScales = loonWidgets_info$showScales,
+
+    if("labels" %in% plotAxes1) {
+
+      output.grob <- set_labelsGrob(
+        loon.grob = output.grob,
+        showScales = loonWidgetsInfo$showScales,
         xlabel = xlabel,
         ylabel = ylabel,
         title = title
       )
-      
-      if(is.null(xlabel)) loon_margins$labelMargins[1] <- loon_margins$minimumMargins[1]
-      if(is.null(ylabel)) loon_margins$labelMargins[2] <- loon_margins$minimumMargins[2]
-      if(title == "") loon_margins$labelMargins[3] <- loon_margins$minimumMargins[3]
-      margins <- margins + loon_margins$labelMargins
-      
-      loonWidgets_info$showLabels <- TRUE
-      
+
+      if(is.null(xlabel) || xlabel == "") loonMargins$labelMargins[1] <- loonMargins$minimumMargins[1]
+      if(is.null(ylabel) || ylabel == "") loonMargins$labelMargins[2] <- loonMargins$minimumMargins[2]
+      if(is.null(title) || title == "") loonMargins$labelMargins[3] <- loonMargins$minimumMargins[3]
+      margins <- margins + loonMargins$labelMargins
+
+      loonWidgetsInfo$showLabels <- TRUE
+
     } else {
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "labels",
         newGrob = nullGrob(name = "labels")
       )
-      
-      loonWidgets_info$showLabels <- FALSE
+
+      loonWidgetsInfo$showLabels <- FALSE
     }
-    
-    if(loonWidgets_info$showLabels | loonWidgets_info$showScales) {
-      margins <- apply(cbind(margins, loon_margins$minimumMargins), 1, max)
-    }
-    
-    brush_id <- if(!isFirst_draw) {
-      # sweeping or brushing
-      if(is.null(input$plot_brush) & is.null(input$plot_click)) {
-        
-        output_info$brush_id
-      } else {
-        
-        get_brush_id(
-          loon_grob = output_grob,
-          coord = list(
-            x = loonWidgets_info$x,
-            y = loonWidgets_info$y
-          ),
-          swap_in_shiny = swap_in_shiny,
-          swap_in_loon = swap_in_loon,
-          position = position,
-          brush_info = input$plot_brush,
-          vp = vpStack(
-            plotViewport(margins = margins, name = "plotViewport"),
-            dataViewport(xscale = if(swap) loonWidgets_info$ylim else loonWidgets_info$xlim,
-                         yscale = if(swap) loonWidgets_info$xlim else loonWidgets_info$ylim,
-                         name = "dataViewport")
-          ),
-          click_info = input$plot_click
-        )
-      }
-    }
-    
-    if("guides" %in% plot_axes2) {
-      
-      output_grob <- set_guides_grob(loon_grob = output_grob,
+
+    if("guides" %in% plotAxes2) {
+
+      output.grob <- set_guidesGrob(loon.grob = output.grob,
                                      xaxis = xaxis,
                                      yaxis = yaxis,
-                                     loon_color = loonWidgets_info$loon_color)
-      
-      loonWidgets_info$showGuides <- TRUE
+                                     loonColor = loonColor)
+
+      loonWidgetsInfo$showGuides <- TRUE
     } else {
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "guides",
         newGrob = nullGrob(name = "guides")
       )
-      loonWidgets_info$showGuides <- FALSE
+      loonWidgetsInfo$showGuides <- FALSE
     }
-    loon_color <- loonWidgets_info$loon_color
-    linkingGroup <- input[[paste0(tabPanelName, "linkingGroup")]]
-    
-    # select dynamic
-    select_dynamic <- input[[paste0(tabPanelName, "select_dynamic")]]
-    sticky <- input[[paste0(tabPanelName, "sticky")]]
-    select_by_color <- input[[paste0(tabPanelName, "select_by_color")]]
-    
-    if(sticky == "off") {
-      
-      if(!is.null(select_by_color)) {
-        
-        # when select_by_color is on, we can use brush to clear selection but keep brush id
-        loonWidgets_info$lastSelection <- if(!is.null(input$plot_brush) | !is.null(input$plot_click)) brush_id else integer(0)
-        brush_id <-  which(loonWidgets_info$color %in% select_by_color)
-      } else {
-        
-        if(!is.null(output_info$select_by_color)) brush_id <- loonWidgets_info$lastSelection
-      }
-      
-      if("deselect" == select_dynamic) {
-        if(!is.null(input$plot_brush) | !is.null(input$plot_click)) brush_id <- integer(0)
-      }
-      
-    } else {
-      
-      if(!is.null(select_by_color)) {
-        
-        which_is_selected <- union(which(loonWidgets_info$color %in% select_by_color), which(loonWidgets_info$selected))
-        
-      } else {
-        
-        which_is_selected <- which(loonWidgets_info$selected)
-      }
-      
-      if("invert" == select_dynamic) {
-        
-        if(is.null(input$plot_brush) | !is.null(input$plot_click)) {
-          brush_id <- which_is_selected
-        } else {
-          brush_id <- union(setdiff(which_is_selected, brush_id), setdiff(brush_id, which_is_selected))
-        }
-      } else if("deselect" == select_dynamic) {
-        
-        if(is.null(input$plot_brush) | !is.null(input$plot_click)) {
-          brush_id <- which_is_selected
-        } else {
-          brush_id <- setdiff(which_is_selected, brush_id)
-        }
-        
-      } else {
-        
-        if(is.null(input$plot_brush) | !is.null(input$plot_click)) {
-          brush_id <- which_is_selected
-        } else {
-          brush_id <- union(which_is_selected, brush_id)
-        }
-      }
+
+    if(loonWidgetsInfo$showLabels || loonWidgetsInfo$showScales) {
+      margins <- apply(cbind(margins, loonMargins$minimumMargins), 1, max)
     }
-    
-    # select panel -------------------------------------
-    input[[paste0(tabPanelName, "select_static_all")]]
-    input[[paste0(tabPanelName, "select_static_none")]]
-    input[[paste0(tabPanelName, "select_static_invert")]]
-    
-    if(buttons$static_button$all != 0) {
-      
-      brush_id <- seq(N)
-    } else if(buttons$static_button$none != 0) {
-      
-      brush_id <- numeric(0)
-    } else if(buttons$static_button$invert != 0) {
-      
-      brush_id <- setdiff(seq(N), brush_id)
-    } else NULL
-    
-    loonWidgets_info$selected <- rep(FALSE, N)
-    loonWidgets_info$selected[brush_id] <- TRUE
-    
-    # highlight color
-    output_grob <- set_color_grob(
-      loon_grob = output_grob,
-      index = brush_id,
-      color = loon_color$select_color[1],
-      size = loonWidgets_info$size,
-      pch = loonWidgets_info$pch,
-      loon_color = loonWidgets_info$loon_color
-    )
-    
-    colorList <- loonWidgets_info$colorList
-    input[[paste0(tabPanelName, "color")]]
-    lapply(colorList, function(col) input[[paste0(tabPanelName, col)]])
-    modify_color <- isolate(input[[paste0(tabPanelName, "modify_color")]])
-    
-    if(buttons$color_button$modify != 0) {
-      
-      loon_grob <- set_color_grob(
-        loon_grob = loon_grob,
-        index = brush_id,
-        color = modify_color,
-        size = loonWidgets_info$size,
-        pch = loonWidgets_info$pch,
-        loon_color = loonWidgets_info$loon_color
-      )
-      
-      loonWidgets_info$color[brush_id] <- modify_color
-    }
-    
-    for(col in colorList) {
-      
-      if(buttons$color_button[[col]] != 0) {
-        
-        loon_grob <- set_color_grob(
-          loon_grob = loon_grob,
-          index = brush_id,
-          color = col,
-          size = loonWidgets_info$size,
-          pch = loonWidgets_info$pch,
-          loon_color = loonWidgets_info$loon_color
+
+    ############ Begin: set brushId ############
+    brushId <- if(!isFirstDraw) {
+      # sweeping or brushing
+      if(is.null(input$plotBrush) && is.null(input$plotClick)) {
+
+        outputInfo$brushId
+      } else {
+
+        get_brushId(
+          loon.grob = output.grob,
+          coord = list(
+            x = loonWidgetsInfo$x,
+            y = loonWidgetsInfo$y
+          ),
+          swapInShiny = swapInShiny,
+          swapInLoon = swapInLoon,
+          position = position,
+          brushInfo = input$plotBrush,
+          vp = grid::vpStack(
+            grid::plotViewport(margins = margins, name = "grid::plotViewport"),
+            grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
+                         yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
+                         name = "dataViewport")
+          ),
+          clickInfo = input$plotClick
         )
-        
-        loonWidgets_info$color[brush_id] <- col
       }
     }
-    
-    # adjust deactive--------------------------------
-    which_is_deactive <- which(!loonWidgets_info$active)
-    output_grob <- set_deactive_grob(
-      loon_grob = output_grob,
-      index = which_is_deactive
-    )
-    
-    loon_grob <- set_deactive_grob(
-      loon_grob = loon_grob,
-      index = which_is_deactive
-    )
-    
-    input[[paste0(tabPanelName, "modify_deactive")]]
-    if(buttons$active_button$deactive != 0) {
-      
-      output_grob <- set_deactive_grob(
-        loon_grob = output_grob,
-        index = brush_id
-      )
-      
-      loon_grob <- set_deactive_grob(
-        loon_grob = loon_grob,
-        index = brush_id
-      )
-      
-      loonWidgets_info$active[brush_id] <- FALSE
-      which_is_deactive <- union(which_is_deactive, brush_id)
+
+    sticky <- input[[paste0(tabPanelName, "sticky")]]
+    selectByColor <- input[[paste0(tabPanelName, "selectByColor")]]
+    linkingGroup <- input[[paste0(tabPanelName, "linkingGroup")]]
+
+    # select dynamic
+    selectDynamic <- input[[paste0(tabPanelName, "selectDynamic")]]
+
+    if(sticky == "off") {
+
+      if(!is.null(selectByColor)) {
+
+        # when selectByColor is on, we can use brush to clear selection but keep brush id
+        loonWidgetsInfo$lastSelection <- if(!is.null(input$plotBrush) | !is.null(input$plotClick)) brushId else integer(0)
+        brushId <-  which(loonWidgetsInfo$color %in% selectByColor)
+
+      } else {
+
+        if(!is.null(outputInfo$selectByColor))
+          brushId <- loonWidgetsInfo$lastSelection
+      }
+
+      if("deselect" == selectDynamic) {
+        if(!is.null(input$plotBrush) || !is.null(input$plotClick))
+          brushId <- integer(0)
+      }
+
+    } else {
+
+      if(!is.null(selectByColor)) {
+
+        whichIsSelected <- union(which(loonWidgetsInfo$color %in% selectByColor), which(loonWidgetsInfo$selected))
+
+      } else {
+
+        whichIsSelected <- which(loonWidgetsInfo$selected)
+      }
+
+      if("invert" == selectDynamic) {
+
+        if(is.null(input$plotBrush) | !is.null(input$plotClick)) {
+          brushId <- whichIsSelected
+        } else {
+          brushId <- union(setdiff(whichIsSelected, brushId), setdiff(brushId, whichIsSelected))
+        }
+      } else if("deselect" == selectDynamic) {
+
+        if(is.null(input$plotBrush) | !is.null(input$plotClick)) {
+          brushId <- whichIsSelected
+        } else {
+          brushId <- setdiff(whichIsSelected, brushId)
+        }
+
+      } else {
+
+        if(is.null(input$plotBrush) | !is.null(input$plotClick)) {
+          brushId <- whichIsSelected
+        } else {
+          brushId <- union(whichIsSelected, brushId)
+        }
+      }
     }
-    
-    input[[paste0(tabPanelName, "modify_reactive")]]
-    if (buttons$active_button$reactive != 0) {
-      
-      output_grob <- set_reactive_grob(
-        loon_grob = output_grob,
-        index = which_is_deactive,
-        graph_edges = loonWidgets_info$graph_edges,
+
+    # select panel -------------------------------------
+    selectStaticAll <- input[[paste0(tabPanelName, "selectStaticAll")]]
+    selectStaticNone <- input[[paste0(tabPanelName, "selectStaticNone")]]
+    selectStaticInvert <- input[[paste0(tabPanelName, "selectStaticInvert")]]
+
+    if(selectStaticAll > buttons["all"]) {
+
+      buttons["all"] <- selectStaticAll
+
+      brushId <- seq(N)
+    } else if(selectStaticNone > buttons["none"]) {
+
+      buttons["none"] <- selectStaticNone
+
+      brushId <- numeric(0)
+    } else if(selectStaticInvert > buttons["invert"]) {
+
+      buttons["invert"] <- selectStaticInvert
+
+      brushId <- setdiff(seq(N), brushId)
+    } else NULL
+
+    # brushId must be active points
+    brushId <- setdiff(brushId, whichIsDeactive)
+    ############ End: set brushId ############
+
+    loonWidgetsInfo$selected <- rep(FALSE, N)
+    loonWidgetsInfo$selected[brushId] <- TRUE
+
+    # highlight color
+    output.grob <- set_color_grob(
+      loon.grob = output.grob,
+      index = brushId,
+      color = select_color(),
+      size = loonWidgetsInfo$size,
+      pch = loonWidgetsInfo$pch
+    )
+
+    # adjust color -------------------------------
+    colorApply <- input[[paste0(tabPanelName, "colorApply")]]
+    colorListButtons <- setNames(
+      lapply(colorList, function(col) input[[paste0(tabPanelName, col)]]),
+      colorList
+    )
+    colorPicker <- isolate(input[[paste0(tabPanelName, "colorPicker")]])
+
+    if(colorApply > buttons["colorApply"]) {
+
+      buttons["colorApply"] <- colorApply
+
+      loon.grob <- set_color_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        color = colorPicker,
+        size = loonWidgetsInfo$size,
+        pch = loonWidgetsInfo$pch
+      )
+
+      loonWidgetsInfo$color[brushId] <- colorPicker
+    }
+
+    for(col in colorList) {
+
+      if(colorListButtons[[col]] > buttons[col]) {
+
+        buttons[col] <- colorListButtons[[col]]
+
+        loon.grob <- set_color_grob(
+          loon.grob = loon.grob,
+          index = brushId,
+          color = col,
+          size = loonWidgetsInfo$size,
+          pch = loonWidgetsInfo$pch
+        )
+
+        loonWidgetsInfo$color[brushId] <- col
+      }
+    }
+
+    # adjust deactive--------------------------------
+    modifyDeactive <- input[[paste0(tabPanelName, "modifyDeactive")]]
+
+    if(modifyDeactive > buttons["deactive"]) {
+
+      buttons["deactive"] <- modifyDeactive
+
+      output.grob <- set_deactive_grob(
+        loon.grob = output.grob,
+        index = brushId
+      )
+
+      loon.grob <- set_deactive_grob(
+        loon.grob = loon.grob,
+        index = brushId
+      )
+
+      loonWidgetsInfo$active[brushId] <- FALSE
+      whichIsDeactive <- union(whichIsDeactive, brushId)
+    }
+
+    # set reactive
+    modifyReactive <- input[[paste0(tabPanelName, "modifyReactive")]]
+    if (modifyReactive > buttons["reactive"]) {
+
+      buttons["reactive"] <- modifyReactive
+
+      output.grob <- set_reactive_grob(
+        loon.grob = output.grob,
+        index = whichIsDeactive,
+        graph_edges = loonWidgetsInfo$graph_edges,
         swap = swap
       )
-      
-      loon_grob <- set_reactive_grob(
-        loon_grob = loon_grob,
-        index = which_is_deactive,
-        graph_edges = loonWidgets_info$graph_edges,
+
+      loon.grob <- set_reactive_grob(
+        loon.grob = loon.grob,
+        index = whichIsDeactive,
+        graph_edges = loonWidgetsInfo$graph_edges,
         swap = FALSE
       )
-      
-      which_is_deactive <- numeric(0)
-      loonWidgets_info$active <- rep(TRUE, N)
-      
-    } else NULL
-    
+
+      whichIsDeactive <- numeric(0)
+      loonWidgetsInfo$active <- rep(TRUE, N)
+
+    }
+
     showOrbit <- input[[paste0(tabPanelName, "show_nodes_label")]]
     if(showOrbit) {
-      
-      output_grob <- set_node_labels_grob(output_grob, which_is_deactive)
-      
-      loonWidgets_info$showOrbit <- TRUE
+
+      output.grob <- set_node_labelsGrob(output.grob, whichIsDeactive)
+
+      loonWidgetsInfo$showOrbit <- TRUE
     } else {
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "graph labels",
         newGrob = nullGrob(name = "graph labels")
       )
-      
-      loonWidgets_info$showOrbit <- FALSE
+
+      loonWidgetsInfo$showOrbit <- FALSE
     }
-    
+
     # modify move
-    move_button <- list(
-      halign = buttons$move_button$halign,
-      valign = buttons$move_button$valign,
-      hdist = buttons$move_button$hdist,
-      vdist = buttons$move_button$vdist,
-      grid = buttons$move_button$grid,
-      jitter = buttons$move_button$jitter,
-      reset = buttons$move_button$reset
-    )
-    
-    input[[paste0(tabPanelName, "modify_move_jitter")]]
-    
-    if(move_button$halign != 0) {
-      
+    modifyMoveHalign <- input[[paste0(tabPanelName, "modifyMoveHalign")]]
+    modifyMoveValign <- input[[paste0(tabPanelName, "modifyMoveValign")]]
+    modifyMoveHdist <- input[[paste0(tabPanelName, "modifyMoveHdist")]]
+    modifyMoveVdist <- input[[paste0(tabPanelName, "modifyMoveVdist")]]
+    modifyMoveGrid <- input[[paste0(tabPanelName, "modifyMoveGrid")]]
+    modifyMoveJitter <- input[[paste0(tabPanelName, "modifyMoveJitter")]]
+    modifyMoveReset <- input[[paste0(tabPanelName, "modifyMoveReset")]]
+
+    if(modifyMoveHalign > buttons["halign"]) {
+
+      buttons["halign"] <- modifyMoveHalign
+
       # to determine if the default widget is swapped
-      halign_y <- if(swap) mean(loonWidgets_info$x[brush_id]) else mean(loonWidgets_info$y[brush_id])
-      
-      output_grob <- move_halign_grob(loon_grob = output_grob,
-                                      index = brush_id,
+      halignY <- if(swap) mean(loonWidgetsInfo$x[brushId]) else mean(loonWidgetsInfo$y[brushId])
+
+      output.grob <- move_halign_grob(loon.grob = output.grob,
+                                      index = brushId,
                                       swap = swap,
-                                      halign_y = halign_y,
+                                      halignY = halignY,
                                       temporary = TRUE)
-      
-      loon_grob <- move_halign_grob(loon_grob = loon_grob,
-                                    index = brush_id,
+
+      loon.grob <- move_halign_grob(loon.grob = loon.grob,
+                                    index = brushId,
                                     swap = swap,
-                                    halign_y = halign_y,
+                                    halignY = halignY,
                                     temporary = FALSE)
-      
-      if(swap) loonWidgets_info$x[brush_id] <- halign_y else loonWidgets_info$y[brush_id] <- halign_y
-      
-    } else if(move_button$valign != 0) {
-      
-      valign_x <- if(swap) mean(loonWidgets_info$y[brush_id]) else mean(loonWidgets_info$x[brush_id])
-      
-      output_grob <- move_valign_grob(loon_grob = output_grob,
-                                      index = brush_id,
+
+      if(swap) loonWidgetsInfo$x[brushId] <- halignY else loonWidgetsInfo$y[brushId] <- halignY
+
+    } else if(modifyMoveValign > buttons["valign"]) {
+
+      buttons["valign"] <- modifyMoveValign
+
+      valignX <- if(swap) mean(loonWidgetsInfo$y[brushId]) else mean(loonWidgetsInfo$x[brushId])
+
+      output.grob <- move_valign_grob(loon.grob = output.grob,
+                                      index = brushId,
                                       swap = swap,
-                                      valign_x = valign_x,
+                                      valignX = valignX,
                                       temporary = TRUE)
-      
-      loon_grob <- move_valign_grob(loon_grob = loon_grob,
-                                    index = brush_id,
+
+      loon.grob <- move_valign_grob(loon.grob = loon.grob,
+                                    index = brushId,
                                     swap = swap,
-                                    valign_x = valign_x,
+                                    valignX = valignX,
                                     temporary = FALSE)
-      
-      if(swap) loonWidgets_info$y[brush_id] <- valign_x else loonWidgets_info$x[brush_id] <- valign_x
-      
-    } else if(move_button$hdist != 0) {
-      
-      hdist_y <- if(swap) {
-        
+
+      if(swap) loonWidgetsInfo$y[brushId] <- valignX else loonWidgetsInfo$x[brushId] <- valignX
+
+    } else if(modifyMoveHdist > buttons["hdist"]) {
+
+      buttons["hdist"] <- modifyMoveHdist
+
+      hdistY <- if(swap) {
+
         seq(
-          from = min(loonWidgets_info$x[brush_id]),
-          to = max(loonWidgets_info$x[brush_id]),
-          length.out = length(brush_id)
+          from = min(loonWidgetsInfo$x[brushId]),
+          to = max(loonWidgetsInfo$x[brushId]),
+          length.out = length(brushId)
         )
       } else {
-        
+
         seq(
-          from = min(loonWidgets_info$y[brush_id]),
-          to = max(loonWidgets_info$y[brush_id]),
-          length.out = length(brush_id)
+          from = min(loonWidgetsInfo$y[brushId]),
+          to = max(loonWidgetsInfo$y[brushId]),
+          length.out = length(brushId)
         )
-      } 
-      
-      output_grob <- move_hdist_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     swap = swap,
-                                     hdist_y = hdist_y,
-                                     temporary = TRUE)
-      
-      loon_grob <- move_hdist_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   swap = swap,
-                                   hdist_y = hdist_y,
-                                   temporary = FALSE)
-      
-      if(swap) loonWidgets_info$x[brush_id] <- hdist_y else loonWidgets_info$y[brush_id] <- hdist_y
-      
-    } else if(move_button$vdist != 0) {
-      
-      vdist_x <- if(swap) {
-        
-        seq(
-          from = min(loonWidgets_info$y[brush_id]),
-          to = max(loonWidgets_info$y[brush_id]),
-          length.out = length(brush_id)
-        )
-      } else {
-        
-        seq(
-          from = min(loonWidgets_info$x[brush_id]),
-          to = max(loonWidgets_info$x[brush_id]),
-          length.out = length(brush_id)
-        ) 
       }
-      
-      output_grob <- move_vdist_grob(loon_grob = output_grob,
-                                     index = brush_id,
+
+      output.grob <- move_hdist_grob(loon.grob = output.grob,
+                                     index = brushId,
                                      swap = swap,
-                                     vdist_x = vdist_x,
+                                     hdistY = hdistY,
                                      temporary = TRUE)
-      
-      loon_grob <- move_vdist_grob(loon_grob = loon_grob,
-                                   index = brush_id,
+
+      loon.grob <- move_hdist_grob(loon.grob = loon.grob,
+                                   index = brushId,
                                    swap = swap,
-                                   vdist_x = vdist_x,
+                                   hdistY = hdistY,
                                    temporary = FALSE)
-      
-      if(swap) loonWidgets_info$y[brush_id] <- vdist_x else loonWidgets_info$x[brush_id] <- vdist_x
-      
-    } else if (move_button$jitter != 0) {
-      
-      jitter_xy <- jitter_coord(
-        x = if(swap) loonWidgets_info$y else loonWidgets_info$x,
-        y = if(swap) loonWidgets_info$x else loonWidgets_info$y,
-        index = brush_id
+
+      if(swap) loonWidgetsInfo$x[brushId] <- hdistY else loonWidgetsInfo$y[brushId] <- hdistY
+
+    } else if(modifyMoveVdist > buttons["vdist"]) {
+
+      buttons["vdist"] <- modifyMoveVdist
+
+      vdistX <- if(swap) {
+
+        seq(
+          from = min(loonWidgetsInfo$y[brushId]),
+          to = max(loonWidgetsInfo$y[brushId]),
+          length.out = length(brushId)
+        )
+      } else {
+
+        seq(
+          from = min(loonWidgetsInfo$x[brushId]),
+          to = max(loonWidgetsInfo$x[brushId]),
+          length.out = length(brushId)
+        )
+      }
+
+      output.grob <- move_vdist_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     swap = swap,
+                                     vdistX = vdistX,
+                                     temporary = TRUE)
+
+      loon.grob <- move_vdist_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   swap = swap,
+                                   vdistX = vdistX,
+                                   temporary = FALSE)
+
+      if(swap) loonWidgetsInfo$y[brushId] <- vdistX else loonWidgetsInfo$x[brushId] <- vdistX
+
+    } else if(modifyMoveJitter > buttons["jitter"]) {
+
+      buttons["jitter"] <- modifyMoveJitter
+
+      jitterxy <- jitter_coord(
+        x = if(swap) loonWidgetsInfo$y else loonWidgetsInfo$x,
+        y = if(swap) loonWidgetsInfo$x else loonWidgetsInfo$y,
+        index = brushId
       )
-      
-      output_grob <- move_jitter_grob(loon_grob = output_grob,
-                                      index = brush_id,
+
+      output.grob <- move_jitter_grob(loon.grob = output.grob,
+                                      index = brushId,
                                       swap = swap,
-                                      jitter_xy = jitter_xy,
+                                      jitterxy = jitterxy,
                                       temporary = TRUE)
-      
-      loon_grob <- move_jitter_grob(loon_grob = loon_grob,
-                                    index = brush_id,
+
+      loon.grob <- move_jitter_grob(loon.grob = loon.grob,
+                                    index = brushId,
                                     swap = swap,
-                                    jitter_xy = jitter_xy,
+                                    jitterxy = jitterxy,
                                     temporary = FALSE)
-      
+
       if(swap) {
-        
-        loonWidgets_info$y[brush_id] <- jitter_xy$x
-        loonWidgets_info$x[brush_id] <- jitter_xy$y 
+
+        loonWidgetsInfo$y[brushId] <- jitterxy$x
+        loonWidgetsInfo$x[brushId] <- jitterxy$y
       } else {
-        
-        loonWidgets_info$x[brush_id] <- jitter_xy$x
-        loonWidgets_info$y[brush_id] <- jitter_xy$y
+
+        loonWidgetsInfo$x[brushId] <- jitterxy$x
+        loonWidgetsInfo$y[brushId] <- jitterxy$y
       }
-    } else if(move_button$grid != 0) {
-      
-      square_xy <- square_coord(
-        x = if(swap) loonWidgets_info$y else loonWidgets_info$x,
-        y = if(swap) loonWidgets_info$x else loonWidgets_info$y,
-        index = brush_id
+    } else if(modifyMoveGrid > buttons["grid"]) {
+
+      buttons["grid"] <- modifyMoveGrid
+
+      squarexy <- square_coord(
+        x = if(swap) loonWidgetsInfo$y else loonWidgetsInfo$x,
+        y = if(swap) loonWidgetsInfo$x else loonWidgetsInfo$y,
+        index = brushId
       )
-      
-      output_grob <- move_grid_grob(loon_grob = output_grob,
-                                    index = brush_id,
+
+      output.grob <- move_grid_grob(loon.grob = output.grob,
+                                    index = brushId,
                                     swap = swap,
-                                    square_xy = square_xy,
+                                    squarexy = squarexy,
                                     temporary = TRUE)
-      
-      loon_grob <- move_grid_grob(loon_grob = loon_grob,
-                                  index = brush_id,
+
+      loon.grob <- move_grid_grob(loon.grob = loon.grob,
+                                  index = brushId,
                                   swap = swap,
-                                  square_xy = square_xy,
+                                  squarexy = squarexy,
                                   temporary = FALSE)
-      
+
       if(swap) {
-        
-        loonWidgets_info$y[brush_id] <- square_xy$x
-        loonWidgets_info$x[brush_id] <- square_xy$y
+
+        loonWidgetsInfo$y[brushId] <- squarexy$x
+        loonWidgetsInfo$x[brushId] <- squarexy$y
       } else {
-        
-        loonWidgets_info$x[brush_id] <- square_xy$x
-        loonWidgets_info$y[brush_id] <- square_xy$y
+
+        loonWidgetsInfo$x[brushId] <- squarexy$x
+        loonWidgetsInfo$y[brushId] <- squarexy$y
       }
-    } else if(move_button$reset != 0) {
-      
-      output_grob <- move_reset_grob(loon_grob = output_grob,
+    } else if(modifyMoveReset > buttons["reset"]) {
+
+      buttons["reset"] <- modifyMoveReset
+
+      output.grob <- move_reset_grob(loon.grob = output.grob,
                                      index = seq(N),
                                      swap = swap,
-                                     xy_original = loonWidgets_info$xy_original,
+                                     xyOriginal = loonWidgetsInfo$xyOriginal,
                                      temporary = TRUE)
-      
-      loon_grob <- move_reset_grob(loon_grob = loon_grob,
+
+      loon.grob <- move_reset_grob(loon.grob = loon.grob,
                                    index = seq(N),
                                    swap = swap,
-                                   xy_original = loonWidgets_info$xy_original,
+                                   xyOriginal = loonWidgetsInfo$xyOriginal,
                                    temporary = FALSE)
-      
-      loonWidgets_info$x <- loonWidgets_info$x_original
-      loonWidgets_info$y <- loonWidgets_info$y_original
-      
+
+      loonWidgetsInfo$x <- loonWidgetsInfo$xOriginal
+      loonWidgetsInfo$y <- loonWidgetsInfo$yOriginal
+
     } else NULL # none of move buttons is active
-    
-    
-    # adjust glyph size--------------------------------
-    glyph_button <- list(
-      circle = buttons$glyph_button$circle,
-      ccircle = buttons$glyph_button$ccircle,
-      ocircle = buttons$glyph_button$ocircle,
-      square = buttons$glyph_button$square,
-      csquare = buttons$glyph_button$csquare,
-      osquare = buttons$glyph_button$osquare,
-      triangle = buttons$glyph_button$triangle,
-      ctriangle = buttons$glyph_button$ctriangle,
-      otriangle = buttons$glyph_button$otriangle
-    )
-    which_glyph_is_active <- which(glyph_button != 0)
-    
-    if(length(which_glyph_is_active) > 0)  {
-      
-      new_glyph <- names(glyph_button[which_glyph_is_active])
-      new_pch <- glyph_to_pch(new_glyph)
-      
-      loon_grob <- set_glyph_grob(
-        loon_grob = loon_grob,
-        index = brush_id,
-        new_pch = new_pch,
+
+
+    # adjust glyph --------------------------------
+    modifyGlyphCircle <- input[[paste0(tabPanelName, "modifyGlyphCircle")]]
+    modifyGlyphCcircle <- input[[paste0(tabPanelName, "modifyGlyphCcircle")]]
+    modifyGlyphOcircle <- input[[paste0(tabPanelName, "modifyGlyphOcircle")]]
+    modifyGlyphSquare <- input[[paste0(tabPanelName, "modifyGlyphSquare")]]
+    modifyGlyphCsquare <- input[[paste0(tabPanelName, "modifyGlyphCsquare")]]
+    modifyGlyphOsquare <- input[[paste0(tabPanelName, "modifyGlyphOsquare")]]
+    modifyGlyphTriangle <- input[[paste0(tabPanelName, "modifyGlyphTriangle")]]
+    modifyGlyphCtriangle <- input[[paste0(tabPanelName, "modifyGlyphCtriangle")]]
+    modifyGlyphOtriangle <- input[[paste0(tabPanelName, "modifyGlyphOtriangle")]]
+
+    newGlyph <- NULL
+
+    if(modifyGlyphCircle > buttons["circle"]) {
+      buttons["circle"] <- modifyGlyphCircle
+      newGlyph <- "circle"
+    }
+    if(modifyGlyphOcircle > buttons["ocircle"]) {
+      buttons["ocircle"] <- modifyGlyphOcircle
+      newGlyph <- "ocircle"
+    }
+    if(modifyGlyphCcircle > buttons["ccircle"]) {
+      buttons["ccircle"] <- modifyGlyphCcircle
+      newGlyph <- "ccircle"
+    }
+    if(modifyGlyphSquare > buttons["square"]) {
+      buttons["square"] <- modifyGlyphSquare
+      newGlyph <- "square"
+    }
+    if(modifyGlyphOsquare > buttons["osquare"]) {
+      buttons["osquare"] <- modifyGlyphOsquare
+      newGlyph <- "osquare"
+    }
+    if(modifyGlyphCsquare > buttons["csquare"]) {
+      buttons["csquare"] <- modifyGlyphCsquare
+      newGlyph <- "csquare"
+    }
+    if(modifyGlyphTriangle > buttons["triangle"]) {
+      buttons["triangle"] <- modifyGlyphTriangle
+      newGlyph <- "triangle"
+    }
+    if(modifyGlyphOtriangle > buttons["otriangle"]) {
+      buttons["otriangle"] <- modifyGlyphOtriangle
+      newGlyph <- "otriangle"
+    }
+    if(modifyGlyphCtriangle > buttons["ctriangle"]) {
+      buttons["ctriangle"] <- modifyGlyphCtriangle
+      newGlyph <- "ctriangle"
+    }
+
+    if(!is.null(newGlyph))  {
+
+      newPch <- glyph_to_pch(newGlyph)
+
+      loon.grob <- set_glyph_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        newPch = newPch,
         tmp = FALSE,
-        color = loonWidgets_info$color,
-        size = loonWidgets_info$size,
-        pch = loonWidgets_info$pch,
-        loon_color = loonWidgets_info$loon_color
+        color = loonWidgetsInfo$color,
+        size = loonWidgetsInfo$size,
+        pch = loonWidgetsInfo$pch,
+        loonColor = loonColor
       )
-      
-      output_grob <- set_glyph_grob(
-        loon_grob = output_grob,
-        index = brush_id,
-        new_pch = new_pch,
+
+      output.grob <- set_glyph_grob(
+        loon.grob = output.grob,
+        index = brushId,
+        newPch = newPch,
         tmp = TRUE,
-        color = loonWidgets_info$color,
-        size = loonWidgets_info$size,
-        pch = loonWidgets_info$pch,
-        loon_color = loonWidgets_info$loon_color
+        color = loonWidgetsInfo$color,
+        size = loonWidgetsInfo$size,
+        pch = loonWidgetsInfo$pch,
+        loonColor = loonColor
       )
-      
-      loonWidgets_info$glyph[brush_id] <- new_glyph
-      loonWidgets_info$pch[brush_id] <- new_pch
-      loonWidgets_info$glyph_name[brush_id] <- paste0("primitive_glyph ", loonWidgets_info$index[brush_id])
+
+      loonWidgetsInfo$glyph[brushId] <- newGlyph
+      loonWidgetsInfo$pch[brushId] <- newPch
+      loonWidgetsInfo$glyphNames[brushId] <- paste0("primitive_glyph ", loonWidgetsInfo$index[brushId])
     }
-    
+
     # adjust size--------------------------------
-    input[[paste0(tabPanelName, "abs_to_plus")]]
-    input[[paste0(tabPanelName, "abs_to_minus")]]
-    input[[paste0(tabPanelName, "rel_to_plus")]]
-    input[[paste0(tabPanelName, "rel_to_minus")]]
-    
-    if(buttons$size_button$abs_to_plus != 0) {
-      
-      if(length(brush_id) > 0) {
-        new_size <- min(loonWidgets_info$size[brush_id]) + default_step_size()
-        loonWidgets_info$size[brush_id] <- rep(new_size, length(brush_id))
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   pch = loonWidgets_info$pch)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     pch = loonWidgets_info$pch)
+    absToPlus <- input[[paste0(tabPanelName, "absToPlus")]]
+    if(absToPlus > buttons["absToPlus"]) {
+
+      buttons["absToPlus"] <- absToPlus
+
+      if(length(brushId) > 0) {
+        newSize <- min(loonWidgetsInfo$size[brushId]) + default_step_size()
+        loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   pch = loonWidgetsInfo$pch)
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     pch = loonWidgetsInfo$pch)
       }
     }
-    
-    if(buttons$size_button$abs_to_minus != 0) {
-      
-      if(length(brush_id) > 0) {
-        new_size <- min(loonWidgets_info$size[brush_id]) - default_step_size()
-        if(new_size <= 0) new_size <- minimumSize()
-        loonWidgets_info$size[brush_id] <- rep(new_size, length(brush_id))
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   pch = loonWidgets_info$pch)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     pch = loonWidgets_info$pch)
+
+    absToMinus <- input[[paste0(tabPanelName, "absToMinus")]]
+    if(absToMinus > buttons["absToMinus"]) {
+
+      buttons["absToMinus"] <- absToMinus
+
+      if(length(brushId) > 0) {
+        newSize <- min(loonWidgetsInfo$size[brushId]) - default_step_size()
+        if(newSize <= 0) newSize <- minimumSize()
+        loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   pch = loonWidgetsInfo$pch)
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     pch = loonWidgetsInfo$pch)
       }
     }
-    
-    if(buttons$size_button$rel_to_plus != 0) {
-      
-      if(length(brush_id) > 0) {
-        
-        loonWidgets_info$size[brush_id] <- loonWidgets_info$size[brush_id] + default_step_size()
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   pch = loonWidgets_info$pch)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     pch = loonWidgets_info$pch)
+
+    relToPlus <- input[[paste0(tabPanelName, "relToPlus")]]
+    if(relToPlus > buttons["relToPlus"]) {
+
+      buttons["relToPlus"] <- relToPlus
+
+      if(length(brushId) > 0) {
+
+        loonWidgetsInfo$size[brushId] <- loonWidgetsInfo$size[brushId] + default_step_size()
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   pch = loonWidgetsInfo$pch)
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     pch = loonWidgetsInfo$pch)
       }
     }
-    
-    if(buttons$size_button$rel_to_minus != 0) {
-      
-      if(length(brush_id) > 0) {
-        
-        new_size <- loonWidgets_info$size[brush_id] - default_step_size()
-        new_size[which(new_size <= 0)] <- minimumSize()
-        loonWidgets_info$size[brush_id] <- new_size
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   pch = loonWidgets_info$pch)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     pch = loonWidgets_info$pch)
+
+    relToMinus <- input[[paste0(tabPanelName, "relToMinus")]]
+    if(relToMinus > buttons["relToMinus"]) {
+
+      buttons["relToMinus"] <- relToMinus
+
+      if(length(brushId) > 0) {
+
+        newSize <- loonWidgetsInfo$size[brushId] - default_step_size()
+        newSize[which(newSize <= 0)] <- minimumSize()
+        loonWidgetsInfo$size[brushId] <- newSize
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   pch = loonWidgetsInfo$pch)
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     pch = loonWidgetsInfo$pch)
       }
     }
-    
+
     # reorder selected points
-    output_grob <- reorder_grob(output_grob,
+    output.grob <- reorder_grob(output.grob,
                                 number = N,
-                                brush_id)
-    
-    
+                                brushId)
+
+
     ## up, down, visible, invisible, ... layer
-    layer_button <- list(
-      up = buttons$layer_button$up,
-      down = buttons$layer_button$down,
-      visible = buttons$layer_button$visible,
-      invisible = buttons$layer_button$invisible,
-      plus = buttons$layer_button$plus,
-      minus = buttons$layer_button$minus,
-      scale_to = buttons$layer_button$scale_to,
-      set = buttons$layer_button$set
-    )
-    
-    # layers
-    input[[paste0(tabPanelName, "layer_up")]]
-    input[[paste0(tabPanelName, "layer_down")]]
-    input[[paste0(tabPanelName, "layer_visible")]]
-    input[[paste0(tabPanelName, "layer_invisible")]]
-    input[[paste0(tabPanelName, "layer_plus")]]
-    input[[paste0(tabPanelName, "layer_minus")]]
-    input[[paste0(tabPanelName, "layer_scale_to")]]
-    input[[paste0(tabPanelName, "layer_set")]]
-    
-    current_layer <- input[[paste0(tabPanelName, "layer")]]
-    new_layer_label <- isolate(input[[paste0(tabPanelName, "layer_changed_label")]])
-    
-    if(layer_button$set != 0) {
-      
-      if(new_layer_label == "") {
-        message("no valid label")
-      } else {
-        layers <- loonWidgets_info$layers
-        layers_name <- names(layers)
-        
-        which_layer_is_edited <- which(layers_name == current_layer)
-        
-        layers_name[which_layer_is_edited] <- new_layer_label
-        names(layers) <- layers_name
-        loonWidgets_info$layers <- layers
-        
-        current_layer <- layers[which_layer_is_edited]
-      }
-    } else {
-      
-      layers <- loonWidgets_info$layers
-      layers_name <- names(layers)
-      
-      current_layer <- layers[which(layers_name == current_layer)]
+    layerUp <- input[[paste0(tabPanelName, "layerUp")]]
+    layerDown <- input[[paste0(tabPanelName, "layerDown")]]
+    layerVisible <- input[[paste0(tabPanelName, "layerVisible")]]
+    layerInvisible <- input[[paste0(tabPanelName, "layerInvisible")]]
+    layerPlus <- input[[paste0(tabPanelName, "layerPlus")]]
+
+    if(layerUp > buttons["layerUp"]) {
+
+      buttons["layerUp"] <- layerUp
+
+      loon.grob <- move_layerUp_grob(loon.grob = loon.grob,
+                                     currentLayer = currentLayer,
+                                     parent = "l_graph_layers")
+
+      output.grob <- move_layerUp_grob(loon.grob = output.grob,
+                                       currentLayer = currentLayer,
+                                       parent = "l_graph_layers")
+
     }
-    
-    if(layer_button$up != 0) {
-      
-      loon_grob <- move_layer_up_grob(loon_grob = loon_grob,
-                                      current_layer = current_layer,
-                                      parent = "l_graph_layers")
-      
-      output_grob <- move_layer_up_grob(loon_grob = output_grob,
-                                        current_layer = current_layer,
-                                        parent = "l_graph_layers")
-      
-    } else if (layer_button$down != 0) {
-      
-      loon_grob <- move_layer_down_grob(loon_grob = loon_grob,
-                                        current_layer = current_layer,
-                                        parent = "l_graph_layers")
-      
-      output_grob <- move_layer_down_grob(loon_grob = output_grob,
-                                          current_layer = current_layer,
-                                          parent = "l_graph_layers")
-      
-    } else if (layer_button$visible != 0) {
-      
-      loon_grob <- move_layer_visible_grob(loon_grob = loon_grob,
-                                           current_layer = current_layer,
-                                           graph_edges = loonWidgets_info$graph_edges,
-                                           N = N)
-      
-      output_grob <- move_layer_visible_grob(loon_grob = output_grob,
-                                             current_layer = current_layer,
-                                             graph_edges = loonWidgets_info$graph_edges,
-                                             N = N)
-      
-    } else if (layer_button$invisible != 0) {
-      
-      loon_grob <- move_layer_invisible_grob(loon_grob = loon_grob,
-                                             current_layer = current_layer,
-                                             N = N)
-      
-      output_grob <- move_layer_invisible_grob(loon_grob = output_grob,
-                                               current_layer = current_layer,
-                                               N = N)
-      
-    } else if (layer_button$plus != 0) {
+
+    if(layerDown > buttons["layerDown"]) {
+
+      buttons["layerDown"] <- layerDown
+
+      loon.grob <- move_layerDown_grob(loon.grob = loon.grob,
+                                       currentLayer = currentLayer,
+                                       parent = "l_graph_layers")
+
+      output.grob <- move_layerDown_grob(loon.grob = output.grob,
+                                         currentLayer = currentLayer,
+                                         parent = "l_graph_layers")
+
+    }
+
+    if(layerVisible > buttons["layerVisible"]) {
+
+      buttons["layerVisible"] <- layerVisible
+
+      loon.grob <- move_layerVisible_grob(loon.grob = loon.grob,
+                                          currentLayer = currentLayer,
+                                          graph_edges = loonWidgetsInfo$graph_edges,
+                                          N = N)
+
+      output.grob <- move_layerVisible_grob(loon.grob = output.grob,
+                                            currentLayer = currentLayer,
+                                            graph_edges = loonWidgetsInfo$graph_edges,
+                                            N = N)
+
+    }
+
+    if(layerInvisible > buttons["layerInvisible"]) {
+
+      buttons["layerInvisible"] <- layerInvisible
+
+      loon.grob <- move_layerInvisible_grob(loon.grob = loon.grob,
+                                            currentLayer = currentLayer,
+                                            N = N)
+
+      output.grob <- move_layerInvisible_grob(loon.grob = output.grob,
+                                              currentLayer = currentLayer,
+                                              N = N)
+
+    }
+
+    if(layerPlus > buttons["layerPlus"]) {
+
+      buttons["layerPlus"] <- layerPlus
+
       message("adding layers has not been inplemented so far")
-    } else if (layer_button$minus != 0) {
-      
-      loon_grob <- setGrob(
-        gTree = loon_grob,
-        gPath = current_layer,
-        newGrob = nullGrob(name = current_layer)
-      )
-      
-      output_grob <- setGrob(
-        gTree = loon_grob,
-        gPath = current_layer,
-        newGrob = nullGrob(name = current_layer)
-      )
-      
-    } else if (layer_button$scale_to != 0) {
-      
-      if(current_layer == "graph") {
-        
-        if(swap) {
-          
-          loonWidgets_info$ylim <- loonWidgets_info$plotView_xlim
-          loonWidgets_info$xlim <- loonWidgets_info$plotView_ylim
-        } else {
-          
-          loonWidgets_info$xlim <- loonWidgets_info$plotView_xlim
-          loonWidgets_info$ylim <- loonWidgets_info$plotView_ylim
-        }
-        
-      } else {
-        
-        layer_lim <- get_layer_worldView(loon_grob, layer = current_layer)
-        xlim <- layer_lim$xlim
-        ylim <- layer_lim$ylim
-        
-        if(length(xlim) != 0 & length(ylim) != 0) {
-          
-          if(swap) {
-            
-            loonWidgets_info$ylim <-xlim
-            loonWidgets_info$xlim <- ylim
-          } else {
-            
-            loonWidgets_info$xlim <- xlim
-            loonWidgets_info$ylim <- ylim
-          }
-        } else message("group layer cannot be scaled to")
-      }
-    } else NULL
-    
+
+    }
+
     # reset vp
-    output_grob <- set_viewPort_grob(
-      loon_grob = output_grob,
-      margins = margins, 
-      xlim = loonWidgets_info$xlim,
-      ylim = loonWidgets_info$ylim
+    output.grob <- set_viewPort_grob(
+      loon.grob = output.grob,
+      margins = margins,
+      xlim = loonWidgetsInfo$xlim,
+      ylim = loonWidgetsInfo$ylim
     )
-    
+
     # reset boundary
-    output_grob <- set_boundary_grob(loon_grob = output_grob,
-                                     margins = margins, 
-                                     loon_color = loonWidgets_info$loon_color)
-    
-    
+    output.grob <- set_boundary_grob(loon.grob = output.grob,
+                                     margins = margins,
+                                     loonColor = loonColor)
+
+
     # set linking info
-    linkingInfo <- update_linkingInfo(loon_grob,
+    linkingInfo <- update_linkingInfo(loon.grob,
                                       tabPanelName = tabPanelName,
-                                      linkingInfo = linkingInfo, 
-                                      linkingGroup = linkingGroup, 
-                                      selected = loonWidgets_info$selected,
-                                      color = loonWidgets_info$color, 
-                                      size = loonWidgets_info$size, 
-                                      pch = loonWidgets_info$pch, 
-                                      active = loonWidgets_info$active, 
-                                      select_by_color = select_by_color,
+                                      linkingInfo = linkingInfo,
+                                      linkingGroup = linkingGroup,
+                                      linkingKey = loonWidgetsInfo$linkingKey,
+                                      selected = loonWidgetsInfo$selected,
+                                      color = loonWidgetsInfo$color,
+                                      size = loonWidgetsInfo$size,
+                                      pch = loonWidgetsInfo$pch,
+                                      active = loonWidgetsInfo$active,
+                                      selectByColor = selectByColor,
                                       linkedStates = input[[paste0(tabPanelName, "linkedStates")]])
   }
-  
+
   list(
-    output_grob = output_grob,
-    loon_grob = loon_grob,
-    output_info = list(
-      brush_id = brush_id,
-      select_by_color = select_by_color,
+    output.grob = output.grob,
+    loon.grob = loon.grob,
+    outputInfo = list(
+      brushId = brushId,
+      selectByColor = selectByColor,
       linkingGroup = linkingGroup,
       linkingInfo = linkingInfo,
-      loonWidgets_info = loonWidgets_info
+      loonWidgetsInfo = loonWidgetsInfo,
+      buttons = buttons
     )
   )
 }

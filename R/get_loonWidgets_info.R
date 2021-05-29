@@ -1,56 +1,54 @@
-get_loonWidgets_info <- function(widgets, loon_grobs, colorList, ...) {
-  UseMethod("get_loonWidgets_info", widgets)
+get_loonWidgetsInfo <- function(widgets, loon.grobs, ...) {
+  UseMethod("get_loonWidgetsInfo", widgets)
 }
 
-get_loonWidgets_info.default <- function(widgets, loon_grobs, colorList, ...) {
+get_loonWidgetsInfo.default <- function(widgets, loon.grobs, ...) {
   stop("Unknow widget", call. = FALSE)
 }
 
-get_loonWidgets_info.l_compound <- function(widgets, loon_grobs, colorList, ...) {
+get_loonWidgetsInfo.l_compound <- function(widgets, loon.grobs, ...) {
   lapply(widgets,
          function(widget) {
-           get_loonWidgets_info(widget, 
-                                loon_grobs[[as.character(widget)]], 
-                                colorList, 
-                                ...)
+           get_loonWidgetsInfo(widget,
+                               loon.grobs[[as.character(widget)]],
+                               ...)
          }
   )
 }
 
-get_loonWidgets_info.list <- function(widgets, loon_grobs, colorList, ...) {
-  get_loonWidgets_info.l_compound(widgets, loon_grobs, colorList, ...)
+get_loonWidgetsInfo.list <- function(widgets, loon.grobs, ...) {
+  get_loonWidgetsInfo.l_compound(widgets, loon.grobs, ...)
 }
 
-get_loonWidgets_info.l_facet_ggplot <- function(widgets, loon_grobs, colorList, ...) {
-  
+get_loonWidgetsInfo.l_facet_ggplot <- function(widgets, loon.grobs,...) {
+
   args <- list(...)
   navbarMenuName <- args$navbarMenuName
-  
+
   plots <- l_getPlots(widgets)
   subtitles <- l_getSubtitles(widgets)
-  
+
   colSubtitles <- subtitles$colSubtitles
   rowSubtitles <- subtitles$rowSubtitles
-  
+
   lapply(seq(length(plots)),
          function(i){
            colSubtitle <- colSubtitles[i]
            rowSubtitle <- rowSubtitles[i]
-           
-           get_loonWidgets_info(plots[[i]], 
-                                loon_grobs = loon_grobs[[as.character(plots[[i]])]],
-                                colorList, 
-                                title = paste0(c(colSubtitle, rowSubtitle), collapse = "\n"), 
-                                navbarMenuName = navbarMenuName)
+
+           get_loonWidgetsInfo(plots[[i]],
+                               loon.grobs = loon.grobs[[as.character(plots[[i]])]],
+                               title = paste0(c(colSubtitle, rowSubtitle), collapse = "\n"),
+                               navbarMenuName = navbarMenuName)
          }
   )
 }
 
-none_loonWidgets_info <- function(...) {
-  
+none_loonWidgetsInfo <- function(...) {
+
   args <- list(...)
   navbarMenuName <- args$navbarMenuName
-  
+
   list(
     linkingGroup = "none",
     linkingKey = NULL,

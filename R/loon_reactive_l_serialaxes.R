@@ -1,48 +1,51 @@
-loon_reactive.l_serialaxes <- function(loon_grob, output_grob, linkingInfo, buttons, position, selectBy,
-                                       linkingGroup, input, tabPanelName, output_info) {
-  
-  if(!is.null(output_grob) & input[["navBarPage"]] != tabPanelName) {
-    
-    loonWidgets_info <- output_info$loonWidgets_info
-    
+loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, buttons, position, selectBy,
+                                       linkingGroup, input, colorList, tabPanelName, outputInfo) {
+
+  if(!is.null(output.grob) & input[["navBarPage"]] != tabPanelName) {
+
+    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+
     if(linkingGroup != "none") {
-      
-      grobs <- set_linking_grobs(
-        loon_grob = loon_grob,
-        output_grob = output_grob,
-        linkedInfo = linkingInfo[[linkingGroup]],
+
+      linkedInfo <- linkingInfo[[linkingGroup]]
+      order <- match(loonWidgetsInfo$linkingKey, linkedInfo$linkingKey)
+
+      modifiedLinkingInfo <- set_linkingInfo(
+        loon.grob = loon.grob,
+        output.grob = output.grob,
+        linkedInfo = linkedInfo,
+        linkedStates = input[[paste0(tabPanelName, "linkedStates")]],
         tabPanelName = tabPanelName,
-        loon_color = loonWidgets_info$loon_color
+        order = order,
+        loonWidgetsInfo = loonWidgetsInfo
       )
-      
-      selected <- linkingInfo[[linkingGroup]]$selected
-      brush_id <- which(selected)
-      select_by_color <- linkingInfo[[linkingGroup]]$select_by_color
-      
-      output_grob <- grobs$output_grob
-      loon_grob <- grobs$loon_grob
-      
-      loonWidgets_info <- update_loonWidgets_info(loonWidgets_info, 
-                                                  linkedInfo = linkingInfo[[linkingGroup]],         
-                                                  tabPanelName = tabPanelName)
-      
+
+      selected <- linkedInfo$selected
+      brushId <- which(selected)
+      selectByColor <- linkedInfo$selectByColor
+
+      output.grob <- modifiedLinkingInfo$output.grob
+      loon.grob <- modifiedLinkingInfo$loon.grob
+      loonWidgetsInfo <- modifiedLinkingInfo$loonWidgetsInfo
+
     } else {
-      
-      brush_id <- output_info$brush_id
-      select_by_color <- output_info$select_by_color
+
+      brushId <- outputInfo$brushId
+      selectByColor <- outputInfo$selectByColor
     }
   } else {
-    
-    input$plot_brush
-    input$plot_click
-    
-    isFirst_draw <- is.null(output_grob)
-    output_grob <- loon_grob
-    loonWidgets_info <- output_info$loonWidgets_info
-    
-    axesLayout_in_shiny <- input[[paste0(tabPanelName, "axesLayout")]]
-    axesLayout_in_loon <- loonWidgets_info$axesLayout
-    
+
+    input$plotBrush
+    input$plotClick
+
+    isFirstDraw <- is.null(output.grob)
+    output.grob <- loon.grob
+    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+    loonColor <- loonWidgetsInfo$loonColor
+
+    axesLayoutInShiny <- input[[paste0(tabPanelName, "axesLayout")]]
+    axesLayoutInLoon <- loonWidgetsInfo$axesLayout
+
     plotShow <- input[[paste0(tabPanelName, "plot")]]
     showGuides <- "showGuides" %in% plotShow
     showAxes <- "showAxes" %in% plotShow
@@ -50,97 +53,99 @@ loon_reactive.l_serialaxes <- function(loon_grob, output_grob, linkingInfo, butt
     showLabels <- "showLabels" %in% plotShow
     showArea <- "showArea" %in% plotShow
     andrews <- "andrews" %in% plotShow
-    
-    title <- loonWidgets_info$title
-    title_gPath <- if(!is.null(getGrob(output_grob, "title"))) {
+
+    title <- loonWidgetsInfo$title
+    titleGpath <- if(!is.null(grid::getGrob(output.grob, "title"))) {
       "title"
     } else {
       "title: textGrob arguments"
     }
-    
-    loon_default_serialaxes_args <- loon_default_serialaxes_args()
-    
+
+    loonDefaultSerialaxesArgs <- loon_defaultSerialaxesSettings_args()
+
     if(showLabels & title != "") {
-      title_grob <- textGrob(
-        name = title_gPath,
+      titleGrob <- grid::textGrob(
+        name = titleGpath,
         label = title,
         y = unit(1, "npc") - unit(.8, "lines"),
-        gp = gpar(fontsize = loon_default_serialaxes_args$title_fontsize,
+        gp = gpar(fontsize = loonDefaultSerialaxesArgs$titleFontsize,
                   fontface="bold"),
         vjust = .5
       )
     } else {
-      
-      title_grob <- grob(name = title_gPath)
+
+      titleGrob <- grob(name = titleGpath)
     }
-    
-    output_grob <- setGrob(
-      gTree = output_grob,
-      gPath = title_gPath,
-      newGrob = title_grob
+
+    output.grob <- grid::setGrob(
+      gTree = output.grob,
+      gPath = titleGpath,
+      newGrob = titleGrob
     )
-    
+
     scaling <- input[[paste0(tabPanelName, "scaling")]]
-    scaledActiveData <- switch(scaling, 
-                               "variable" = loonWidgets_info$scaledActiveData_variable,
-                               "observation" = loonWidgets_info$scaledActiveData_observation,
-                               "data" = loonWidgets_info$scaledActiveData_data,
-                               "none" = loonWidgets_info$scaledActiveData_none)
-    
-    N <- loonWidgets_info$N
-    len.xaxis <- loonWidgets_info$len_seqName
-    axesLabels <- loonWidgets_info$seqName
-    andrewsSeriesLength <- loonWidgets_info$andrewsSeriesLength
-    
+    scaledActiveData <- switch(scaling,
+                               "variable" = loonWidgetsInfo$variableScaledActiveData,
+                               "observation" = loonWidgetsInfo$observationScaledActiveData,
+                               "data" = loonWidgetsInfo$dataScaledActiveData,
+                               "none" = loonWidgetsInfo$noneScaledActiveData)
+
+    N <- loonWidgetsInfo$N
+    whichIsDeactive <- which(!loonWidgetsInfo$active)
+
+    len.xaxis <- loonWidgetsInfo$lenSeqName
+    axesLabels <- loonWidgetsInfo$seqName
+    andrewsSeriesLength <- loonWidgetsInfo$andrewsSeriesLength
+
     if(andrews) {
       axesLabels <- round(seq(-pi, pi, length.out = len.xaxis), 2)
-      fourierTrans <- loonWidgets_info$fourierTrans
-      
+      fourierTrans <- loonWidgetsInfo$fourierTrans
+
       scaledActiveData <- as.matrix(scaledActiveData) %*% fourierTrans$matrix
-      
+
       dataRange <- range(scaledActiveData, na.rm = TRUE)
       d <- if(diff(dataRange) == 0) 1 else diff(dataRange)
-      
+
       scaledActiveData <- (scaledActiveData - min(scaledActiveData, na.rm = TRUE))/d
     }
-    
+
     # set layout axes, showAxes, showGuides, ...
-    if(axesLayout_in_shiny == "parallel") {
-      
+    if(axesLayoutInShiny == "parallel") {
+
       xaxis <- seq(0, 1, length.out =  len.xaxis)
-      
-      axes_gPath <- if(axesLayout_in_shiny == axesLayout_in_loon) "parallelAxes" else "radialAxes"
-      yaxis <- grid.pretty(loonWidgets_info$ylim)
+
+      axesGpath <- if(axesLayoutInShiny == axesLayoutInLoon) "parallelAxes" else "radialAxes"
+      yaxis <- grid.pretty(loonWidgetsInfo$ylim)
       len.yaxis <- length(yaxis)
-      
+
       # set guides -----------------------------------------------------------
-      
-      guides_grob <- if(showGuides) {
-        
+
+      guidesGrob <- if(showGuides) {
+
         gTree(
           children = do.call(
             gList,
             lapply(seq(len.xaxis + len.yaxis + 1),
                    function(i) {
                      if(i == 1){
-                       rectGrob(gp = gpar(col = NA, fill = loon_default_serialaxes_args$guides_background),
-                                name = "bounding box")
+                       grid::rectGrob(gp = gpar(col = NA, fill = loonDefaultSerialaxesArgs$guidesBackground),
+                                      name = "bounding box")
                      } else if( i > 1 && i<= (1 + len.xaxis)){
                        condGrob(
                          test = showAxes,
-                         grobFun = linesGrob,
+                         grobFun = grid::linesGrob,
                          name = paste("x axis", i - 1),
                          x = unit(rep(xaxis[i - 1],2 ), "native"),
                          y =  unit(c(0, 1), "native"),
-                         gp = gpar(col =  loon_default_serialaxes_args$line_color1,
-                                   lwd = loon_default_serialaxes_args$guideLine_width)
+                         gp = gpar(col =  loonDefaultSerialaxesArgs$lineColor1,
+                                   lwd = loonDefaultSerialaxesArgs$guideLineWidth)
                        )
                      } else {
-                       linesGrob(
+                       grid::linesGrob(
                          x = unit(c(0, 1), "native"),
                          y =  unit(rep(yaxis[i - (1 + len.xaxis)],2 ), "native"),
-                         gp = gpar(col =loon_default_serialaxes_args$line_color1,
-                                   lwd = loon_default_serialaxes_args$guideLine_width),
+                         gp = gpar(col =loonDefaultSerialaxesArgs$lineColor1,
+                                   lwd = loonDefaultSerialaxesArgs$guideLineWidth),
                          name = paste("y axis", i - (1 + len.xaxis))
                        )
                      }
@@ -148,7 +153,7 @@ loon_reactive.l_serialaxes <- function(loon_grob, output_grob, linkingInfo, butt
           name = "guides"
         )
       } else {
-        
+
         gTree(
           children =  do.call(
             gList,
@@ -156,12 +161,12 @@ loon_reactive.l_serialaxes <- function(loon_grob, output_grob, linkingInfo, butt
                    function(i) {
                      condGrob(
                        test = showAxes,
-                       grobFun = linesGrob,
+                       grobFun = grid::linesGrob,
                        name = paste("x axis", i),
                        x = unit(rep(xaxis[i],2 ), "native"),
                        y =  unit(c(0, 1), "native"),
-                       gp = gpar(col =  loon_default_serialaxes_args$line_color2,
-                                 lwd = loon_default_serialaxes_args$guideLine_width)
+                       gp = gpar(col =  loonDefaultSerialaxesArgs$lineColor2,
+                                 lwd = loonDefaultSerialaxesArgs$guideLineWidth)
                      )
                    }
             )
@@ -169,42 +174,42 @@ loon_reactive.l_serialaxes <- function(loon_grob, output_grob, linkingInfo, butt
           name = "guides"
         )
       }
-      loonWidgets_info$showGuides <- showGuides
-      output_grob <- setGrob(
-        gTree = output_grob,
+      loonWidgetsInfo$showGuides <- showGuides
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "guides",
-        newGrob = guides_grob
+        newGrob = guidesGrob
       )
-      
+
       # set labels -----------------------------------------------------------
-      labels_grob <- gTree(
+      labelsGrob <- gTree(
         children = do.call(
           gList,
           lapply(seq(len.xaxis),
                  function(i) {
                    condGrob(
                      test = showAxesLabels,
-                     grobFun = textGrob,
+                     grobFun = grid::textGrob,
                      label = axesLabels[i],
                      name = paste("label", i),
                      x = unit(xaxis[i], "native"),
                      y = unit(0, "npc") + unit(1.2, "lines"),
-                     gp = gpar(fontsize = loon_default_serialaxes_args$label_fontsize), vjust = 1
+                     gp = gpar(fontsize = loonDefaultSerialaxesArgs$labelFontsize), vjust = 1
                    )
                  }
           )
         ),
         name = "labels"
       )
-      
-      loonWidgets_info$showLabels <- showLabels
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
+
+      loonWidgetsInfo$showLabels <- showLabels
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "labels",
-        newGrob = labels_grob
+        newGrob = labelsGrob
       )
-      
+
       if(andrews) {
         len.xaxis <- andrewsSeriesLength
         x.axis <- seq(0, 1, length.out = len.xaxis)
@@ -212,42 +217,42 @@ loon_reactive.l_serialaxes <- function(loon_grob, output_grob, linkingInfo, butt
         x.axis <- xaxis
       }
       # set axes -----------------------------------------------------------
-      axes_grob <- gTree(
+      axesGrob <- gTree(
         children = gList(
           do.call(
             gList,
             lapply(seq_len(N),
                    function(i){
                      if (showArea) {
-                       
+
                        xx <- unit(c(x.axis, rev(x.axis)), "native")
                        yy <- unit(c(scaledActiveData[i, ], rep(0, len.xaxis)), "native")
-                       
-                       loonWidgets_info$x[[i]] <<- xx
-                       loonWidgets_info$y[[i]] <<- yy
-                       
-                       polygonGrob(
+
+                       loonWidgetsInfo$x[[i]] <<- xx
+                       loonWidgetsInfo$y[[i]] <<- yy
+
+                       grid::polygonGrob(
                          x = xx,
                          y = yy,
                          name = paste("polyline: showArea", i),
-                         gp = gpar(fill = loonWidgets_info$color[i],
+                         gp = gpar(fill = loonWidgetsInfo$color[i],
                                    col = NA)
                        )
                      } else {
-                       
+
                        xx <- unit(x.axis, "native")
                        yy <- unit(scaledActiveData[i, ], "native")
-                       
-                       loonWidgets_info$x[[i]] <<- xx
-                       loonWidgets_info$y[[i]] <<- yy
-                       
-                       linesGrob(
+
+                       loonWidgetsInfo$x[[i]] <<- xx
+                       loonWidgetsInfo$y[[i]] <<- yy
+
+                       grid::linesGrob(
                          x = xx,
                          y = yy,
                          name = paste("polyline", i),
                          gp = gpar(
-                           col = loonWidgets_info$color[i],
-                           lwd = if(is.na(loonWidgets_info$size[i])) loon_default_serialaxes_args$linewidth_default else loonWidgets_info$size[i]
+                           col = loonWidgetsInfo$color[i],
+                           lwd = if(is.na(loonWidgetsInfo$size[i])) loonDefaultSerialaxesArgs$linewidthDefault else loonWidgetsInfo$size[i]
                          )
                        )
                      }
@@ -255,465 +260,494 @@ loon_reactive.l_serialaxes <- function(loon_grob, output_grob, linkingInfo, butt
             )
           )
         ),
-        name = axes_gPath
+        name = axesGpath
       )
-      loonWidgets_info$showAxes <- showAxes
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
-        gPath = axes_gPath,
-        newGrob = axes_grob
+      loonWidgetsInfo$showAxes <- showAxes
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
+        gPath = axesGpath,
+        newGrob = axesGrob
       )
-    } else if(axesLayout_in_shiny == "radial") {
-      
+    } else if(axesLayoutInShiny == "radial") {
+
       xpos <- unit(0.5, "native")
       ypos <- unit(0.5, "native")
-      radius <- loon_default_serialaxes_args$radius
+      radius <- loonDefaultSerialaxesArgs$radius
       angle <- seq(0, 2*pi, length.out = len.xaxis + 1)[1:len.xaxis]
-      
-      axes_gPath <- if(axesLayout_in_shiny == axesLayout_in_loon) "radialAxes" else "parallelAxes"
+
+      axesGpath <- if(axesLayoutInShiny == axesLayoutInLoon) "radialAxes" else "parallelAxes"
       # set guides ---------------------------------------------------------
-      guides_grob <- if(showGuides) {
-        
+      guidesGrob <- if(showGuides) {
+
         gTree(
           children = gList(
-            rectGrob(gp = gpar(col = NA, fill = loon_default_serialaxes_args$guides_background),
-                     name = "bounding box"),
-            polygonGrob(xpos + unit(radius * cos(seq(0, 2*pi, length=101)), "npc"),
-                        ypos + unit(radius * sin(seq(0, 2*pi, length=101)), "npc"),
-                        gp = gpar(fill = NA, col = l_getOption("guidelines"),
-                                  lwd = loon_default_serialaxes_args$guideLine_width),
-                        name = "bounding line" # TODO find line width
+            grid::rectGrob(gp = gpar(col = NA, fill = loonDefaultSerialaxesArgs$guidesBackground),
+                           name = "bounding box"),
+            grid::polygonGrob(xpos + unit(radius * cos(seq(0, 2*pi, length=101)), "npc"),
+                              ypos + unit(radius * sin(seq(0, 2*pi, length=101)), "npc"),
+                              gp = gpar(fill = NA, col = l_getOption("guidelines"),
+                                        lwd = loonDefaultSerialaxesArgs$guideLineWidth),
+                              name = "bounding line" # TODO find line width
             ),
             condGrob(
               test = showAxes,
-              grobFun = polylineGrob,
+              grobFun = grid::polylineGrob,
               name = "axes",
               x = xpos + unit(c(rep(0, len.xaxis) ,radius * cos(angle)), "npc"),
               y =  ypos + unit(c(rep(0, len.xaxis) ,radius * sin(angle)), "npc"),
               id = rep(1:len.xaxis, 2),
-              gp = gpar(col = loon_default_serialaxes_args$line_color1,
-                        lwd = loon_default_serialaxes_args$guideLine_width)   # TODO Again with width loon should use guide colours
+              gp = gpar(col = loonDefaultSerialaxesArgs$lineColor1,
+                        lwd = loonDefaultSerialaxesArgs$guideLineWidth)   # TODO Again with width loon should use guide colours
             )
           ),
           name = "guides"
         )
       } else {
-        
+
         gTree(
           children = gList(
             condGrob(
               test = showAxes,
-              grobFun = polylineGrob,
+              grobFun = grid::polylineGrob,
               name = "axes",
               x = unit(c(rep(0, len.xaxis) ,radius * cos(angle)), "npc") + xpos,
               y = unit(c(rep(0, len.xaxis) ,radius * sin(angle)), "npc") + ypos,
               id = rep(1:len.xaxis, 2),
-              gp = gpar(col = loon_default_serialaxes_args$line_color2,
-                        lwd = loon_default_serialaxes_args$guideLine_width)
+              gp = gpar(col = loonDefaultSerialaxesArgs$lineColor2,
+                        lwd = loonDefaultSerialaxesArgs$guideLineWidth)
             )
           ), name = "guides"
         )
       }
-      loonWidgets_info$showGuides <- showGuides
-      output_grob <- setGrob(
-        gTree = output_grob,
+      loonWidgetsInfo$showGuides <- showGuides
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "guides",
-        newGrob = guides_grob
+        newGrob = guidesGrob
       )
-      
+
       # set labels ---------------------------------------------------------
-      labels_grob <- gTree(
+      labelsGrob <- gTree(
         children = do.call(
           gList,
-          lapply(1:(len.xaxis),
+          lapply(seq(len.xaxis),
                  function(i) {
                    condGrob(
                      test = showAxesLabels,
-                     grobFun = textGrob,
+                     grobFun = grid::textGrob,
                      name = paste("label", i),
                      label = axesLabels[i],
-                     x = unit((radius + loon_default_serialaxes_args$radius_offset) * cos(angle[i]), "npc") + xpos,
-                     y = unit((radius + loon_default_serialaxes_args$radius_offset) * sin(angle[i]), "npc") + ypos,
-                     gp = gpar(fontsize = loon_default_serialaxes_args$label_fontsize), vjust = 0.5
+                     x = unit((radius + loonDefaultSerialaxesArgs$radiusOffset) * cos(angle[i]), "npc") + xpos,
+                     y = unit((radius + loonDefaultSerialaxesArgs$radiusOffset) * sin(angle[i]), "npc") + ypos,
+                     gp = gpar(fontsize = loonDefaultSerialaxesArgs$labelFontsize), vjust = 0.5
                    )
                  }
           )
         ),
         name = "labels"
       )
-      loonWidgets_info$showLabels <- showLabels
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
+      loonWidgetsInfo$showLabels <- showLabels
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
         gPath = "labels",
-        newGrob = labels_grob
+        newGrob = labelsGrob
       )
-      
+
       # set axes ---------------------------------------------------------
       if(andrews) {
         angle <- seq(0, 2*pi, length.out = andrewsSeriesLength + 1)[1:andrewsSeriesLength]
       }
-      axes_grob <- gTree(
+      axesGrob <- gTree(
         children = do.call(
           gList,
           lapply(seq_len(N),
                  function(i){
-                   
+
                    radialxais <- radius * scaledActiveData[i, ] * cos(angle)
                    radialyais <- radius * scaledActiveData[i, ] * sin(angle)
-                   
+
                    xx <- xpos + unit(c(radialxais, radialxais[1]), "npc")
                    yy <- ypos + unit(c(radialyais, radialyais[1]), "npc")
-                   
-                   loonWidgets_info$x[[i]] <<- xx
-                   loonWidgets_info$y[[i]] <<- yy
-                   
+
+                   loonWidgetsInfo$x[[i]] <<- xx
+                   loonWidgetsInfo$y[[i]] <<- yy
+
                    if(showArea){
-                     
-                     polygonGrob(
+
+                     grid::polygonGrob(
                        x = xx,
                        y = yy,
                        name = paste("polyline: showArea", i),
-                       gp = gpar(fill = loonWidgets_info$color[i], col = NA)
+                       gp = gpar(fill = loonWidgetsInfo$color[i], col = NA)
                      )
                    } else {
-                     
-                     linesGrob(
+
+                     grid::linesGrob(
                        x = xx,
                        y = yy,
                        name = paste("polyline", i),
                        gp = gpar(
-                         col = loonWidgets_info$color[i],
-                         lwd = if(is.na(loonWidgets_info$size[i])) loon_default_serialaxes_args$linewidth_default else loonWidgets_info$size[i]
+                         col = loonWidgetsInfo$color[i],
+                         lwd = if(is.na(loonWidgetsInfo$size[i])) loonDefaultSerialaxesArgs$linewidthDefault else loonWidgetsInfo$size[i]
                        )
                      )
                    }
                  }
           )
         ),
-        name = axes_gPath
+        name = axesGpath
       )
-      
-      loonWidgets_info$showAxes <- showAxes
-      
-      output_grob <- setGrob(
-        gTree = output_grob,
-        gPath = axes_gPath,
-        newGrob = axes_grob
+
+      loonWidgetsInfo$showAxes <- showAxes
+
+      output.grob <- grid::setGrob(
+        gTree = output.grob,
+        gPath = axesGpath,
+        newGrob = axesGrob
       )
     } else NULL
-    
-    loon_color <- loonWidgets_info$loon_color
+
     linkingGroup <- input[[paste0(tabPanelName, "linkingGroup")]]
-    default_serialaxes <- get_default_serialaxes(axesLayout_in_shiny)
-    
-    viewPort <- vpStack(
-      plotViewport(margins = loon_default_serialaxes_args$margins, name = "plotViewport"),
-      dataViewport(xscale = default_serialaxes$xscale,
-                   yscale = default_serialaxes$yscale,
-                   name = "dataViewport")
+    defaultSerialaxesSettings <- get_defaultSerialaxesSettings(axesLayoutInShiny)
+
+    viewPort <- grid::vpStack(
+      grid::plotViewport(margins = loonDefaultSerialaxesArgs$margins, name = "grid::plotViewport"),
+      grid::dataViewport(xscale = defaultSerialaxesSettings$xscale,
+                         yscale = defaultSerialaxesSettings$yscale,
+                         name = "dataViewport")
     )
-    
+
     # sweeping or brushing
-    brush_id <- if(isFirst_draw) {
-      
-      output_info$brush_id
+    brushId <- if(isFirstDraw) {
+
+      outputInfo$brushId
     } else {
-      
-      if(is.null(input$plot_brush) & is.null(input$plot_click)) {
-        
-        output_info$brush_id
+
+      if(is.null(input$plotBrush) & is.null(input$plotClick)) {
+
+        outputInfo$brushId
       } else {
-        
-        get_brush_id(
-          loon_grob = output_grob,
+
+        get_brushId(
+          loon.grob = output.grob,
           coord = list(
-            x = loonWidgets_info$x,
-            y = loonWidgets_info$y
+            x = loonWidgetsInfo$x,
+            y = loonWidgetsInfo$y
           ),
           position = position,
-          brush_info = input$plot_brush,
+          brushInfo = input$plotBrush,
           vp = viewPort,
-          axesLayout_in_shiny = axesLayout_in_shiny
+          axesLayoutInShiny = axesLayoutInShiny
         )
       }
     }
-    
+
     sticky <- input[[paste0(tabPanelName, "sticky")]]
-    select_by_color <- input[[paste0(tabPanelName, "select_by_color")]]
-    
+    selectByColor <- input[[paste0(tabPanelName, "selectByColor")]]
+
     if(sticky == "off") {
-      
-      if(!is.null(select_by_color)) {
-        
-        # when select_by_color is on, we can use brush to clear selection but keep brush id
-        loonWidgets_info$lastSelection <- if(!is.null(input$plot_brush) | !is.null(input$plot_click)) brush_id else integer(0)
-        brush_id <- which(loonWidgets_info$color %in% select_by_color)
+
+      if(!is.null(selectByColor)) {
+
+        # when selectByColor is on, we can use brush to clear selection but keep brush id
+        loonWidgetsInfo$lastSelection <- if(!is.null(input$plotBrush) | !is.null(input$plotClick)) brushId else integer(0)
+        brushId <- which(loonWidgetsInfo$color %in% selectByColor)
       } else {
-        
-        if(!is.null(output_info$select_by_color)) brush_id <- loonWidgets_info$lastSelection
+
+        if(!is.null(outputInfo$selectByColor)) brushId <- loonWidgetsInfo$lastSelection
       }
     } else {
-      
+
       # sticky is on
-      if(!is.null(select_by_color)) {
-        
-        which_is_selected <- union(which(loonWidgets_info$color %in% select_by_color), which(loonWidgets_info$selected))
-        
+      if(!is.null(selectByColor)) {
+
+        whichIsSelected <- union(which(loonWidgetsInfo$color %in% selectByColor), which(loonWidgetsInfo$selected))
+
       } else {
-        
-        which_is_selected <- which(loonWidgets_info$selected)
+
+        whichIsSelected <- which(loonWidgetsInfo$selected)
       }
-      
-      if(is.null(input$plot_brush)) {
-        brush_id <- which_is_selected
+
+      if(is.null(input$plotBrush)) {
+        brushId <- whichIsSelected
       } else {
-        brush_id <- union(which_is_selected, brush_id)
+        brushId <- union(whichIsSelected, brushId)
       }
     }
-    
+
     # select panel -------------------------------------
-    input[[paste0(tabPanelName, "select_static_all")]]
-    input[[paste0(tabPanelName, "select_static_none")]]
-    input[[paste0(tabPanelName, "select_static_invert")]]
-    
-    if(buttons$static_button$all != 0) {
-      
-      brush_id <- seq(N)
-    } else if(buttons$static_button$none != 0) {
-      
-      brush_id <- integer(0)
-    } else if(buttons$static_button$invert != 0) {
-      
-      brush_id <- setdiff(seq(N), brush_id)
+    selectStaticAll <- input[[paste0(tabPanelName, "selectStaticAll")]]
+    selectStaticNone <- input[[paste0(tabPanelName, "selectStaticNone")]]
+    selectStaticInvert <- input[[paste0(tabPanelName, "selectStaticInvert")]]
+
+    if(selectStaticAll > buttons["all"]) {
+
+      buttons["all"] <- selectStaticAll
+
+      brushId <- seq(N)
+
+    } else if(selectStaticNone > buttons["none"]) {
+
+      buttons["none"] <- selectStaticNone
+
+      brushId <- integer(0)
+
+    } else if(selectStaticInvert > buttons["invert"]) {
+
+      buttons["invert"] <- selectStaticInvert
+
+      brushId <- setdiff(seq(N), brushId)
     } else NULL
-    
-    loonWidgets_info$selected <- rep(FALSE, N)
-    loonWidgets_info$selected[brush_id] <- TRUE
-    
+
+    # brushId must be active points
+    brushId <- setdiff(brushId, whichIsDeactive)
+
+    loonWidgetsInfo$selected <- rep(FALSE, N)
+    loonWidgetsInfo$selected[brushId] <- TRUE
+
     # highlight color
-    output_grob <- set_color_grob(
-      loon_grob = output_grob,
-      index = brush_id,
-      color = loon_color$select_color[1],
-      axes_gPath = axes_gPath,
-      loon_color = loonWidgets_info$loon_color
+    output.grob <- set_color_grob(
+      loon.grob = output.grob,
+      index = brushId,
+      color = select_color(),
+      axesGpath = axesGpath
     )
-    
+
     # adjust color -------------------------------
-    colorList <- loonWidgets_info$colorList
-    input[[paste0(tabPanelName, "color")]]
-    lapply(colorList, function(col) input[[paste0(tabPanelName, col)]])
-    modify_color <- isolate(input[[paste0(tabPanelName, "modify_color")]])
-    
-    if(buttons$color_button$modify != 0) {
-      
-      loon_grob <- set_color_grob(
-        loon_grob = loon_grob,
-        index = brush_id,
-        color = modify_color,
-        axes_gPath = axes_gPath,
-        loon_color = loonWidgets_info$loon_color
+    colorApply <- input[[paste0(tabPanelName, "colorApply")]]
+    colorListButtons <- setNames(
+      lapply(colorList, function(col) input[[paste0(tabPanelName, col)]]),
+      colorList
+    )
+    colorPicker <- isolate(input[[paste0(tabPanelName, "colorPicker")]])
+
+    if(colorApply > buttons["colorApply"]) {
+
+      buttons["colorApply"] <- colorApply
+
+      loon.grob <- set_color_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        color = colorPicker,
+        axesGpath = axesGpath
       )
-      
-      loonWidgets_info$color[brush_id] <- modify_color
+
+      loonWidgetsInfo$color[brushId] <- colorPicker
     }
-    
+
     for(col in colorList) {
-      
-      if(buttons$color_button[[col]] != 0) {
-        
-        loon_grob <- set_color_grob(
-          loon_grob = loon_grob,
-          index = brush_id,
+
+      if(colorListButtons[[col]] > buttons[col]) {
+
+        buttons[col] <- colorListButtons[[col]]
+
+        loon.grob <- set_color_grob(
+          loon.grob = loon.grob,
+          index = brushId,
           color = col,
-          axes_gPath = axes_gPath,
-          loon_color = loonWidgets_info$loon_color
+          axesGpath = axesGpath,
+          loonColor = loonColor
         )
-        
-        loonWidgets_info$color[brush_id] <- col
+
+        loonWidgetsInfo$color[brushId] <- col
       }
     }
-    
+
     # adjust deactive--------------------------------
-    which_is_deactive <- which(!loonWidgets_info$active)
-    output_grob <- set_deactive_grob(
-      loon_grob = output_grob,
-      index = which_is_deactive,
-      axes_gPath = axes_gPath
+    output.grob <- set_deactive_grob(
+      loon.grob = output.grob,
+      index = whichIsDeactive,
+      axesGpath = axesGpath
     )
-    
-    loon_grob <- set_deactive_grob(
-      loon_grob = loon_grob,
-      index = which_is_deactive,
-      axes_gPath = axes_gPath
+
+    loon.grob <- set_deactive_grob(
+      loon.grob = loon.grob,
+      index = whichIsDeactive,
+      axesGpath = axesGpath
     )
-    
-    input[[paste0(tabPanelName, "modify_deactive")]]
-    if(buttons$active_button$deactive != 0) {
-      
-      loon_grob <- set_deactive_grob(
-        loon_grob = loon_grob,
-        index = brush_id,
-        axes_gPath = axes_gPath
+
+
+    modifyDeactive <- input[[paste0(tabPanelName, "modifyDeactive")]]
+
+    if(modifyDeactive > buttons["deactive"]) {
+
+      buttons["deactive"] <- modifyDeactive
+
+      loon.grob <- set_deactive_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        axesGpath = axesGpath
       )
-      
-      output_grob <- set_deactive_grob(
-        loon_grob = output_grob,
-        index = brush_id,
-        axes_gPath = axes_gPath
+
+      output.grob <- set_deactive_grob(
+        loon.grob = output.grob,
+        index = brushId,
+        axesGpath = axesGpath
       )
-      
-      loonWidgets_info$active[brush_id] <- FALSE
-      which_is_deactive <- union(which_is_deactive, brush_id)
+
+      loonWidgetsInfo$active[brushId] <- FALSE
+      whichIsDeactive <- union(whichIsDeactive, brushId)
     }
-    
-    input[[paste0(tabPanelName, "modify_reactive")]]
-    if (buttons$active_button$reactive != 0) {
-      
-      output_grob <- set_reactive_grob(
-        loon_grob = output_grob,
-        index = which_is_deactive,
-        axes_gPath = axes_gPath,
+
+    # set reactive
+    modifyReactive <- input[[paste0(tabPanelName, "modifyReactive")]]
+    if (modifyReactive > buttons["reactive"]) {
+
+      buttons["reactive"] <- modifyReactive
+
+      output.grob <- set_reactive_grob(
+        loon.grob = output.grob,
+        index = whichIsDeactive,
+        axesGpath = axesGpath,
         showArea = showArea
       )
-      
-      loon_grob <- set_reactive_grob(
-        loon_grob = loon_grob,
-        index = which_is_deactive,
-        axes_gPath = axes_gPath,
+
+      loon.grob <- set_reactive_grob(
+        loon.grob = loon.grob,
+        index = whichIsDeactive,
+        axesGpath = axesGpath,
         showArea = showArea
       )
-      loonWidgets_info$active <- rep(TRUE, N)
+      loonWidgetsInfo$active <- rep(TRUE, N)
     }
-    
+
     # adjust size--------------------------------
-    input[[paste0(tabPanelName, "abs_to_plus")]]
-    input[[paste0(tabPanelName, "abs_to_minus")]]
-    input[[paste0(tabPanelName, "rel_to_plus")]]
-    input[[paste0(tabPanelName, "rel_to_minus")]]
-    
-    if(buttons$size_button$abs_to_plus != 0) {
-      
-      if(length(brush_id) > 0) {
-        new_size <- min(loonWidgets_info$size[brush_id]) + default_step_size(line = TRUE)
-        loonWidgets_info$size[brush_id] <- rep(new_size, length(brush_id))
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   axes_gPath = axes_gPath,
+    absToPlus <- input[[paste0(tabPanelName, "absToPlus")]]
+    if(absToPlus > buttons["absToPlus"]) {
+
+      buttons["absToPlus"] <- absToPlus
+
+      if(length(brushId) > 0) {
+        newSize <- min(loonWidgetsInfo$size[brushId]) + default_step_size(line = TRUE)
+        loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   axesGpath = axesGpath,
                                    showArea = showArea)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     axes_gPath = axes_gPath,
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     axesGpath = axesGpath,
                                      showArea = showArea)
       }
     }
-    
-    if(buttons$size_button$abs_to_minus != 0) {
-      
-      if(length(brush_id) > 0) {
-        new_size <- min(loonWidgets_info$size[brush_id]) - default_step_size(line = TRUE)
-        if(new_size <= 0) new_size <- minimumSize()
-        loonWidgets_info$size[brush_id] <- rep(new_size, length(brush_id))
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   axes_gPath = axes_gPath,
+
+    absToMinus <- input[[paste0(tabPanelName, "absToMinus")]]
+    if(absToMinus > buttons["absToMinus"]) {
+
+      buttons["absToMinus"] <- absToMinus
+
+      if(length(brushId) > 0) {
+        newSize <- min(loonWidgetsInfo$size[brushId]) - default_step_size(line = TRUE)
+        if(newSize <= 0) newSize <- minimumSize()
+        loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   axesGpath = axesGpath,
                                    showArea = showArea)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     axes_gPath = axes_gPath,
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     axesGpath = axesGpath,
                                      showArea = showArea)
       }
     }
-    
-    if(buttons$size_button$rel_to_plus != 0) {
-      
-      if(length(brush_id) > 0) {
-        
-        loonWidgets_info$size[brush_id] <- loonWidgets_info$size[brush_id] + default_step_size(line = TRUE)
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   axes_gPath = axes_gPath,
+
+    relToPlus <- input[[paste0(tabPanelName, "relToPlus")]]
+    if(relToPlus > buttons["relToPlus"]) {
+
+      buttons["relToPlus"] <- relToPlus
+
+      if(length(brushId) > 0) {
+
+        loonWidgetsInfo$size[brushId] <- loonWidgetsInfo$size[brushId] + default_step_size(line = TRUE)
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   axesGpath = axesGpath,
                                    showArea = showArea)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     axes_gPath = axes_gPath,
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     axesGpath = axesGpath,
                                      showArea = showArea)
       }
     }
-    
-    if(buttons$size_button$rel_to_minus != 0) {
-      
-      if(length(brush_id) > 0) {
-        
-        new_size <- loonWidgets_info$size[brush_id] - default_step_size(line = TRUE)
-        new_size[which(new_size <= 0)] <- minimumSize()
-        loonWidgets_info$size[brush_id] <- new_size
-        
-        loon_grob <- set_size_grob(loon_grob = loon_grob,
-                                   index = brush_id,
-                                   new_size = loonWidgets_info$size,
-                                   axes_gPath = axes_gPath,
+
+    relToMinus <- input[[paste0(tabPanelName, "relToMinus")]]
+    if(relToMinus > buttons["relToMinus"]) {
+
+      buttons["relToMinus"] <- relToMinus
+
+      if(length(brushId) > 0) {
+
+        newSize <- loonWidgetsInfo$size[brushId] - default_step_size(line = TRUE)
+        newSize[which(newSize <= 0)] <- minimumSize()
+        loonWidgetsInfo$size[brushId] <- newSize
+
+        loon.grob <- set_size_grob(loon.grob = loon.grob,
+                                   index = brushId,
+                                   newSize = loonWidgetsInfo$size,
+                                   axesGpath = axesGpath,
                                    showArea = showArea)
-        
-        output_grob <- set_size_grob(loon_grob = output_grob,
-                                     index = brush_id,
-                                     new_size = loonWidgets_info$size,
-                                     axes_gPath = axes_gPath,
+
+        output.grob <- set_size_grob(loon.grob = output.grob,
+                                     index = brushId,
+                                     newSize = loonWidgetsInfo$size,
+                                     axesGpath = axesGpath,
                                      showArea = showArea)
       }
     }
-    
-    output_grob <- reorder_grob(output_grob,
+
+    output.grob <- reorder_grob(output.grob,
                                 number = N,
-                                brush_id,
-                                axes_gPath = axes_gPath)
-    
-    
-    output_grob <- setGrob(
-      gTree = output_grob,
+                                brushId,
+                                axesGpath = axesGpath)
+
+
+    output.grob <- grid::setGrob(
+      gTree = output.grob,
       gPath = "l_serialaxes",
       newGrob = editGrob(
-        grob = getGrob(output_grob, "l_serialaxes"),
+        grob = grid::getGrob(output.grob, "l_serialaxes"),
         vp = viewPort
       )
     )
-    
+
     # set linking info
-    linkingInfo <- update_linkingInfo(loon_grob,
+    linkingInfo <- update_linkingInfo(loon.grob,
                                       tabPanelName = tabPanelName,
-                                      linkingInfo = linkingInfo, 
-                                      linkingGroup = linkingGroup, 
-                                      selected = loonWidgets_info$selected,
-                                      color = loonWidgets_info$color, 
-                                      active = loonWidgets_info$active, 
-                                      size = loonWidgets_info$size,
-                                      select_by_color = select_by_color,
+                                      linkingInfo = linkingInfo,
+                                      linkingGroup = linkingGroup,
+                                      linkingKey = loonWidgetsInfo$linkingKey,
+                                      selected = loonWidgetsInfo$selected,
+                                      color = loonWidgetsInfo$color,
+                                      active = loonWidgetsInfo$active,
+                                      size = loonWidgetsInfo$size,
+                                      selectByColor = selectByColor,
                                       linkedStates = input[[paste0(tabPanelName, "linkedStates")]])
   }
-  
+
   list(
-    output_grob = output_grob,
-    loon_grob = loon_grob,
-    output_info = list(
-      brush_id = brush_id,
-      select_by_color = select_by_color,
+    output.grob = output.grob,
+    loon.grob = loon.grob,
+    outputInfo = list(
+      brushId = brushId,
+      selectByColor = selectByColor,
       linkingGroup = linkingGroup,
       linkingInfo = linkingInfo,
-      loonWidgets_info = loonWidgets_info
+      loonWidgetsInfo = loonWidgetsInfo,
+      buttons = buttons
     )
   )
 }

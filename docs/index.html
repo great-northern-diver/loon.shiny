@@ -38,12 +38,21 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">loon.shiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li>
+  <a href="index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="reference/index.html">Reference</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
@@ -52,19 +61,15 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/introduction.html">Introduction</a>
+      <a href="articles/introduction.html">Introduction to loon.shiny</a>
     </li>
   </ul>
 </li>
-      </ul>
-<ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/great-northern-diver/loon.shiny">
-    <span class="fas fa-github fa-lg"></span>
-     
-  </a>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -76,8 +81,10 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="loonshiny" class="section level1">
-
+<div id="loonshiny-" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#loonshiny-" class="anchor"></a>loon.shiny <img src="reference/figures/logo.png" align="right" width="120">
+</h1></div>
 
 <div id="display-loon-widgets-in-shiny-app" class="section level2">
 <h2 class="hasAnchor">
@@ -85,7 +92,7 @@
 <p>The <a href="https://shiny.rstudio.com/"><code>shiny</code></a> <code>R</code> package simplifies the creation of interactive analysis web pages. <code>Shiny</code> apps facilitate sharing data analyses while simultaneously allowing, even encouraging, some interactive exploration by the viewer. An example would be the shiny app that allows viewers to explore interesting features of U.S. Secretary of State Clinton’s emails at <a href="https://shiny.math.uwaterloo.ca/sas/clinton/">https://shiny.math.uwaterloo.ca/sas/clinton/</a>. Such <em>curated</em> interaction is immensely important for both sharing analytic results and encouraging exploration.</p>
 <p>In contrast, the <a href="https://great-northern-diver.github.io/loon/"><code>loon</code></a> <code>R</code> package provides an interactive visualization toolkit for unconstrained, unscripted, and open-ended data exploration. It is intended for data analysts themselves.</p>
 <p>The <a href="http://great-northern-diver.github.io/loon.shiny/"><code>loon.shiny</code></a> <code>R</code> package enables <code>loon</code> plots and <code>loon</code> style interaction (e.g., brushing, linked plots, panning, zooming, etc., as well as a <code>shiny</code> version of <code>loon</code> inspectors) to be incorporated into a <code>shiny</code> application (including an <code>RMarkdown</code> file). The <code>loon</code> widgets are rendered into an html file by <code>Rmarkdown</code> so that analysts who explore data in <code>loon</code> now can present their interactive graphics in <code>Rmarkdown</code>. Other users can then explore the data online using the rich set of visual interactions available in <code>loon</code> as provided by the creator of the curated analysis.</p>
-<p>A single function, <code><a href="reference/shiny.loon.html">shiny.loon()</a></code>, does the work.</p>
+<p>A single function, <code><a href="reference/loon.shiny.html">loon.shiny()</a></code>, does the work.</p>
 <hr>
 </div>
 <div id="1-basic-shiny-app" class="section level2">
@@ -94,7 +101,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">loon.shiny</span><span class="op">)</span>
 <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="fu">l_plot</span><span class="op">(</span><span class="va">hp</span>, <span class="va">mpg</span>, color <span class="op">=</span> <span class="va">cyl</span>, size <span class="op">=</span> <span class="va">wt</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="reference/shiny.loon.html">shiny.loon</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></code></pre></div>
 <p>produces a web based shiny app containing the <code>loon</code> plot <code>p</code> together with its <code>loon</code> inspector:</p>
 <p><img src="reference/figures/loonShiny.gif"></p>
 </div>
@@ -112,7 +119,7 @@
 <span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">l_hist</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,
              showLabels <span class="op">=</span> <span class="cn">FALSE</span>, swapAxes <span class="op">=</span> <span class="cn">TRUE</span>,
              showStackedColors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="reference/shiny.loon.html">shiny.loon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>,
+<span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>,
            layout_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">NA</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
            plot_width <span class="op">=</span> <span class="st">"400px"</span><span class="op">)</span></code></pre></div>
 <p>Note that the plots are linked and the inspector is shared by/addresses all three plots (see tabs on the inspector).</p>
@@ -127,7 +134,7 @@
        <span class="fu">geom_point</span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">gear</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
        <span class="fu">geom_smooth</span><span class="op">(</span><span class="op">)</span>
 
-<span class="fu"><a href="reference/shiny.loon.html">shiny.loon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/loon.ggplot/man/loon.ggplot.html">loon.ggplot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>,
+<span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/loon.ggplot/man/loon.ggplot.html">loon.ggplot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>,
            left <span class="op">=</span> <span class="fl">20</span>,
            right <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span></code></pre></div>
 <p>which results in</p>
@@ -156,7 +163,7 @@
 <p>add <code>runtime: shiny</code> to the document’s YAML header. For example,</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>title<span class="sc">:</span> <span class="st">"My Title"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>author<span class="sc">:</span> <span class="st">"You"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>author<span class="sc">:</span> <span class="st">"Me"</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>date<span class="sc">:</span> <span class="st">"15/05/2021"</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>output<span class="sc">:</span> html_document</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>runtime<span class="sc">:</span> shiny</span>

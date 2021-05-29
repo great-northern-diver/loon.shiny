@@ -1,14 +1,14 @@
-context("test examples")
+context("test model layers")
 library(loon.shiny)
+pdf(NULL)
 
-test_that("example works", {
-  ####################################### l_plot #######################################
+test_that("test l_plot", {
   p <- l_plot(iris)
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   p['swapAxes'] <- TRUE
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   # different glyphs
@@ -38,14 +38,14 @@ test_that("example works", {
   y_hexagon <-
     c(0.446917314894843, 0.894194756554307, 0.446917314894843,
       -0.447637568424085, -0.892754249495822, -0.447637568424085)
-  
+
   p <- l_plot(1:3, 1:3)
-  
+
   gl <- l_glyph_add_polygon(p, x = list(x_star, x_cross, x_hexagon),
                             y = list(y_star, y_cross, y_hexagon))
-  
+
   p['glyph'] <- gl
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   gl['showArea'] <- FALSE
@@ -56,22 +56,22 @@ test_that("example works", {
   p <- l_plot(iris)
   gs <- l_glyph_add_serialaxes(p, data = iris, showArea=FALSE)
   p['glyph'] <- gs
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   gs['axesLayout'] <- "parallel"
   p['glyph'] <- gs
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   gs['showArea'] <- TRUE
   p['glyph'] <- gs
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   gs['showEnclosing'] <- TRUE
   p['glyph'] <- gs
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   ###################### image glyph ######################
@@ -80,57 +80,67 @@ test_that("example works", {
   # imgs <- setNames(l_image_import_files(img_paths),
   #                  tools::file_path_sans_ext(basename(img_paths)))
   # i <- pmatch(gsub("^[[:alpha:]]+-","", olive$Area), names(imgs), duplicates.ok = TRUE)
-  # 
+  #
   # g <- l_glyph_add_image(p, imgs[i], label="Flags")
   # p['glyph'] <- g
-  # x <- shiny.loon(p)
+  # x <- loon.shiny(p)
   # x
   # expect_equal(class(x), "shiny.appobj")
   ###################### pointrange glyph ######################
   p <- l_plot(x = 1:3, color = c('red', 'blue', 'green'), showScales=TRUE)
   g <- l_glyph_add_pointrange(p, ymin=(1:3)-(1:3)/5, ymax=(1:3)+(1:3)/5)
   p['glyph'] <- g
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
   ###################### text glyph ######################
   p <- l_plot(iris, color = iris$Species)
   g <- l_glyph_add_text(p, iris$Species, "test_label")
   p['glyph'] <- g
-  x <- shiny.loon(p)
-  x
-  expect_equal(class(x), "shiny.appobj")
-  ####################################### l_hist ####################################### 
-  p <- l_hist(iris)
-  x <- shiny.loon(p)
-  x
-  expect_equal(class(x), "shiny.appobj")
-  p['swapAxes'] <- TRUE
-  x <- shiny.loon(p)
-  x
-  expect_equal(class(x), "shiny.appobj")
-  ####################################### l_graph ####################################### 
-  p <- l_navgraph(iris)
-  g <- p$graph
-  x <- shiny.loon(g)
-  x
-  expect_equal(class(x), "shiny.appobj")
-  g['swapAxes'] <- TRUE
-  x <- shiny.loon(g)
-  x
-  expect_equal(class(x), "shiny.appobj")
-  ####################################### l_serialaxes ####################################### 
-  p <- l_serialaxes(iris)
-  x <- shiny.loon(p)
-  x
-  expect_equal(class(x), "shiny.appobj")
-  ####################################### l_pairs ####################################### 
-  p <- l_pairs(iris, showHistograms = TRUE)
-  x <- shiny.loon(p)
-  x
-  expect_equal(class(x), "shiny.appobj")
-  p <- l_pairs(iris, showHistograms = TRUE, histLocation = "diag")
-  x <- shiny.loon(p)
+  x <- loon.shiny(p)
   x
   expect_equal(class(x), "shiny.appobj")
 })
+
+test_that("test l_hist", {
+  p <- l_hist(iris)
+  x <- loon.shiny(p)
+  x
+  expect_equal(class(x), "shiny.appobj")
+  p['swapAxes'] <- TRUE
+  x <- loon.shiny(p)
+  x
+  expect_equal(class(x), "shiny.appobj")
+})
+
+
+test_that("test l_serialaxes", {
+  p <- l_serialaxes(iris)
+  x <- loon.shiny(p)
+  x
+  expect_equal(class(x), "shiny.appobj")
+})
+
+test_that("test l_pairs", {
+  p <- l_pairs(iris, showHistograms = TRUE)
+  x <- loon.shiny(p)
+  x
+  expect_equal(class(x), "shiny.appobj")
+  p <- l_pairs(iris, showHistograms = TRUE, histLocation = "diag")
+  x <- loon.shiny(p)
+  x
+  expect_equal(class(x), "shiny.appobj")
+})
+
+test_that("test l_graph", {
+  p <- l_navgraph(iris)
+  g <- p$graph
+  x <- loon.shiny(g)
+  x
+  expect_equal(class(x), "shiny.appobj")
+  g['swapAxes'] <- TRUE
+  x <- loon.shiny(g)
+  x
+  expect_equal(class(x), "shiny.appobj")
+})
+

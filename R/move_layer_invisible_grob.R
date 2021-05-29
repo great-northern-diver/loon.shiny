@@ -1,183 +1,183 @@
-move_layer_invisible_grob <- function(loon_grob, current_layer, ...) {
+move_layerInvisible_grob <- function(loon.grob, currentLayer, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
-  UseMethod("move_layer_invisible_grob", obj)
+  class(obj) <- names(loon.grob$children)
+  UseMethod("move_layerInvisible_grob", obj)
 }
 
 
-move_layer_invisible_grob.l_plot <- function(loon_grob, current_layer, ...) {
+move_layerInvisible_grob.l_plot <- function(loon.grob, currentLayer, ...) {
 
-  if(current_layer == "scatterplot") {
+  if(currentLayer == "scatterplot") {
 
     args <- list(...)
-    pointsTree_name <- args$pointsTree_name
+    pointsTreeName <- args$pointsTreeName
     N <- args$N
 
-    set_deactive_grob(loon_grob, index = seq(N), pointsTree_name = pointsTree_name)
+    set_deactive_grob(loon.grob, index = seq(N), pointsTreeName = pointsTreeName)
 
   } else {
 
-    setGrob(
-      gTree = loon_grob,
-      gPath = current_layer,
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = currentLayer,
       newGrob = set_deactive_layer(
-        current_layer_grob = getGrob(loon_grob, current_layer)
+        currentLayer_grob = grid::getGrob(loon.grob, currentLayer)
       )
     )
   }
 }
 
-move_layer_invisible_grob.l_hist <- function(loon_grob, current_layer, ...) {
+move_layerInvisible_grob.l_hist <- function(loon.grob, currentLayer, ...) {
 
-  if(current_layer == "histogram") {
+  if(currentLayer == "histogram") {
 
-    setGrob(
-      gTree = loon_grob,
-      gPath = current_layer,
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = currentLayer,
       newGrob = grob(name = "histogram")
     )
   } else {
 
-    setGrob(
-      gTree = loon_grob,
-      gPath = current_layer,
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = currentLayer,
       newGrob = set_deactive_layer(
-        current_layer_grob = getGrob(loon_grob, current_layer)
+        currentLayer_grob = grid::getGrob(loon.grob, currentLayer)
       )
     )
   }
 }
 
-move_layer_invisible_grob.l_graph <- function(loon_grob, current_layer, ...) {
+move_layerInvisible_grob.l_graph <- function(loon.grob, currentLayer, ...) {
 
   args <- list(...)
   N <- args$N
-  
-  if(current_layer == "graph") {
 
-    set_deactive_grob(loon_grob, index = seq(N))
+  if(currentLayer == "graph") {
+
+    set_deactive_grob(loon.grob, index = seq(N))
 
   } else {
 
-    setGrob(
-      gTree = loon_grob,
-      gPath = current_layer,
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = currentLayer,
       newGrob = set_deactive_layer(
-        current_layer_grob = getGrob(loon_grob, current_layer)
+        currentLayer_grob = grid::getGrob(loon.grob, currentLayer)
       )
     )
   }
 }
 
-set_deactive_layer <- function(current_layer_grob) {
+set_deactive_layer <- function(currentLayer_grob) {
 
-  if(str_detect(current_layer_grob$name, "l_layer_polygon:")) {
+  if(grepl(currentLayer_grob$name, pattern = "l_layer_polygon:")) {
 
-    do.call(grob, getGrobArgs(current_layer_grob))
+    do.call(grob, getGrobArgs(currentLayer_grob))
 
-  } else if(str_detect(current_layer_grob$name, "l_layer_line:")) {
+  } else if(grepl(currentLayer_grob$name,pattern =  "l_layer_line:")) {
 
-    do.call(grob, getGrobArgs(current_layer_grob))
+    do.call(grob, getGrobArgs(currentLayer_grob))
 
-  } else if(str_detect(current_layer_grob$name, "l_layer_rectangle:")) {
+  } else if(grepl(currentLayer_grob$name,pattern =  "l_layer_rectangle:")) {
 
-    do.call(grob, getGrobArgs(current_layer_grob))
+    do.call(grob, getGrobArgs(currentLayer_grob))
 
-  } else if(str_detect(current_layer_grob$name, "l_layer_oval:")) {
+  } else if(grepl(currentLayer_grob$name, pattern = "l_layer_oval:")) {
 
-    do.call(grob, getGrobArgs(current_layer_grob))
+    do.call(grob, getGrobArgs(currentLayer_grob))
 
-  } else if(str_detect(current_layer_grob$name, "l_layer_text:")) {
+  } else if(grepl(currentLayer_grob$name, pattern = "l_layer_text:")) {
 
-    do.call(grob, getGrobArgs(current_layer_grob))
+    do.call(grob, getGrobArgs(currentLayer_grob))
 
-  } else if(str_detect(current_layer_grob$name, "l_layer_points:")) {
+  } else if(grepl(currentLayer_grob$name,pattern =  "l_layer_points:")) {
 
-    do.call(grob, getGrobArgs(current_layer_grob))
+    do.call(grob, getGrobArgs(currentLayer_grob))
 
-  } else if(str_detect(current_layer_grob$name, "l_layer_texts:")) {
+  } else if(grepl(currentLayer_grob$name, pattern = "l_layer_texts:")) {
 
     args <- list()
-    lapply(1:length(current_layer_grob$children),
+    lapply(1:length(currentLayer_grob$children),
            function(i) {
-             args[[i]] <<- getGrobArgs(current_layer_grob$children[[i]])
+             args[[i]] <<- getGrobArgs(currentLayer_grob$children[[i]])
            }
     )
 
     gTree(
       children = do.call(
         gList,
-        lapply(1:length(current_layer_grob$children),
+        lapply(1:length(currentLayer_grob$children),
                function(i) {
                  do.call(grob, args[[i]])
                })
       ),
-      name = current_layer_grob$name,
-      gp = current_layer_grob$gp,
-      vp = current_layer_grob$vp
+      name = currentLayer_grob$name,
+      gp = currentLayer_grob$gp,
+      vp = currentLayer_grob$vp
     )
-  } else if(str_detect(current_layer_grob$name, "l_layer_polygons:")) {
+  } else if(grepl(currentLayer_grob$name,pattern =  "l_layer_polygons:")) {
 
     args <- list()
-    lapply(1:length(current_layer_grob$children),
+    lapply(1:length(currentLayer_grob$children),
            function(i) {
-             args[[i]] <<- getGrobArgs(current_layer_grob$children[[i]])
+             args[[i]] <<- getGrobArgs(currentLayer_grob$children[[i]])
            }
     )
 
     gTree(
       children = do.call(
         gList,
-        lapply(1:length(current_layer_grob$children),
+        lapply(1:length(currentLayer_grob$children),
                function(i) {
                  do.call(grob, args[[i]])
                })
       ),
-      name = current_layer_grob$name,
-      gp = current_layer_grob$gp,
-      vp = current_layer_grob$vp
+      name = currentLayer_grob$name,
+      gp = currentLayer_grob$gp,
+      vp = currentLayer_grob$vp
     )
-  } else if(str_detect(current_layer_grob$name, "l_layer_rectangles:")) {
+  } else if(grepl(currentLayer_grob$name,pattern =  "l_layer_rectangles:")) {
 
     args <- list()
-    lapply(1:length(current_layer_grob$children),
+    lapply(1:length(currentLayer_grob$children),
            function(i) {
-             args[[i]] <<- getGrobArgs(current_layer_grob$children[[i]])
+             args[[i]] <<- getGrobArgs(currentLayer_grob$children[[i]])
            }
     )
 
     gTree(
       children = do.call(
         gList,
-        lapply(1:length(current_layer_grob$children),
+        lapply(1:length(currentLayer_grob$children),
                function(i) {
                  do.call(grob, args[[i]])
                })
       ),
-      name = current_layer_grob$name,
-      gp = current_layer_grob$gp,
-      vp = current_layer_grob$vp
+      name = currentLayer_grob$name,
+      gp = currentLayer_grob$gp,
+      vp = currentLayer_grob$vp
     )
-  } else if(str_detect(current_layer_grob$name, "l_layer_lines:")) {
+  } else if(grepl(currentLayer_grob$name,pattern =  "l_layer_lines:")) {
 
     args <- list()
-    lapply(1:length(current_layer_grob$children),
+    lapply(1:length(currentLayer_grob$children),
            function(i) {
-             args[[i]] <<- getGrobArgs(current_layer_grob$children[[i]])
+             args[[i]] <<- getGrobArgs(currentLayer_grob$children[[i]])
            }
     )
 
     gTree(
       children = do.call(
         gList,
-        lapply(1:length(current_layer_grob$children),
+        lapply(1:length(currentLayer_grob$children),
                function(i) {
                  do.call(grob, args[[i]])
                })
       ),
-      name = current_layer_grob$name,
-      gp = current_layer_grob$gp,
-      vp = current_layer_grob$vp
+      name = currentLayer_grob$name,
+      gp = currentLayer_grob$gp,
+      vp = currentLayer_grob$vp
     )
   } else stop("unspecified layer name")
 }

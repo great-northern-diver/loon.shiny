@@ -1,22 +1,22 @@
-get_scales <- function(loon_grob) {
+get_scales <- function(loon.grob) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("get_scales", obj)
 }
 
-get_scales.default <- function(loon_grob) {
+get_scales.default <- function(loon.grob) {
   showScales <- TRUE
-  xaxis_grob <- getGrob(loon_grob, "x axis")
+  xaxis_grob <- grid::getGrob(loon.grob, "x axis")
   if(is.null(xaxis_grob)) {
     showScales <- FALSE
-    xaxis_grob <- getGrob(loon_grob, "x axis: xaxisGrob arguments")
+    xaxis_grob <- grid::getGrob(loon.grob, "x axis: xaxisGrob arguments")
   }
   xaxis <- xaxis_grob$at
 
   yaxis_grob <- if(showScales) {
-    getGrob(loon_grob, "y axis")
+    grid::getGrob(loon.grob, "y axis")
   } else {
-    getGrob(loon_grob, "y axis: yaxisGrob arguments")
+    grid::getGrob(loon.grob, "y axis: yaxisGrob arguments")
   }
   yaxis <- yaxis_grob$at
 
@@ -27,28 +27,28 @@ get_scales.default <- function(loon_grob) {
   )
 }
 
-set_scales_grob <- function(loon_grob, xaxis, yaxis) {
+set_scales_grob <- function(loon.grob, xaxis, yaxis) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("set_scales_grob", obj)
 }
 
-set_scales_grob.default <- function(loon_grob, xaxis, yaxis){
+set_scales_grob.default <- function(loon.grob, xaxis, yaxis){
 
-  setGrob(
-    gTree = loon_grob,
+  grid::setGrob(
+    gTree = loon.grob,
     gPath = "axes",
     newGrob = gTree(
       children = do.call(
         gList,
-        lapply(1:length(getGrob(loon_grob, "axes")[["childrenOrder"]]),
+        lapply(1:length(grid::getGrob(loon.grob, "axes")[["childrenOrder"]]),
                function(i){
-                 grobi <- getGrob(loon_grob, "axes")[["children"]][[i]]
+                 grobi <- grid::getGrob(loon.grob, "axes")[["children"]][[i]]
                  grobi_args <- getGrobArgs(grobi)
                  if(!all(names(grobi_args) %in% formalArgs(xaxisGrob))) {
                    grobi_args <- grobi_args[formalArgs(xaxisGrob)]
                  }
-                 if(str_detect(grobi$name ,"x axis")) {
+                 if(grepl(grobi$name ,pattern = "x axis")) {
 
                    grobi_args$at <- xaxis
                    do.call(

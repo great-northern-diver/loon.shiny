@@ -1,49 +1,53 @@
-loon.ui <- function(loon_grobs, 
-                    plotWidth = "100%", 
-                    plotHeight = "400px", 
-                    inspectorWidth = 330, 
+loon.ui <- function(loon.grobs,
+                    plotRegionWidth = "100%",
+                    plotRegionHeight = "400px",
+                    inspectorWidth = 330,
                     inspectorHeight = "auto",
-                    top = 60, 
-                    left = "auto", 
-                    right = 20, 
+                    top = 60,
+                    left = "auto",
+                    right = 20,
                     bottom = "auto",
-                    loonWidgets_info,
-                    selectBy = NULL, 
+                    loonWidgetsInfo,
+                    selectBy = NULL,
+                    colorList = loon::l_getColorList(),
                     showWorldView = TRUE,
-                    envir = parent.frame(), 
+                    displayedPanel = NULL,
+                    envir = parent.frame(),
                     ...) {
-  
-  loon_grobs <- adjust_loon_grobs(loon_grobs, loonWidgets_info)
-  # update loon_grobs in parent env
-  assign("loon_grobs", loon_grobs, envir = envir)
-  tabPanelNames <- names(loon_grobs)
-  
-  n <- length(loon_grobs)
-  selectBy <- get_selectBy(selectBy, loonWidgets_info)
-  
+
+  loon.grobs <- adjust_loon.grobs(loon.grobs, loonWidgetsInfo)
+  # update loon.grobs in parent env
+  assign("loon.grobs", loon.grobs, envir = envir)
+  tabPanelNames <- names(loon.grobs)
+
+  n <- length(loon.grobs)
+  selectBy <- get_selectBy(selectBy, loonWidgetsInfo)
+
   linkingGroups <- sapply(seq(n),
                           function(i) {
-                            loonWidgets_info[[i]]$linkingGroup
+                            loonWidgetsInfo[[i]]$linkingGroup
                           }
   )
-  
-  navbarMenuNames <- sapply(seq(n), function(i) loonWidgets_info[[i]]$navbarMenuName)
-  
+
+  navbarMenuNames <- sapply(seq(n), function(i) loonWidgetsInfo[[i]]$navbarMenuName)
+
   # set loon inspector
   sidebarPanel_args <- lapply(seq(n),
                               function(i){
                                 loon_sidebarPanel(
-                                  loon_grob = loon_grobs[[i]],
+                                  loon.grob = loon.grobs[[i]],
                                   tabPanelName = tabPanelNames[i],
-                                  selectBy = selectBy, 
-                                  linkingGroup = linkingGroups[i], 
+                                  colorList = colorList,
+                                  selectBy = selectBy,
+                                  linkingGroup = linkingGroups[i],
                                   linkingGroups = linkingGroups,
-                                  loonWidgets_info = loonWidgets_info[[i]],
-                                  showWorldView = showWorldView
+                                  loonWidgetsInfo = loonWidgetsInfo[[i]],
+                                  showWorldView = showWorldView,
+                                  displayedPanel = displayedPanel
                                 )
                               }
   )
-  
+
   # set ui
   args <- list(...)
   ui <- shiny::fluidPage(
@@ -52,24 +56,24 @@ loon.ui <- function(loon_grobs,
       if(is.null(args$titlePanel_size)) args$titlePanel_size <- function(title, align) shiny::h2(title, align)
       titlePanel(title = args$titlePanel_size(args$titlePanel_title, align = args$titlePanel_align))
     },
-    shiny::absolutePanel(id = "controls", 
+    shiny::absolutePanel(id = "controls",
                          class = "panel panel-default",
-                         draggable = TRUE, 
-                         top = top, 
-                         left = left, 
-                         right = right, 
+                         draggable = TRUE,
+                         top = top,
+                         left = left,
+                         right = right,
                          bottom = bottom,
-                         width = inspectorWidth, 
+                         width = inspectorWidth,
                          height = inspectorHeight,
                          set_tabPanel(sidebarPanel_args, navbarMenuNames)
     ),
     shiny::plotOutput(outputId="plots",
-                      brush = shiny::brushOpts(id = "plot_brush",
+                      brush = shiny::brushOpts(id = "plotBrush",
                                                resetOnNew = (selectBy == "sweeping")),
-                      dblclick = "plot_click",
-                      width = plotWidth, 
-                      height = plotHeight)
+                      dblclick = "plotClick",
+                      width = plotRegionWidth,
+                      height = plotRegionHeight)
   )
-  
+
   ui
 }

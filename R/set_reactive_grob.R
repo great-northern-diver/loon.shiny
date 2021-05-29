@@ -1,98 +1,98 @@
-set_reactive_grob <- function(loon_grob, index, ...) {
+set_reactive_grob <- function(loon.grob, index, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("set_reactive_grob", obj)
 }
 
-set_reactive_grob.l_plot <- function(loon_grob, index, ...) {
+set_reactive_grob.l_plot <- function(loon.grob, index, ...) {
 
   args <- list(...)
-  pointsTree_name <- args$pointsTree_name
+  pointsTreeName <- args$pointsTreeName
 
-  if(pointsTree_name != "points: missing glyphs" & length(index) != 0) {
-    newGrob <- getGrob(loon_grob, pointsTree_name)
+  if(pointsTreeName != "points: missing glyphs" & length(index) != 0) {
+    newGrob <- grid::getGrob(loon.grob, pointsTreeName)
 
     lapply(index,
            function(i) {
 
-             if(str_detect(newGrob$children[[i]]$name, "primitive_glyph")) {
+             if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
 
                newGrob$children[[i]] <<- do.call(pointsGrob, getGrobArgs(newGrob$children[[i]]))
 
-             } else if(str_detect(newGrob$children[[i]]$name, "pointrange_glyph")) {
+             } else if(grepl(newGrob$children[[i]]$name, pattern = "pointrange_glyph")) {
 
                newGrob$children[[i]] <<- gTree(
                  children = gList(
                    # point
-                   do.call(pointsGrob, getGrobArgs(getGrob(newGrob$children[[i]], "point"))),
+                   do.call(pointsGrob, getGrobArgs(grid::getGrob(newGrob$children[[i]], "point"))),
                    # range
-                   do.call(linesGrob, getGrobArgs(getGrob(newGrob$children[[i]], "range")))
+                   do.call(grid::linesGrob, getGrobArgs(grid::getGrob(newGrob$children[[i]], "range")))
                  ),
                  name = newGrob$children[[i]]$name
                )
 
-             } else if(str_detect(newGrob$children[[i]]$name, "text_glyph")) {
+             } else if(grepl(newGrob$children[[i]]$name, pattern = "text_glyph")) {
 
-               newGrob$children[[i]] <<- do.call(textGrob, getGrobArgs(newGrob$children[[i]]))
+               newGrob$children[[i]] <<- do.call(grid::textGrob, getGrobArgs(newGrob$children[[i]]))
 
-             } else if(str_detect(newGrob$children[[i]]$name, "serialaxes_glyph")) {
+             } else if(grepl(newGrob$children[[i]]$name, pattern = "serialaxes_glyph")) {
 
                gTree_names <- newGrob$children[[i]]$childrenOrder
 
                newGrob$children[[i]] <<- if("polyline" %in% gTree_names) {
 
-                 setGrob(
+                 grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "polyline",
-                   newGrob = do.call(linesGrob, getGrobArgs(getGrob(newGrob$children[[i]], "polyline")))
+                   newGrob = do.call(grid::linesGrob, getGrobArgs(grid::getGrob(newGrob$children[[i]], "polyline")))
                  )
                } else if("polyline: showArea" %in% gTree_names) {
 
-                 setGrob(
+                 grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "polyline: showArea",
-                   newGrob = do.call(polygonGrob, getGrobArgs(getGrob(newGrob$children[[i]], "polyline: showArea")))
+                   newGrob = do.call(grid::polygonGrob, getGrobArgs(grid::getGrob(newGrob$children[[i]], "polyline: showArea")))
                  )
                } else stop("serialaxes name does not match")
 
                if("boundary" %in% gTree_names) {
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "boundary",
-                   newGrob = do.call(polylineGrob, getGrobArgs(getGrob(newGrob$children[[i]], "boundary")))
+                   newGrob = do.call(grid::polylineGrob, getGrobArgs(grid::getGrob(newGrob$children[[i]], "boundary")))
                  )
                }
 
                if("axes" %in% gTree_names) {
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "axes",
-                   newGrob = do.call(polylineGrob, getGrobArgs(getGrob(newGrob$children[[i]], "axes")))
+                   newGrob = do.call(grid::polylineGrob, getGrobArgs(grid::getGrob(newGrob$children[[i]], "axes")))
                  )
                }
 
-             } else if(str_detect(newGrob$children[[i]]$name, "polygon_glyph")) {
+             } else if(grepl(newGrob$children[[i]]$name, pattern = "polygon_glyph")) {
 
-               newGrob$children[[i]] <<- if(str_detect(newGrob$children[[i]]$name, "showArea")) {
+               newGrob$children[[i]] <<- if(grepl(newGrob$children[[i]]$name, pattern = "showArea")) {
 
-                 do.call(polygonGrob, getGrobArgs(newGrob$children[[i]]))
+                 do.call(grid::polygonGrob, getGrobArgs(newGrob$children[[i]]))
                } else {
 
-                 do.call(polylineGrob, getGrobArgs(newGrob$children[[i]]))
+                 do.call(grid::polylineGrob, getGrobArgs(newGrob$children[[i]]))
                }
 
-             } else if(str_detect(newGrob$children[[i]]$name, "image_glyph")) {
+             } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
                # in rasterGrob, the first argument is "image", however, in output list, the first argument is "raster"
                # we need to rename the arguments
-               raster_args <- getGrobArgs(getGrob(newGrob$children[[i]], "image"))
+               raster_args <- getGrobArgs(grid::getGrob(newGrob$children[[i]], "image"))
                names(raster_args) <- c("image", names(raster_args)[-1])
 
                newGrob$children[[i]] <<- gTree(
                  children = gList(
-                   do.call(rectGrob, getGrobArgs(getGrob(newGrob$children[[i]], "image_border"))),
+                   do.call(grid::rectGrob, getGrobArgs(grid::getGrob(newGrob$children[[i]], "image_border"))),
                    do.call(rasterGrob, raster_args)
                  ),
                  name = newGrob$children[[i]]$name
@@ -102,29 +102,29 @@ set_reactive_grob.l_plot <- function(loon_grob, index, ...) {
            }
     )
 
-    setGrob(
-      gTree = loon_grob,
-      gPath = pointsTree_name,
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = pointsTreeName,
       newGrob = newGrob
     )
-  } else loon_grob
+  } else loon.grob
 }
 
-set_reactive_grob.l_graph <- function(loon_grob, index, ...) {
-  
+set_reactive_grob.l_graph <- function(loon.grob, index, ...) {
+
   if(length(index) > 0) {
     args <- list(...)
     swap <- args$swap
     edgesTree <- args$graph_edges
 
     if(swap) {
-      
+
       edgesTree <- gTree(
         children = do.call(
           gList,
           lapply(1:length(edgesTree$children),
                  function(i){
-                   
+
                    grobi <- edgesTree$children[[i]]
                    if(!is.null(grobi$x) & !is.null(grobi$y)) {
                      editGrob(grobi,
@@ -137,67 +137,67 @@ set_reactive_grob.l_graph <- function(loon_grob, index, ...) {
         ), name = "graph edges"
       )
     }
-    
-    loon_grob <- setGrob(
-      gTree = loon_grob,
+
+    loon.grob <- grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph edges",
       newGrob = edgesTree
     )
-    
-    nodesGrob <- getGrob(loon_grob, "graph nodes")
-    
+
+    nodesGrob <- grid::getGrob(loon.grob, "graph nodes")
+
     lapply(index,
            function(i) {
              nodesGrob$children[[i]] <<- do.call(pointsGrob, getGrobArgs(nodesGrob$children[[i]]))
            }
     )
-    
-    loon_grob <- setGrob(
-      gTree = loon_grob,
+
+    loon.grob <- grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph nodes",
       newGrob = nodesGrob
     )
-    
-    labelsGrob <- getGrob(loon_grob, "graph labels")
-    
+
+    labelsGrob <- grid::getGrob(loon.grob, "graph labels")
+
     lapply(index,
            function(i) {
-             labelsGrob$children[[i]] <<- do.call(textGrob, getGrobArgs(labelsGrob$children[[i]]))
+             labelsGrob$children[[i]] <<- do.call(grid::textGrob, getGrobArgs(labelsGrob$children[[i]]))
            }
     )
-    
-    setGrob(
-      gTree = loon_grob,
+
+    grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph labels",
       newGrob = labelsGrob
     )
-    
-  } else loon_grob
+
+  } else loon.grob
 }
 
-set_reactive_grob.l_serialaxes <- function(loon_grob, index, ...) {
-  
+set_reactive_grob.l_serialaxes <- function(loon.grob, index, ...) {
+
   if(length(index) > 0) {
     args <- list(...)
-    axes_gPath <- args$axes_gPath
+    axesGpath <- args$axesGpath
     showArea <- args$showArea
-    
-    axes_grob <- getGrob(loon_grob, axes_gPath)
-    
+
+    axesGrob <- grid::getGrob(loon.grob, axesGpath)
+
     lapply(index,
            function(i) {
-             axes_grob$children[[i]] <<- if(showArea) {
-               do.call(polygonGrob, getGrobArgs(axes_grob$children[[i]]))
+             axesGrob$children[[i]] <<- if(showArea) {
+               do.call(grid::polygonGrob, getGrobArgs(axesGrob$children[[i]]))
              } else {
-               do.call(linesGrob, getGrobArgs(axes_grob$children[[i]]))
+               do.call(grid::linesGrob, getGrobArgs(axesGrob$children[[i]]))
              }
            }
     )
-    
-    setGrob(
-      gTree = loon_grob,
-      gPath = axes_gPath,
-      newGrob = axes_grob
+
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = axesGpath,
+      newGrob = axesGrob
     )
-  } else loon_grob
+  } else loon.grob
 }

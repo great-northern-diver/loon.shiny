@@ -1,33 +1,33 @@
-set_serialAxes_enclosing_grob <- function(loon_grob, pointsTree_name, glyph_name, set_boundary, swap, which_is_deactive){
+set_serialAxes_enclosing_grob <- function(loon.grob, pointsTreeName, glyphNames, showEnclosing, swap, whichIsDeactive){
 
-  newGrob <- getGrob(loon_grob, pointsTree_name)
+  newGrob <- grid::getGrob(loon.grob, pointsTreeName)
 
-  serialaxes_and_active <- setdiff(which(str_detect(glyph_name, "serialaxes")), which_is_deactive)
-  
+  serialaxes_and_active <- setdiff(which(grepl(glyphNames, pattern = "serialaxes")), whichIsDeactive)
+
   if(length(serialaxes_and_active) > 0) {
 
     lapply(serialaxes_and_active,
            function(i) {
              serialaxes_tree <- newGrob$children[[i]]
-             boundary_grob <- getGrob(serialaxes_tree, "boundary")
+             boundary_grob <- grid::getGrob(serialaxes_tree, "boundary")
              if(is.null(boundary_grob)) {
-               boundary_grob <- getGrob(serialaxes_tree, "boundary: polylineGrob arguments")
+               boundary_grob <- grid::getGrob(serialaxes_tree, "boundary: polylineGrob arguments")
                boundary_grob_name <- "boundary: polylineGrob arguments"
              } else {
                boundary_grob_name <- "boundary"
              }
-             
-             newGrob$children[[i]] <<- if(set_boundary) {
-               setGrob(
+
+             newGrob$children[[i]] <<- if(showEnclosing) {
+               grid::setGrob(
                  gTree = newGrob$children[[i]],
                  gPath = boundary_grob_name,
                  newGrob = do.call(
-                   polylineGrob,
+                   grid::polylineGrob,
                    args = getGrobArgs(boundary_grob)
                  )
                )
              } else {
-               setGrob(
+               grid::setGrob(
                  gTree = newGrob$children[[i]],
                  gPath = boundary_grob_name,
                  newGrob = do.call(
@@ -38,16 +38,16 @@ set_serialAxes_enclosing_grob <- function(loon_grob, pointsTree_name, glyph_name
              }
 
 
-             if(swap & set_boundary) {
+             if(swap & showEnclosing) {
 
-               newGrob$children[[i]] <<- setGrob(
+               newGrob$children[[i]] <<- grid::setGrob(
                  gTree = newGrob$children[[i]],
                  gPath =  boundary_grob_name,
                  newGrob = editGrob(
-                   grob = getGrob(newGrob$children[[i]], boundary_grob_name),
-                   y = get_unit(boundary_grob$x, as.numeric = FALSE) + 
+                   grob = grid::getGrob(newGrob$children[[i]], boundary_grob_name),
+                   y = get_unit(boundary_grob$x, as.numeric = FALSE) +
                      get_unit(boundary_grob$y, is.unit = FALSE, as.numeric = FALSE),
-                   x = get_unit(boundary_grob$y, as.numeric = FALSE) + 
+                   x = get_unit(boundary_grob$y, as.numeric = FALSE) +
                      get_unit(boundary_grob$x, is.unit = FALSE, as.numeric = FALSE)
                  )
                )
@@ -57,9 +57,9 @@ set_serialAxes_enclosing_grob <- function(loon_grob, pointsTree_name, glyph_name
 
   } else NULL
 
-  setGrob(
-    gTree = loon_grob,
-    gPath = pointsTree_name,
+  grid::setGrob(
+    gTree = loon.grob,
+    gPath = pointsTreeName,
     newGrob = newGrob
   )
 }

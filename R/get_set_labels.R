@@ -1,30 +1,30 @@
-get_labels <- function(loon_grob) {
+get_labels <- function(loon.grob) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("get_labels", obj)
 }
 
-get_labels.default <- function(loon_grob) {
+get_labels.default <- function(loon.grob) {
   showLabels <- TRUE
-  xlabel_grob <- getGrob(loon_grob, "x label")
+  xlabel_grob <- grid::getGrob(loon.grob, "x label")
 
   if(is.null(xlabel_grob)) {
     showLabels <- FALSE
-    xlabel_grob <- getGrob(loon_grob, "x label: textGrob arguments")
+    xlabel_grob <- grid::getGrob(loon.grob, "x label: textGrob arguments")
   }
   xlabel <- xlabel_grob$label
 
   ylabel_grob <- if(showLabels) {
-    getGrob(loon_grob, "y label")
+    grid::getGrob(loon.grob, "y label")
   } else {
-    getGrob(loon_grob, "y label: textGrob arguments")
+    grid::getGrob(loon.grob, "y label: textGrob arguments")
   }
   ylabel <- ylabel_grob$label
 
   title <- if(showLabels) {
-    title_grob <- getGrob(loon_grob, "title")
+    titleGrob <- grid::getGrob(loon.grob, "title")
   } else {
-    title_grob <- getGrob(loon_grob, "title: textGrob arguments")
+    titleGrob <- grid::getGrob(loon.grob, "title: textGrob arguments")
   }
   title <- title$label
 
@@ -35,17 +35,17 @@ get_labels.default <- function(loon_grob) {
   )
 }
 
-get_labels.l_serialaxes <- function(loon_grob) {
+get_labels.l_serialaxes <- function(loon.grob) {
 
   showLabels <- TRUE
-  title_grob <- getGrob(loon_grob, "title")
+  titleGrob <- grid::getGrob(loon.grob, "title")
 
-  if(is.null(title_grob)) {
+  if(is.null(titleGrob)) {
     showLabels <- FALSE
-    title_grob <- getGrob(loon_grob, "title: textGrob arguments")
+    titleGrob <- grid::getGrob(loon.grob, "title: textGrob arguments")
   }
 
-  title <- title_grob$label
+  title <- titleGrob$label
 
   list(
     title = title,
@@ -54,29 +54,29 @@ get_labels.l_serialaxes <- function(loon_grob) {
 }
 
 
-set_labels_grob <- function(loon_grob, showScales, xlabel, ylabel, title) {
+set_labelsGrob <- function(loon.grob, showScales, xlabel, ylabel, title) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
-  UseMethod("set_labels_grob", obj)
+  class(obj) <- names(loon.grob$children)
+  UseMethod("set_labelsGrob", obj)
 }
 
-set_labels_grob.default <- function(loon_grob, showScales, xlabel, ylabel, title) {
+set_labelsGrob.default <- function(loon.grob, showScales, xlabel, ylabel, title) {
 
   xylab_loc <- if (showScales) c(-3.5, -6.5) else c(-1, -1)
 
-  setGrob(
-    gTree = loon_grob,
+  grid::setGrob(
+    gTree = loon.grob,
     gPath = "labels",
     newGrob = gTree(
       children = do.call(
         gList,
-        lapply(1:length(getGrob(loon_grob, "labels")[["childrenOrder"]]),
+        lapply(1:length(grid::getGrob(loon.grob, "labels")[["childrenOrder"]]),
                function(i){
-                 grobi <- getGrob(loon_grob, "labels")[["children"]][[i]]
+                 grobi <- grid::getGrob(loon.grob, "labels")[["children"]][[i]]
                  grobi_args <-  getGrobArgs(grobi)
 
-                 if(str_detect(grobi$name ,"x label")) {
-                   
+                 if(grepl(grobi$name ,pattern = "x label")) {
+
                    if(is.null(xlabel)) xlabel <- ""
 
                    grobi_args$label <- xlabel
@@ -88,10 +88,10 @@ set_labels_grob.default <- function(loon_grob, showScales, xlabel, ylabel, title
                      grid::textGrob,
                      grobi_args
                    )
-                 } else if(str_detect(grobi$name ,"y label")) {
+                 } else if(grepl(grobi$name ,pattern = "y label")) {
 
                    if(is.null(ylabel)) ylabel <- ""
-                   
+
                    grobi_args$label <- ylabel
                    grobi_args$x <- unit(xylab_loc[2], "lines")
                    grobi_args$y <- unit(0.5, "npc")
@@ -101,10 +101,10 @@ set_labels_grob.default <- function(loon_grob, showScales, xlabel, ylabel, title
                      grid::textGrob,
                      grobi_args
                    )
-                 }  else if(str_detect(grobi$name ,"title")) {
-                   
+                 }  else if(grepl(grobi$name ,pattern = "title")) {
+
                    if(is.null(title)) title <- ""
-                   
+
                    grobi_args$label <- title
                    do.call(
                      grid::textGrob,
@@ -118,22 +118,22 @@ set_labels_grob.default <- function(loon_grob, showScales, xlabel, ylabel, title
   )
 }
 
-set_labels_grob.l_serialaxes <- function(loon_grob, title) {
+set_labelsGrob.l_serialaxes <- function(loon.grob, title) {
 
   gPath <- "title"
-  title_grob <- getGrob(loon_grob, gPath)
+  titleGrob <- grid::getGrob(loon.grob, gPath)
 
-  if(is.null(title_grob)) {
+  if(is.null(titleGrob)) {
     gPath <- "title: textGrob arguments"
-    title_grob <- getGrob(loon_grob, gPath)
+    titleGrob <- grid::getGrob(loon.grob, gPath)
   }
 
-  setGrob(
-    gTree = loon_grob,
+  grid::setGrob(
+    gTree = loon.grob,
     gPath = gPath,
     newGrob = do.call(
-      textGrob,
-      getGrobArgs(title_grob)
+      grid::textGrob,
+      getGrobArgs(titleGrob)
     )
   )
 }

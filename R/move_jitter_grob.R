@@ -1,76 +1,76 @@
-move_jitter_grob <- function(loon_grob, index, swap, jitter_xy, temporary, ...) {
+move_jitter_grob <- function(loon.grob, index, swap, jitterxy, temporary, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("move_jitter_grob", obj)
 }
 
-move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary = FALSE, ...) {
+move_jitter_grob.l_plot <- function(loon.grob, index, swap, jitterxy, temporary = FALSE, ...) {
 
-  if(length(index) == 0) return(loon_grob)
-  
+  if(length(index) == 0) return(loon.grob)
+
   args <- list(...)
-  pointsTree_name <- args$pointsTree_name
+  pointsTreeName <- args$pointsTreeName
 
-  if(pointsTree_name != "points: missing glyphs") {
-    x <- jitter_xy$x
-    y <- jitter_xy$y
+  if(pointsTreeName != "points: missing glyphs") {
+    x <- jitterxy$x
+    y <- jitterxy$y
 
-    newGrob <- getGrob(loon_grob, pointsTree_name)
+    newGrob <- grid::getGrob(loon.grob, pointsTreeName)
 
     if(!temporary & swap) {
       lapply(index,
              function(i) {
 
-               if(str_detect(newGrob$children[[i]]$name, "primitive_glyph")) {
+               if(grepl(newGrob$children[[i]]$name,pattern =  "primitive_glyph")) {
                  newGrob$children[[i]] <<- editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(x[which(index %in% i)], "native"),
                    x = unit(y[which(index %in% i)], "native")
                  )
-               } else if(str_detect(newGrob$children[[i]]$name, "serialaxes_glyph"))  {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "serialaxes_glyph"))  {
 
-                 polyline_grob <- getGrob(newGrob$children[[i]], "polyline")
+                 polyline_grob <- grid::getGrob(newGrob$children[[i]], "polyline")
                  if(is.null(polyline_grob)) {
-                   polyline_grob <- getGrob(newGrob$children[[i]], "polyline: showArea")
+                   polyline_grob <- grid::getGrob(newGrob$children[[i]], "polyline: showArea")
                    polyline_grob_name <-  "polyline: showArea"
                  } else polyline_grob_name <-  "polyline"
 
                  polyline_grob <- editGrob(
                    polyline_grob,
-                   y = unit(x[which(index %in% i)], "native") + 
-                     get_unit(polyline_grob$x, 
+                   y = unit(x[which(index %in% i)], "native") +
+                     get_unit(polyline_grob$x,
                               is.unit = FALSE,
                               as.numeric = FALSE),
-                   x = unit(y[which(index %in% i)], "native") + 
-                     get_unit(polyline_grob$y, 
+                   x = unit(y[which(index %in% i)], "native") +
+                     get_unit(polyline_grob$y,
                               is.unit = FALSE,
                               as.numeric = FALSE)
                  )
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = polyline_grob_name,
                    newGrob = polyline_grob
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "polygon_glyph")) {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "polygon_glyph")) {
 
                  newGrob$children[[i]] <<- editGrob(
                    grob = newGrob$children[[i]],
-                   y = unit(x[which(index %in% i)], "native") +  
-                     get_unit(newGrob$children[[i]]$x, 
+                   y = unit(x[which(index %in% i)], "native") +
+                     get_unit(newGrob$children[[i]]$x,
                               is.unit = FALSE,
                               as.numeric = FALSE),
-                   x = unit(y[which(index %in% i)], "native") +  
-                     get_unit(newGrob$children[[i]]$y, 
+                   x = unit(y[which(index %in% i)], "native") +
+                     get_unit(newGrob$children[[i]]$y,
                               is.unit = FALSE,
                               as.numeric = FALSE)
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "pointrange_glyph")) {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "pointrange_glyph")) {
 
-                 point_grob <- getGrob(newGrob$children[[i]], "point")
-                 line_grob <- getGrob(newGrob$children[[i]], "range")
+                 point_grob <- grid::getGrob(newGrob$children[[i]], "point")
+                 line_grob <- grid::getGrob(newGrob$children[[i]], "range")
 
                  point_grob <- editGrob(
                    point_grob,
@@ -87,19 +87,19 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
                  )
 
 
-                 tmpGrob <- setGrob(
+                 tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "point",
                    newGrob = point_grob
                  )
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "range",
                    newGrob = line_grob
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "text_glyph"))  {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "text_glyph"))  {
 
                  newGrob$children[[i]] <<- editGrob(
                    grob = newGrob$children[[i]],
@@ -107,10 +107,10 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
                    x = unit(y[which(index %in% i)], "native")
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "image_glyph")) {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
-                 image_border_grob <- getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- getGrob(newGrob$children[[i]], "image")
+                 image_border_grob <- grid::getGrob(newGrob$children[[i]], "image_border")
+                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  image_border_grob <- editGrob(
                    image_border_grob,
@@ -124,13 +124,13 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
                    x = unit(y[which(index %in% i)], "native")
                  )
 
-                 tmpGrob <- setGrob(
+                 tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "image_border",
                    newGrob = image_border_grob
                  )
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
                    newGrob = image_grob
@@ -142,56 +142,56 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
       lapply(index,
              function(i) {
 
-               if(str_detect(newGrob$children[[i]]$name, "primitive_glyph")) {
+               if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
                  newGrob$children[[i]] <<- editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(x[which(index %in% i)], "native"),
                    y = unit(y[which(index %in% i)], "native")
                  )
-               } else if(str_detect(newGrob$children[[i]]$name, "serialaxes_glyph"))  {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "serialaxes_glyph"))  {
 
-                 polyline_grob <- getGrob(newGrob$children[[i]], "polyline")
+                 polyline_grob <- grid::getGrob(newGrob$children[[i]], "polyline")
                  if(is.null(polyline_grob)) {
-                   polyline_grob <- getGrob(newGrob$children[[i]], "polyline: showArea")
+                   polyline_grob <- grid::getGrob(newGrob$children[[i]], "polyline: showArea")
                    polyline_grob_name <-  "polyline: showArea"
                  } else polyline_grob_name <-  "polyline"
 
                  polyline_grob <- editGrob(
                    polyline_grob,
-                   x = unit(x[which(index %in% i)], "native") + 
-                     get_unit(polyline_grob$x, 
+                   x = unit(x[which(index %in% i)], "native") +
+                     get_unit(polyline_grob$x,
                               is.unit = FALSE,
                               as.numeric = FALSE),
-                   y = unit(y[which(index %in% i)], "native") + 
-                     get_unit(polyline_grob$y, 
+                   y = unit(y[which(index %in% i)], "native") +
+                     get_unit(polyline_grob$y,
                               is.unit = FALSE,
                               as.numeric = FALSE)
                  )
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = polyline_grob_name,
                    newGrob = polyline_grob
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "polygon_glyph")) {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "polygon_glyph")) {
 
                  newGrob$children[[i]] <<- editGrob(
                    grob = newGrob$children[[i]],
-                   x = unit(x[which(index %in% i)], "native") +  
-                     get_unit(newGrob$children[[i]]$x, 
+                   x = unit(x[which(index %in% i)], "native") +
+                     get_unit(newGrob$children[[i]]$x,
                               is.unit = FALSE,
                               as.numeric = FALSE),
-                   y = unit(y[which(index %in% i)], "native") +  
-                     get_unit(newGrob$children[[i]]$y, 
+                   y = unit(y[which(index %in% i)], "native") +
+                     get_unit(newGrob$children[[i]]$y,
                               is.unit = FALSE,
                               as.numeric = FALSE)
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "pointrange_glyph")) {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "pointrange_glyph")) {
 
-                 point_grob <- getGrob(newGrob$children[[i]], "point")
-                 line_grob <- getGrob(newGrob$children[[i]], "range")
+                 point_grob <- grid::getGrob(newGrob$children[[i]], "point")
+                 line_grob <- grid::getGrob(newGrob$children[[i]], "range")
 
                  point_grob <- editGrob(
                    point_grob,
@@ -207,19 +207,19 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
                  )
 
 
-                 tmpGrob <- setGrob(
+                 tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "point",
                    newGrob = point_grob
                  )
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "range",
                    newGrob = line_grob
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "text_glyph"))  {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "text_glyph"))  {
 
                  newGrob$children[[i]] <<- editGrob(
                    grob = newGrob$children[[i]],
@@ -227,10 +227,10 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
                    y = unit(y[which(index %in% i)], "native")
                  )
 
-               } else if(str_detect(newGrob$children[[i]]$name, "image_glyph")) {
+               } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
-                 image_border_grob <- getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- getGrob(newGrob$children[[i]], "image")
+                 image_border_grob <- grid::getGrob(newGrob$children[[i]], "image_border")
+                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  image_border_grob <- editGrob(
                    image_border_grob,
@@ -244,13 +244,13 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
                    y = unit(y[which(index %in% i)], "native")
                  )
 
-                 tmpGrob <- setGrob(
+                 tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "image_border",
                    newGrob = image_border_grob
                  )
 
-                 newGrob$children[[i]] <<- setGrob(
+                 newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
                    newGrob = image_grob
@@ -260,25 +260,25 @@ move_jitter_grob.l_plot <- function(loon_grob, index, swap, jitter_xy, temporary
       )
     }
 
-    setGrob(
-      gTree = loon_grob,
-      gPath = pointsTree_name,
+    grid::setGrob(
+      gTree = loon.grob,
+      gPath = pointsTreeName,
       newGrob = newGrob
     )
-  } else loon_grob
+  } else loon.grob
 }
 
 
-move_jitter_grob.l_graph <- function(loon_grob, index, swap, jitter_xy, temporary = FALSE, ...) {
+move_jitter_grob.l_graph <- function(loon.grob, index, swap, jitterxy, temporary = FALSE, ...) {
 
-  if(length(index) == 0) return(loon_grob)
-  
-  jx <- jitter_xy$x
-  jy <- jitter_xy$y
+  if(length(index) == 0) return(loon.grob)
 
-  nodesGrob <- getGrob(loon_grob, "graph nodes")
-  labelsGrob <- getGrob(loon_grob, "graph labels")
-  edgesGrob <- getGrob(loon_grob, "graph edges")
+  jx <- jitterxy$x
+  jy <- jitterxy$y
+
+  nodesGrob <- grid::getGrob(loon.grob, "graph nodes")
+  labelsGrob <- grid::getGrob(loon.grob, "graph labels")
+  edgesGrob <- grid::getGrob(loon.grob, "graph edges")
 
   if(!temporary & swap) {
 
@@ -293,47 +293,47 @@ move_jitter_grob.l_graph <- function(loon_grob, index, swap, jitter_xy, temporar
            }
     )
 
-    loon_grob <- setGrob(
-      gTree = loon_grob,
+    loon.grob <- grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph nodes",
       newGrob = nodesGrob
     )
 
     # avoid labelsGrob to be nullGrob
-    if(!str_detect(grobName(labelsGrob), "null")) {
+    if(!grepl(grobName(labelsGrob), pattern = "null")) {
       lapply(index,
              function(i) {
-               
+
                grobi <- labelsGrob$children[[i]]
-               
+
                labelsGrob$children[[i]] <<- editGrob(
                  grob = grobi,
-                 x = unit(jy[which(index == i)], "native") + 
-                   get_unit(grobi$y, 
+                 x = unit(jy[which(index == i)], "native") +
+                   get_unit(grobi$y,
                             is.unit = FALSE,
                             as.numeric = FALSE),
-                 y = unit(jx[which(index == i)], "native") + 
-                   get_unit(grobi$x, 
+                 y = unit(jx[which(index == i)], "native") +
+                   get_unit(grobi$x,
                             is.unit = FALSE,
                             as.numeric = FALSE)
                )
              }
       )
-      
-      loon_grob <- setGrob(
-        gTree = loon_grob,
+
+      loon.grob <- grid::setGrob(
+        gTree = loon.grob,
         gPath = "graph labels",
         newGrob = labelsGrob
       )
-      
+
     }
-    
+
     lapply(1:length(edgesGrob$children),
            function(i) {
 
              grobi <- edgesGrob$children[[i]]
 
-             if(!str_detect(grobi$name, "missing")) {
+             if(!grepl(grobi$name,pattern =  "missing")) {
 
                to_id <-  grobi$id
                num_line <- length(to_id)/2
@@ -385,8 +385,8 @@ move_jitter_grob.l_graph <- function(loon_grob, index, swap, jitter_xy, temporar
            }
     )
 
-    loon_grob <- setGrob(
-      gTree = loon_grob,
+    loon.grob <- grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph edges",
       newGrob = edgesGrob
     )
@@ -403,47 +403,47 @@ move_jitter_grob.l_graph <- function(loon_grob, index, swap, jitter_xy, temporar
            }
     )
 
-    loon_grob <- setGrob(
-      gTree = loon_grob,
+    loon.grob <- grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph nodes",
       newGrob = nodesGrob
     )
 
     # avoid labelsGrob to be nullGrob
-    if(!str_detect(grobName(labelsGrob), "null")) {
+    if(!grepl(grobName(labelsGrob),pattern =  "null")) {
       lapply(index,
              function(i) {
-               
+
                grobi <- labelsGrob$children[[i]]
-               
+
                labelsGrob$children[[i]] <<- editGrob(
                  grob = grobi,
-                 y = unit(jy[which(index == i)], "native") + 
-                   get_unit(grobi$y, 
+                 y = unit(jy[which(index == i)], "native") +
+                   get_unit(grobi$y,
                             is.unit = FALSE,
                             as.numeric = FALSE),
-                 x = unit(jx[which(index == i)], "native") + 
-                   get_unit(grobi$x, 
+                 x = unit(jx[which(index == i)], "native") +
+                   get_unit(grobi$x,
                             is.unit = FALSE,
                             as.numeric = FALSE)
                )
              }
       )
-      
-      loon_grob <- setGrob(
-        gTree = loon_grob,
+
+      loon.grob <- grid::setGrob(
+        gTree = loon.grob,
         gPath = "graph labels",
         newGrob = labelsGrob
       )
     }
-    
-    
+
+
     lapply(1:length(edgesGrob$children),
            function(i) {
 
              grobi <- edgesGrob$children[[i]]
 
-             if(!str_detect(grobi$name, "missing")) {
+             if(!grepl(grobi$name, pattern = "missing")) {
                to_id <-  grobi$id
                num_line <- length(to_id)/2
 
@@ -494,14 +494,14 @@ move_jitter_grob.l_graph <- function(loon_grob, index, swap, jitter_xy, temporar
            }
     )
 
-    loon_grob <- setGrob(
-      gTree = loon_grob,
+    loon.grob <- grid::setGrob(
+      gTree = loon.grob,
       gPath = "graph edges",
       newGrob = edgesGrob
     )
   }
 
-  loon_grob
+  loon.grob
 }
 
 
@@ -517,18 +517,18 @@ jitter_coord  <- function(x, y, index) {
     diff_x <- diff(sort(x[index]))
 
     diff_y <- diff(sort(y[index]))
-    
+
     diff_x <- diff_x[diff_x > 1e-2]
     diff_y <- diff_y[diff_y > 1e-2]
-    
-    dx <- if(length(diff_x) == 0) 
+
+    dx <- if(length(diff_x) == 0)
       1e-2
-    else 
+    else
       min(diff_x)
-    
-    dy <- if(length(diff_y) == 0) 
+
+    dy <- if(length(diff_y) == 0)
       1e-2
-    else 
+    else
       min(diff_y)
 
     jitter_x <- rnorm(length(index), x[index], dx/5)

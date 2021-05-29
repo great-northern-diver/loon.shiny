@@ -1,142 +1,142 @@
-get_deactive_index <- function(loon_grob, index, ...) {
+get_deactive_index <- function(loon.grob, index, ...) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
+  class(obj) <- names(loon.grob$children)
   UseMethod("get_deactive_index", obj)
 }
 
-get_deactive_index.l_plot <- function(loon_grob, index, ...) {
+get_deactive_index.l_plot <- function(loon.grob, index, ...) {
 
   args <- list(...)
-  pointsTree_name <- args$pointsTree_name
+  pointsTreeName <- args$pointsTreeName
 
-  if(pointsTree_name != "points: missing glyphs") {
+  if(pointsTreeName != "points: missing glyphs") {
 
-    newGrob <- grid::getGrob(loon_grob, pointsTree_name)
-    which_is_deactive <- numeric(0)
+    newGrob <- grid::getGrob(loon.grob, pointsTreeName)
+    whichIsDeactive <- numeric(0)
 
     lapply(index,
            function(i) {
 
-             if(stringr::str_detect(newGrob$children[[i]]$name, "primitive_glyph")) {
+             if(grepl("primitive_glyph",newGrob$children[[i]]$name)) {
 
-               if(stringr::str_detect(grobName(newGrob$children[[i]]), "grob")) {
-                 which_is_deactive[i] <<- i
+               if(grepl("grob", grobName(newGrob$children[[i]]))) {
+                 whichIsDeactive[i] <<- i
                }
 
-             } else if(stringr::str_detect(newGrob$children[[i]]$name, "pointrange_glyph")) {
+             } else if(grepl("pointrange_glyph", newGrob$children[[i]]$name)) {
 
                the_children <- newGrob$children[[i]]$children
                if(
                  all(
                    sapply(1:length(the_children),
                           function(j) {
-                            stringr::str_detect(grobName(the_children[[j]]), "grob")
+                            grepl("grob", grobName(the_children[[j]]))
                           }
                    )
                  )
                ) {
-                 which_is_deactive[i] <<- i
+                 whichIsDeactive[i] <<- i
                }
 
-             } else if(stringr::str_detect(newGrob$children[[i]]$name, "text_glyph")) {
+             } else if(grepl("text_glyph", newGrob$children[[i]]$name)) {
 
-               if(stringr::str_detect(grobName(newGrob$children[[i]]), "grob")) {
-                 which_is_deactive[i] <<- i
+               if(grepl("grob", grobName(newGrob$children[[i]]))) {
+                 whichIsDeactive[i] <<- i
                }
 
-             } else if(stringr::str_detect(newGrob$children[[i]]$name, "serialaxes_glyph")) {
+             } else if(grepl("serialaxes_glyph", newGrob$children[[i]]$name)) {
 
                the_children <- newGrob$children[[i]]$children
                if(
                  all(
                    sapply(1:length(the_children),
                           function(j) {
-                            stringr::str_detect(grobName(the_children[[j]]), "grob")
+                            grepl("grob", grobName(the_children[[j]]))
                           }
                    )
                  )
                ) {
-                 which_is_deactive[i] <<- i
+                 whichIsDeactive[i] <<- i
                }
 
-             } else if(stringr::str_detect(newGrob$children[[i]]$name, "polygon_glyph")) {
+             } else if(grepl("polygon_glyph", newGrob$children[[i]]$name)) {
 
-               if(stringr::str_detect(grobName(newGrob$children[[i]]), "grob")) {
-                 which_is_deactive[i] <<- i
+               if(grepl("grob", grobName(newGrob$children[[i]]))) {
+                 whichIsDeactive[i] <<- i
                }
 
-             } else if(stringr::str_detect(newGrob$children[[i]]$name, "image_glyph")) {
+             } else if(grepl("image_glyph", newGrob$children[[i]]$name)) {
 
                the_children <- newGrob$children[[i]]$children
                if(
                  all(
                    sapply(1:length(the_children),
                           function(j) {
-                            stringr::str_detect(grobName(the_children[[j]]), "grob")
+                            grepl("grob", grobName(the_children[[j]]))
                           }
                    )
                  )
                ) {
-                 which_is_deactive[i] <<- i
+                 whichIsDeactive[i] <<- i
                }
 
              } else stop("not inplemented")
            }
     )
 
-    which_is_deactive[which(!is.na(which_is_deactive))]
+    whichIsDeactive[which(!is.na(whichIsDeactive))]
   } else numeric(0)
 }
 
 
-get_deactive_index.l_hist <- function(loon_grob, index) {
+get_deactive_index.l_hist <- function(loon.grob, index) {
 
-  newGrob <- grid::getGrob(loon_grob, "histogram")
-  which_is_deactive <- numeric(0)
+  newGrob <- grid::getGrob(loon.grob, "histogram")
+  whichIsDeactive <- numeric(0)
 
   lapply(index,
          function(i) {
-           if(stringr::str_detect(grobName(newGrob$children[[i]]), "grob")) {
-             which_is_deactive[i] <<- i
+           if(grepl("grob", grobName(newGrob$children[[i]]))) {
+             whichIsDeactive[i] <<- i
            }
          }
   )
 
-  which_is_deactive[which(!is.na(which_is_deactive))]
+  whichIsDeactive[which(!is.na(whichIsDeactive))]
 }
 
 
-get_deactive_index.l_graph <- function(loon_grob, index) {
+get_deactive_index.l_graph <- function(loon.grob, index) {
 
-  newGrob <- grid::getGrob(loon_grob, "graph nodes")
-  which_is_deactive <- numeric(0)
+  newGrob <- grid::getGrob(loon.grob, "graph nodes")
+  whichIsDeactive <- numeric(0)
 
   lapply(index,
          function(i) {
-           if(stringr::str_detect(grobName(newGrob$children[[i]]), "grob")) {
-             which_is_deactive[i] <<- i
+           if(grepl("grob", grobName(newGrob$children[[i]]))) {
+             whichIsDeactive[i] <<- i
            }
          }
   )
 
-  which_is_deactive[which(!is.na(which_is_deactive))]
+  whichIsDeactive[which(!is.na(whichIsDeactive))]
 }
 
-get_deactive_index.l_serialaxes <- function(loon_grob, index, ...) {
+get_deactive_index.l_serialaxes <- function(loon.grob, index, ...) {
 
   args <- list(...)
-  axes_gPath <- args$axes_gPath
+  axesGpath <- args$axesGpath
 
-  axes_grob <- grid::getGrob(loon_grob, axes_gPath)
-  which_is_deactive <- numeric(0)
+  axesGrob <- grid::getGrob(loon.grob, axesGpath)
+  whichIsDeactive <- numeric(0)
 
   lapply(index,
          function(i) {
-           if(stringr::str_detect(grobName(axes_grob$children[[i]]), "grob")) {
-             which_is_deactive[i] <<- i
+           if(grepl("grob", grobName(axesGrob$children[[i]]))) {
+             whichIsDeactive[i] <<- i
            }
          }
   )
 
-  which_is_deactive[which(!is.na(which_is_deactive))]
+  whichIsDeactive[which(!is.na(whichIsDeactive))]
 }

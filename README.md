@@ -1,8 +1,8 @@
-# loon.shiny 
+# loon.shiny <img src="man/figures/logo.png" align="right" width="120" />
 
 [![Travis build status](https://travis-ci.org/great-northern-diver/loon.shiny.svg?branch=master)](https://travis-ci.org/great-northern-diver/loon.shiny)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/loon.shiny)](https://cran.r-project.org/package=loon.shiny)
-<img src="man/figures/logo.png" align="right" width="120" />
+
 
 ## Display loon widgets in shiny app
 
@@ -20,7 +20,7 @@ The  [`loon.shiny`](http://great-northern-diver.github.io/loon.shiny/) `R` packa
 Other users can then explore the data online using the rich set of visual interactions available in `loon` as provided by the
 creator of the curated analysis.
 
-A single function, `shiny.loon()`, does the work.
+A single function, `loon.shiny()`, does the work.
 
 -----
 
@@ -29,7 +29,7 @@ A single function, `shiny.loon()`, does the work.
 ```r
 library(loon.shiny)
 p <- with(mtcars, l_plot(hp, mpg, color = cyl, size = wt))
-shiny.loon(p)
+loon.shiny(p)
 ```
 produces a web based shiny app containing the `loon` plot `p`  together with its `loon` inspector:
 
@@ -54,7 +54,7 @@ p2 <- l_hist(iris$Sepal.Length, linkingGroup = "iris",
 p3 <- l_hist(iris$Sepal.Length, linkingGroup = "iris",
              showLabels = FALSE, swapAxes = TRUE,
              showStackedColors = TRUE)
-shiny.loon(list(p1, p2, p3),
+loon.shiny(list(p1, p2, p3),
            layout_matrix = matrix(c(2, NA, 1, 3), nrow = 2, byrow = TRUE),
            plot_width = "400px")
 ```    
@@ -74,7 +74,7 @@ g <- ggplot(mtcars, mapping = aes(x = wt, y = hp)) +
        geom_point(mapping = aes(color = factor(gear))) + 
        geom_smooth()
 
-shiny.loon(loon.ggplot(g),
+loon.shiny(loon.ggplot(g),
            left = 20,
            right = "auto")
 ```
@@ -110,7 +110,7 @@ An R Markdown file containing Shiny widgets and outputs is an interactive docume
    ```r
    ---
    title: "My Title"
-   author: "You"
+   author: "Me"
    date: "15/05/2021"
    output: html_document
    runtime: shiny

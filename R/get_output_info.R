@@ -1,15 +1,15 @@
-get_output_info <- function(loon_grob, loonWidgets_info) {
+get_outputInfo <- function(loon.grob, loonWidgetsInfo) {
   obj <- character(0)
-  class(obj) <- names(loon_grob$children)
-  UseMethod("get_output_info", obj)
+  class(obj) <- names(loon.grob$children)
+  UseMethod("get_outputInfo", obj)
 }
 
-get_output_info.default <- function(loon_grob, loonWidgets_info) {
+get_outputInfo.default <- function(loon.grob, loonWidgetsInfo) {
   
-  brush_id <- if(is.null(loonWidgets_info$selected)) integer(0) else which(loonWidgets_info$selected)
+  brushId <- if(is.null(loonWidgetsInfo$selected)) integer(0) else which(loonWidgetsInfo$selected)
   
   list(
-    brush_id = brush_id,
-    loonWidgets_info = loonWidgets_info
+    brushId = brushId,
+    loonWidgetsInfo = loonWidgetsInfo
   )
 }
