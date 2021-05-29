@@ -5,9 +5,10 @@ cran-comments.md
 .DS_Store
 .gitignore
 .Rhistory
-_pkgdown.yml  
+_pkgdown.yml
 codecov.yml
 docs/*
 pkgdown/*
 ^doc$
 ^Meta$
+.travis.yml
