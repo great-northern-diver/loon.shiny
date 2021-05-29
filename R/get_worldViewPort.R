@@ -1,6 +1,7 @@
-get_worldViewPort <- function(loon.grob, parent = "", parentExcluded = TRUE) {
+get_worldViewPort <- function(loon.grob, parent = "",
+                              parentExcluded = TRUE, recursive = FALSE) {
 
-  layers <- get_layers(loon.grob)
+  layers <- get_layers(loon.grob, recursive = recursive)
 
   loonplot <- grid::getGrob(loon.grob, "loon plot")
   vp <- loonplot$vp

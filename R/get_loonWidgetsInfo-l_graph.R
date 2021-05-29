@@ -87,11 +87,12 @@ get_loonWidgetsInfo.l_graph <- function(widgets, loon.grobs, ...) {
 
   # the world view is swapped as well
   worldView <- get_worldViewPort(loon.grob = loon.grob,
-                                 parentExcluded = TRUE)
+                                 parentExcluded = TRUE,
+                                 recursive = TRUE)
   worldViewXlim <- range(c(plotViewXlim, worldView$xlim))
   worldViewYlim <- range(c(plotViewYlim, worldView$ylim))
 
-  layers <- get_layers(loon.grob)
+  layers <- get_layers(loon.grob, recursive = FALSE)
   names(layers) <- layers
 
   list(
