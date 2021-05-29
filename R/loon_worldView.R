@@ -22,6 +22,9 @@ loon_worldView.l_plot <- function(loon.grob, input, tabPanelName, colorList,
   input[[paste0(tabPanelName, "xlim")]]
   input[[paste0(tabPanelName, "ylim")]]
 
+  input[[paste0(tabPanelName, "push")]]
+  input[[paste0(tabPanelName, "pull")]]
+
   input[[paste0(tabPanelName, "sticky")]]
   input[[paste0(tabPanelName, "selectByColor")]]
   input[[paste0(tabPanelName, "selectDynamic")]]
@@ -38,6 +41,8 @@ loon_worldView.l_plot <- function(loon.grob, input, tabPanelName, colorList,
 
   input[[paste0(tabPanelName, "modifyDeactive")]]
   input[[paste0(tabPanelName, "modifyReactive")]]
+
+  input[[paste0(tabPanelName, "alphaApply")]]
 
   input[[paste0(tabPanelName, "modifyMoveHalign")]]
   input[[paste0(tabPanelName, "modifyMoveValign")]]
@@ -209,6 +214,9 @@ loon_worldView.l_hist <- function(loon.grob, input, tabPanelName, colorList,
   input[[paste0(tabPanelName, "yshows")]]
   input[[paste0(tabPanelName, "origin")]]
   input[[paste0(tabPanelName, "binwidth")]]
+
+  input[[paste0(tabPanelName, "push")]]
+  input[[paste0(tabPanelName, "pull")]]
 
   input[[paste0(tabPanelName, "plotAxes2")]]
 

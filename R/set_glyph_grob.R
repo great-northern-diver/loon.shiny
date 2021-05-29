@@ -8,12 +8,12 @@ set_glyph_grob.l_plot <- function(loon.grob, index, newPch, tmp, ...) {
 
   args <- list(...)
   pointsTreeName <- args$pointsTreeName
+  len <- length(index)
 
-  if(pointsTreeName != "points: missing glyphs" & length(index) > 0) {
+  if(pointsTreeName != "points: missing glyphs" && len > 0) {
 
     color <- args$color
     size <- args$size
-    pch <- args$pch
     grob_index <- args$grob_index
 
     newGrob <- grid::getGrob(loon.grob, pointsTreeName)
@@ -22,10 +22,12 @@ set_glyph_grob.l_plot <- function(loon.grob, index, newPch, tmp, ...) {
     lapply(index,
            function(i) {
 
-             if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
+             grobi <- newGrob$children[[i]]
+
+             if(grepl(grobi$name, pattern = "primitive_glyph")) {
 
                newGrob$children[[i]] <<- grid::editGrob(
-                 grob = newGrob$children[[i]],
+                 grob = grobi,
                  gp = if(newPch %in% 21:24) {
                    grid::gpar(
                      fill = if(tmp) select_color() else color[i],
@@ -83,7 +85,6 @@ set_glyph_grob.l_graph <- function(loon.grob, index, newPch, tmp, ...) {
   if(length(index) > 0) {
 
     args <- list(...)
-    pch <- args$pch
     size <- args$size
     color <- args$color
 
@@ -93,8 +94,10 @@ set_glyph_grob.l_graph <- function(loon.grob, index, newPch, tmp, ...) {
     lapply(index,
            function(i) {
 
+             grobi <- newGrob$children[[i]]
+
              newGrob$children[[i]] <<- grid::editGrob(
-               grob = newGrob$children[[i]],
+               grob = grobi,
                gp = if(newPch %in% 21:24) {
                  grid::gpar(
                    fill = if(tmp) select_color() else color[i],

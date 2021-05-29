@@ -1,10 +1,10 @@
-set_boundary_grob <- function(loon.grob, margins, loonColor) {
+set_boundaryGrob <- function(loon.grob, margins, loonColor) {
   obj <- character(0)
   class(obj) <- names(loon.grob$children)
-  UseMethod("set_boundary_grob", obj)
+  UseMethod("set_boundaryGrob", obj)
 }
 
-set_boundary_grob.default <- function(loon.grob, margins, loonColor) {
+set_boundaryGrob.default <- function(loon.grob, margins, loonColor) {
 
   gPath <- if(!is.null(grid::getGrob(loon.grob, "boundary rectangle"))) {
     "boundary rectangle"

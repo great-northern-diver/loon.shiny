@@ -53,15 +53,15 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
              } else if(grepl(glyphNames, pattern = "serialaxes_glyph")) {
 
                scale <- sqrt(size[i]/default_size())
-               x_boundary <- rounding$boundary_grob_rounding$x * scale
-               y_boundary <- rounding$boundary_grob_rounding$y * scale
+               xBoundary <- rounding$boundaryGrobRounding$x * scale
+               yBoundary <- rounding$boundaryGrobRounding$y * scale
 
-               x_axesRounding <- rounding$axesGrob_rounding$x * scale
-               y_axesRounding <- rounding$axesGrob_rounding$y * scale
+               xAxesRounding <- rounding$axesGrobRounding$x * scale
+               yAxesRounding <- rounding$axesGrobRounding$y * scale
 
-               x_rounding <- rounding$serialaxesGrob_rounding$x * scale
-               y_rounding <- rounding$serialaxesGrob_rounding$y * scale
-               dimension <- length(x_axesRounding)/2
+               xRounding <- rounding$serialaxesGrobRounding$x * scale
+               yRounding <- rounding$serialaxesGrobRounding$y * scale
+               dimension <- length(xAxesRounding)/2
                box_color <- "#B3B3B3"
 
                is_radial <- grepl(glyphNames, pattern = "radial")
@@ -70,14 +70,14 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                  points_grob$children[[i]] <<- gTree (
                    children = gList(
                      if(nonePrimitiveGlyphSettings$showArea) {
-                       grid::polygonGrob(x = grid::unit(x[i], "native") + grid::unit(x_rounding, "mm"),
-                                               y = grid::unit(y[i], "native") + grid::unit(y_rounding, "mm"),
+                       grid::polygonGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
+                                               y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
                                                gp = grid::gpar(fill = color,
                                                                col = NA),
                                                name = "polyline: showArea")
                      } else {
-                       grid::linesGrob(x = grid::unit(x[i], "native") + grid::unit(x_rounding, "mm"),
-                                       y = grid::unit(y[i], "native") + grid::unit(y_rounding, "mm"),
+                       grid::linesGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
+                                       y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
                                        gp = grid::gpar(col = color),
                                        name = "polyline")
                      },
@@ -85,16 +85,16 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                        test = nonePrimitiveGlyphSettings$showEnclosing,
                        grobFun = grid::polylineGrob,
                        name = "boundary",
-                       x = grid::unit(x[i], "native") + grid::unit(x_boundary, "mm"),
-                       y = grid::unit(y[i], "native") + grid::unit(y_boundary, "mm"),
+                       x = grid::unit(x[i], "native") + grid::unit(xBoundary, "mm"),
+                       y = grid::unit(y[i], "native") + grid::unit(yBoundary, "mm"),
                        gp = grid::gpar(col = box_color)
                      ),
                      loon::condGrob(
                        test = nonePrimitiveGlyphSettings$showAxes,
                        grobFun = grid::polylineGrob,
                        name = "axes",
-                       x = grid::unit(x[i], "native") + grid::unit(x_axesRounding, "mm"),
-                       y = grid::unit(y[i], "native") + grid::unit(y_axesRounding, "mm"),
+                       x = grid::unit(x[i], "native") + grid::unit(xAxesRounding, "mm"),
+                       y = grid::unit(y[i], "native") + grid::unit(yAxesRounding, "mm"),
                        id = rep(1:dimension, 2),
                        gp = grid::gpar(col = box_color)
                      )
@@ -122,20 +122,20 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                        test = nonePrimitiveGlyphSettings$showAxes,
                        grobFun = grid::polylineGrob,
                        name = "axes",
-                       x = grid::unit(x[i], "native") + grid::unit(x_axesRounding, "mm"),
-                       y = grid::unit(y[i], "native") + grid::unit(y_axesRounding, "mm"),
+                       x = grid::unit(x[i], "native") + grid::unit(xAxesRounding, "mm"),
+                       y = grid::unit(y[i], "native") + grid::unit(yAxesRounding, "mm"),
                        id = rep(1:dimension, each = 2),
                        gp = grid::gpar(col = box_color)
                      ),
                      if(nonePrimitiveGlyphSettings$showArea) {
-                       grid::polygonGrob(x = grid::unit(x[i], "native") + grid::unit(x_rounding, "mm"),
-                                               y = grid::unit(y[i], "native") + grid::unit(y_rounding, "mm"),
+                       grid::polygonGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
+                                               y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
                                                gp = grid::gpar(fill = color,
                                                                col = NA),
                                                name = "polyline: showArea")
                      } else {
-                       grid::linesGrob(x = grid::unit(x[i], "native") + grid::unit(x_rounding, "mm"),
-                                       y = grid::unit(y[i], "native") + grid::unit(y_rounding, "mm"),
+                       grid::linesGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
+                                       y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
                                        gp = grid::gpar(col = color),
                                        name = "polyline")
                      }

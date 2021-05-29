@@ -149,7 +149,7 @@ set_deactive_grob.l_graph <- function(loon.grob, index) {
                  active_id <- which(!grobi$id %in% index)
 
                  if(length(active_id) > 0) {
-                   editGrob(
+                   grid::editGrob(
                      grob = grobi,
                      x = grobi$x[active_id],
                      y = grobi$y[active_id],

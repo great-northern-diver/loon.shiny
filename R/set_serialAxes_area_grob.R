@@ -24,7 +24,7 @@ set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, show
                    newGrob$children[[i]] <<- grid::setGrob(
                      gTree = newGrob$children[[i]],
                      gPath = serialaxesGrob_name,
-                     newGrob =  editGrob(
+                     newGrob =  grid::editGrob(
                        grob =  do.call(
                          grid::polygonGrob,
                          args = polyline2gon(Filter(Negate(is.null),
@@ -41,7 +41,7 @@ set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, show
                    newGrob$children[[i]] <<- grid::setGrob(
                      gTree = newGrob$children[[i]],
                      gPath = serialaxesGrob_name,
-                     newGrob = editGrob(
+                     newGrob = grid::editGrob(
                        grob = do.call(
                          grid::linesGrob,
                          args = polygon2line(Filter(Negate(is.null),
@@ -61,7 +61,7 @@ set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, show
                    newGrob$children[[i]] <<- grid::setGrob(
                      gTree = newGrob$children[[i]],
                      gPath = serialaxesGrob_name,
-                     newGrob = editGrob(
+                     newGrob = grid::editGrob(
                        grob = do.call(
                          grid::polygonGrob,
                          args = Filter(Negate(is.null),
@@ -78,7 +78,7 @@ set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, show
                    newGrob$children[[i]] <<- grid::setGrob(
                      gTree = newGrob$children[[i]],
                      gPath = serialaxesGrob_name,
-                     newGrob = editGrob(
+                     newGrob = grid::editGrob(
                        grob = do.call(
                          grid::linesGrob,
                          args = Filter(Negate(is.null), x = getGrobArgs(serialaxesGrob))

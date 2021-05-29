@@ -36,7 +36,7 @@ swapCoords_grob.l_plot <- function(loon.grob, x, y, index = NULL, ...){
                    if(i %in% index) {
                      # different glyphs have different type of grob, some of them are gTree, some of them are grobs
                      if(grepl(grobi$name, pattern = "primitive_glyph")) {
-                       editGrob(grobi,
+                       grid::editGrob(grobi,
                                 x = unit(x[i], "native"),
                                 y = unit(y[i], "native")
                        )
@@ -48,7 +48,7 @@ swapCoords_grob.l_plot <- function(loon.grob, x, y, index = NULL, ...){
                          polyline_grob_name <- "polyline: showArea"
                        } else polyline_grob_name <- "polyline"
 
-                       grobi$children[[polyline_grob_name]] <- editGrob(polyline_grob,
+                       grobi$children[[polyline_grob_name]] <- grid::editGrob(polyline_grob,
                                                                         x = unit(x[i], "native") +
                                                                           get_unit(polyline_grob$x, is.unit = FALSE, as.numeric = FALSE),
                                                                         y = unit(y[i], "native") +
@@ -57,7 +57,7 @@ swapCoords_grob.l_plot <- function(loon.grob, x, y, index = NULL, ...){
                        grobi
                      } else if(grepl(grobi$name, pattern = "polygon_glyph")) {
 
-                       editGrob(grobi,
+                       grid::editGrob(grobi,
                                 x = unit(x[i], "native") +
                                   get_unit(grobi$x, is.unit = FALSE, as.numeric = FALSE),
                                 y = unit(y[i], "native") +
@@ -66,30 +66,30 @@ swapCoords_grob.l_plot <- function(loon.grob, x, y, index = NULL, ...){
                      } else if(grepl(grobi$name, pattern = "pointrange_glyph")) {
 
                        # modify point
-                       grobi$children$point <- editGrob(grobi$children$point,
+                       grobi$children$point <- grid::editGrob(grobi$children$point,
                                                         x = unit(x[i], "native"),
                                                         y = unit(y[i], "native")
                        )
                        # modify range
-                       grobi$children$range <- editGrob(grobi$children$range,
+                       grobi$children$range <- grid::editGrob(grobi$children$range,
                                                         x = grobi$children$range$y,
                                                         y = grobi$children$range$x
                        )
                        grobi
                      } else if(grepl(grobi$name, pattern = "text_glyph")) {
-                       editGrob(grobi,
+                       grid::editGrob(grobi,
                                 x = unit(x[i], "native"),
                                 y = unit(y[i], "native")
                        )
                      } else if(grepl(grobi$name, pattern = "image_glyph")) {
-                       grobi$children$image_border <- editGrob(grobi$children$image_border,
+                       grobi$children$image_border <- grid::editGrob(grobi$children$image_border,
                                                                x = grobi$children$image_border$y,
                                                                y = grobi$children$image_border$x,
                                                                width = grobi$children$image_border$height,
                                                                height = grobi$children$image_border$width
                        )
 
-                       grobi$children$image <- editGrob(grobi$children$image,
+                       grobi$children$image <- grid::editGrob(grobi$children$image,
                                                         x = grobi$children$image$y,
                                                         y = grobi$children$image$x,
                                                         width = grobi$children$image$height,
@@ -135,7 +135,7 @@ swapCoords_grob.l_graph <- function(loon.grob, x, y, index = NULL, ...) {
                  grobi <- edgesTree$children[[i]]
                  if(i %in% index) {
                    if(!is.null(grobi$x) & !is.null(grobi$y)) {
-                     editGrob(grobi,
+                     grid::editGrob(grobi,
                               x = grobi$y,
                               y = grobi$x
                      )
@@ -163,7 +163,7 @@ swapCoords_grob.l_graph <- function(loon.grob, x, y, index = NULL, ...) {
                    grobi <- pointsTree$children[[i]]
                    if(i %in% index) {
 
-                     editGrob(grobi,
+                     grid::editGrob(grobi,
                               x = unit(x[i], "native"),
                               y = unit(y[i], "native")
                      )
@@ -188,7 +188,7 @@ swapCoords_grob.l_graph <- function(loon.grob, x, y, index = NULL, ...) {
                    grobi <- labelsTree$children[[i]]
                    if(i %in% index) {
                      if(!is.null(grobi$x) & !is.null(grobi$y)) {
-                       editGrob(grobi,
+                       grid::editGrob(grobi,
                                 x = grobi$y,
                                 y = grobi$x
                        )
@@ -224,7 +224,7 @@ swapCoords_grob.l_graph <- function(loon.grob, x, y, index = NULL, ...) {
                               grobij <- grobi$children[[j]]
 
                               if(!is.null(grobij$x) & !is.null(grobij$y)) {
-                                editGrob(
+                                grid::editGrob(
                                   grobij,
                                   x = grobij$y,
                                   y = grobij$x

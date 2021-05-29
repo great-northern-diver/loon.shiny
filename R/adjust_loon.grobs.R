@@ -8,10 +8,10 @@ adjust_loon.grobs <- function(loon.grobs, loonWidgetsInfo = NULL) {
                          function(i) {
 
                            loon.grob <- loon.grobs[[i]]
-                           widget_info <- loonWidgetsInfo[[i]]
-                           whichIsSelected <- if(is.null(widget_info$selected)) integer(0) else which(widget_info$selected)
+                           widgetInfo <- loonWidgetsInfo[[i]]
+                           whichIsSelected <- if(is.null(widgetInfo$selected)) integer(0) else which(widgetInfo$selected)
 
-                           resetOrder_grob(loon.grob, widget_info, index = whichIsSelected)
+                           resetOrder_grob(loon.grob, widgetInfo, index = whichIsSelected)
                          }
     )
 
@@ -73,22 +73,22 @@ pointsGrob_to_gTree.l_plot <- function(loon.grob) {
   } else loon.grob
 }
 
-resetOrder_grob <- function(loon.grob, widget_info, index) {
+resetOrder_grob <- function(loon.grob, widgetInfo, index) {
   obj <- character(0)
   class(obj) <- names(loon.grob$children)
   UseMethod("resetOrder_grob", obj)
 }
 
-resetOrder_grob.default <- function(loon.grob, widget_info, index) loon.grob
+resetOrder_grob.default <- function(loon.grob, widgetInfo, index) loon.grob
 
-resetOrder_grob.l_plot <- function(loon.grob, widget_info, index) {
+resetOrder_grob.l_plot <- function(loon.grob, widgetInfo, index) {
 
 
   scatterplotGrob <- grid::getGrob(loon.grob, "scatterplot")
   # only one child
   pointsTreeName <- scatterplotGrob$childrenOrder
 
-  display_order <- widget_info$display_order
+  displayOrder <- widgetInfo$displayOrder
   newGrob <- grid::getGrob(loon.grob, pointsTreeName)
 
   loon.grob <- grid::setGrob(
@@ -96,7 +96,7 @@ resetOrder_grob.l_plot <- function(loon.grob, widget_info, index) {
     gPath = pointsTreeName,
     newGrob = gTree(
       children = gList(
-        newGrob$children[display_order]
+        newGrob$children[displayOrder]
       ),
       name = newGrob$name
     )
@@ -107,31 +107,31 @@ resetOrder_grob.l_plot <- function(loon.grob, widget_info, index) {
     set_color_grob(
       loon.grob = loon.grob,
       index = index,
-      color = widget_info$color[index],
+      newColor = widgetInfo$color[index],
       pointsTreeName = pointsTreeName
     )
   } else loon.grob
 }
 
-resetOrder_grob.l_graph <- function(loon.grob, widget_info, index) {
+resetOrder_grob.l_graph <- function(loon.grob, widgetInfo, index) {
 
   if(length(index) > 0) {
 
     set_color_grob(
       loon.grob = loon.grob,
       index = index,
-      color = widget_info$color[index]
+      newColor = widgetInfo$color[index]
     )
   } else loon.grob
 }
 
-resetOrder_grob.l_serialaxes <- function(loon.grob, widget_info, index) {
+resetOrder_grob.l_serialaxes <- function(loon.grob, widgetInfo, index) {
 
 
   axesLayout <- get_axesLayout(loon.grob)
   axesGpath <- if(axesLayout == "parallel") "parallelAxes" else "radialAxes"
 
-  display_order <- widget_info$display_order
+  displayOrder <- widgetInfo$displayOrder
   newGrob <- grid::getGrob(loon.grob, axesGpath)
 
   loon.grob <- grid::setGrob(
@@ -139,7 +139,7 @@ resetOrder_grob.l_serialaxes <- function(loon.grob, widget_info, index) {
     gPath = axesGpath,
     newGrob = gTree(
       children = gList(
-        newGrob$children[display_order]
+        newGrob$children[displayOrder]
       ),
       name = newGrob$name
     )
@@ -150,7 +150,7 @@ resetOrder_grob.l_serialaxes <- function(loon.grob, widget_info, index) {
     set_color_grob(
       loon.grob = loon.grob,
       index = index,
-      color = widget_info$color[index],
+      newColor = widgetInfo$color[index],
       axesGpath = axesGpath
     )
   } else loon.grob

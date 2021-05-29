@@ -46,7 +46,7 @@ set_serialAxes_scales_grob <- function(loon.grob, pointsTreeName,
                newGrob$children[[i]] <<- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = axesGrob_name,
-                   newGrob = editGrob(
+                   newGrob = grid::editGrob(
                      grob = grid::getGrob(newGrob$children[[i]], axesGrob_name),
                      y = get_unit(axesGrob$x, as.numeric = FALSE) +
                        get_unit(axesGrob$y, is.unit = FALSE, as.numeric = FALSE),

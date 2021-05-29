@@ -20,7 +20,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
              function(i) {
 
                if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(vdistX[which(index %in% i)], "native")
                  )
@@ -45,7 +45,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "polygon_glyph")) {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(vdistX[which(index %in% i)], "native") +
                      get_unit(newGrob$children[[i]]$y,
@@ -56,16 +56,16 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "pointrange_glyph")) {
                  # TODO
-                 point_grob <- grid::getGrob(newGrob$children[[i]], "point")
+                 pointGrob <- grid::getGrob(newGrob$children[[i]], "point")
                  line_grob <- grid::getGrob(newGrob$children[[i]], "range")
 
-                 point_grob$y <- unit(vdistX[which(index %in% i)], "native")
+                 pointGrob$y <- unit(vdistX[which(index %in% i)], "native")
                  line_grob$y <- unit(rep(vdistX[which(index %in% i)], 2), "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "point",
-                   newGrob = point_grob
+                   newGrob = pointGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
@@ -76,23 +76,23 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
 
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "text_glyph"))  {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(vdistX[which(index %in% i)], "native")
                  )
 
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "image_glyph")) {
 
-                 image_border_grob <- grid::getGrob(newGrob$children[[i]], "image_border")
+                 imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
                  image_grob <- grid::getGrob(newGrob$children[[i]], "image")
 
-                 image_border_grob$y <- unit(vdistX[which(index %in% i)], "native")
+                 imageBorderGrob$y <- unit(vdistX[which(index %in% i)], "native")
                  image_grob$y <- unit(vdistX[which(index %in% i)], "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "image_border",
-                   newGrob = image_border_grob
+                   newGrob = imageBorderGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
@@ -101,7 +101,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
                    newGrob = image_grob
                  )
                } else {
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(vdistX[which(index %in% i)], "native")
                  )
@@ -113,7 +113,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
              function(i) {
 
                if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(vdistX[which(index %in% i)], "native")
                  )
@@ -139,7 +139,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "polygon_glyph")) {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(vdistX[which(index %in% i)], "native") +
                      get_unit(newGrob$children[[i]]$x, "native",
@@ -150,16 +150,16 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
 
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "pointrange_glyph")) {
 
-                 point_grob <- grid::getGrob(newGrob$children[[i]], "point")
+                 pointGrob <- grid::getGrob(newGrob$children[[i]], "point")
                  line_grob <- grid::getGrob(newGrob$children[[i]], "range")
 
-                 point_grob$x <- unit(vdistX[which(index %in% i)], "native")
+                 pointGrob$x <- unit(vdistX[which(index %in% i)], "native")
                  line_grob$x <- unit(rep(vdistX[which(index %in% i)], 2), "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "point",
-                   newGrob = point_grob
+                   newGrob = pointGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
@@ -170,23 +170,23 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
 
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "text_glyph"))  {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(vdistX[which(index %in% i)], "native")
                  )
 
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "image_glyph")) {
 
-                 image_border_grob <- grid::getGrob(newGrob$children[[i]], "image_border")
+                 imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
                  image_grob <- grid::getGrob(newGrob$children[[i]], "image")
 
-                 image_border_grob$x <- unit(vdistX[which(index %in% i)], "native")
+                 imageBorderGrob$x <- unit(vdistX[which(index %in% i)], "native")
                  image_grob$x <- unit(vdistX[which(index %in% i)], "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "image_border",
-                   newGrob = image_border_grob
+                   newGrob = imageBorderGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
@@ -195,7 +195,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
                    newGrob = image_grob
                  )
                } else {
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(vdistX[which(index %in% i)], "native")
                  )
@@ -225,7 +225,7 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
     lapply(index,
            function(i) {
 
-             nodesGrob$children[[i]] <<- editGrob(
+             nodesGrob$children[[i]] <<- grid::editGrob(
                grob = nodesGrob$children[[i]],
                y = unit(vdistX[which(index == i)], "native")
              )
@@ -245,7 +245,7 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
 
                grobi <- labelsGrob$children[[i]]
 
-               labelsGrob$children[[i]] <<- editGrob(
+               labelsGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
                  y = unit(vdistX[which(index == i)], "native") +
                    get_unit(grobi$x, "native", is.unit = FALSE, as.numeric = FALSE)
@@ -279,12 +279,12 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
                  if(length(change_id) > 0) {
 
                    y[change_id] <- vdistX[which(index %in% to_id[change_id])]
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      y = unit(y,"native")
                    )
                  } else {
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      y = unit(y,"native")
                    )
@@ -297,7 +297,7 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
                  if(length(change_id) > 0) {
 
                    y[change_id] <- vdistX[which(index %in% to_id[change_id])]
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      y = unit(y,"native")
                    )
@@ -317,7 +317,7 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
     lapply(index,
            function(i) {
 
-             nodesGrob$children[[i]] <<- editGrob(
+             nodesGrob$children[[i]] <<- grid::editGrob(
                grob = nodesGrob$children[[i]],
                x = unit(vdistX[which(index == i)], "native")
              )
@@ -338,7 +338,7 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
                grobi <- labelsGrob$children[[i]]
 
 
-               labelsGrob$children[[i]] <<- editGrob(
+               labelsGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
                  x = unit(vdistX[which(index == i)], "native") +
                    get_unit(grobi$x, "native", is.unit = FALSE, as.numeric = FALSE)
@@ -372,12 +372,12 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
                  if(length(change_id) > 0) {
 
                    x[change_id] <- vdistX[which(index %in% to_id[change_id])]
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      x = unit(x,"native")
                    )
                  } else {
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      x = unit(x,"native")
                    )
@@ -390,7 +390,7 @@ move_vdist_grob.l_graph <- function(loon.grob, index, swap, vdistX, temporary = 
                  if(length(change_id) > 0) {
 
                    x[change_id] <- vdistX[which(index %in% to_id[change_id])]
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      x = unit(x,"native")
                    )
