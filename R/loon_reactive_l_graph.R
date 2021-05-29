@@ -75,7 +75,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     title <- labels$title
 
     layerSet <- input[[paste0(tabPanelName, "layerSet")]]
-    currentLayer <- input[[paste0(tabPanelName, "layer")]]
+    currentLayerName <- input[[paste0(tabPanelName, "layer")]]
     newLayerLabel <- isolate(input[[paste0(tabPanelName, "newLayerLabel")]])
 
     if(layerSet > buttons["layerSet"]) {
@@ -88,12 +88,12 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         layers <- loonWidgetsInfo$layers
         layersName <- names(layers)
 
-        currentLayer <- layers[which(layersName == currentLayer)]
+        currentLayer <- layers[which(layersName == currentLayerName)]
 
       } else {
         layers <- loonWidgetsInfo$layers
         layersName <- names(layers)
-        whichLayerIsEdited <- which(layersName == currentLayer)
+        whichLayerIsEdited <- which(layersName == currentLayerName)
 
         layersName[whichLayerIsEdited] <- newLayerLabel
         names(layers) <- layersName
@@ -106,7 +106,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       layers <- loonWidgetsInfo$layers
       layersName <- names(layers)
 
-      currentLayer <- layers[which(layersName == currentLayer)]
+      currentLayer <- layers[which(layersName == currentLayerName)]
     }
 
     layerMinus <- input[[paste0(tabPanelName, "layerMinus")]]

@@ -117,7 +117,7 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
       } else {
         layers <- loonWidgetsInfo$layers
         layersName <- names(layers)
-        whichLayerIsEdited <- which(layersName == currentLayer)
+        whichLayerIsEdited <- which(layersName == currentLayerName)
 
         layersName[whichLayerIsEdited] <- newLayerLabel
         names(layers) <- layersName

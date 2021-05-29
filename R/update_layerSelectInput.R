@@ -9,9 +9,9 @@ update_layerSelectInput <- function(session, buttons, tabPanelName, layers, inpu
     if(newLayerLabel != "") {
 
       layersName <- names(layers)
-      currentLayer <- input[[paste0(tabPanelName, "layer")]]
+      currentLayerName <- input[[paste0(tabPanelName, "layer")]]
 
-      layersName[which(layersName == currentLayer)] <- newLayerLabel
+      layersName[which(layersName == currentLayerName)] <- newLayerLabel
 
       shiny::updateSelectInput(
         session,
