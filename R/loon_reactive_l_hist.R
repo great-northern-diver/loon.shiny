@@ -393,7 +393,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
     )
 
     # reset boundary
-    output.grob <- set_boundary_grob(loon.grob = output.grob,
+    output.grob <- set_boundaryGrob(loon.grob = output.grob,
                                      margins = margins,
                                      loonColor = loonColor)
 

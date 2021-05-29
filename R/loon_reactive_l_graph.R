@@ -506,9 +506,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     output.grob <- set_color_grob(
       loon.grob = output.grob,
       index = brushId,
-      color = select_color(),
-      size = loonWidgetsInfo$size,
-      pch = loonWidgetsInfo$pch
+      newColor = select_color()
     )
 
     # adjust color -------------------------------
@@ -526,9 +524,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       loon.grob <- set_color_grob(
         loon.grob = loon.grob,
         index = brushId,
-        color = colorPicker,
-        size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch
+        newColor = colorPicker
       )
 
       loonWidgetsInfo$color[brushId] <- colorPicker
@@ -543,13 +539,33 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         loon.grob <- set_color_grob(
           loon.grob = loon.grob,
           index = brushId,
-          color = col,
-          size = loonWidgetsInfo$size,
-          pch = loonWidgetsInfo$pch
+          newColor = col
         )
 
         loonWidgetsInfo$color[brushId] <- col
       }
+    }
+
+    alphaApply <- input[[paste0(tabPanelName, "alphaApply")]]
+    if(alphaApply > buttons["alphaApply"]) {
+
+      buttons["alphaApply"] <- alphaApply
+
+      alpha <- isolate(input[[paste0(tabPanelName, "alpha")]])
+
+      loon.grob <- set_alpha_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        newAlpha = alpha
+      )
+
+      output.grob <- set_alpha_grob(
+        loon.grob = output.grob,
+        index = brushId,
+        newAlpha = alpha
+      )
+
+      loonWidgetsInfo$alpha[brushId] <- alpha
     }
 
     # adjust deactive--------------------------------
@@ -877,9 +893,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         newPch = newPch,
         tmp = FALSE,
         color = loonWidgetsInfo$color,
-        size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch,
-        loonColor = loonColor
+        size = loonWidgetsInfo$size
       )
 
       output.grob <- set_glyph_grob(
@@ -888,9 +902,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         newPch = newPch,
         tmp = TRUE,
         color = loonWidgetsInfo$color,
-        size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch,
-        loonColor = loonColor
+        size = loonWidgetsInfo$size
       )
 
       loonWidgetsInfo$glyph[brushId] <- newGlyph
@@ -910,13 +922,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -932,13 +942,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -953,13 +961,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -976,13 +982,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -1074,7 +1078,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     )
 
     # reset boundary
-    output.grob <- set_boundary_grob(loon.grob = output.grob,
+    output.grob <- set_boundaryGrob(loon.grob = output.grob,
                                      margins = margins,
                                      loonColor = loonColor)
 

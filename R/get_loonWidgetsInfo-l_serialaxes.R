@@ -14,7 +14,7 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
   xlim <- viewPort[[2]]$xscale
   ylim <- viewPort[[2]]$yscale
 
-  display_order <- get_display_order(widgets)
+  displayOrder <- get_display_order(widgets)
 
   linewidth <- index <- c()
   x <- y <- list()
@@ -40,10 +40,10 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
          }
   )
 
-  x <- x[display_order]
-  y <- y[display_order]
-  linewidth <- linewidth[display_order]
-  index <- index[display_order]
+  x <- x[displayOrder]
+  y <- y[displayOrder]
+  linewidth <- linewidth[displayOrder]
+  index <- index[displayOrder]
 
   labelsGrob <- grid::getGrob(loon.grob, "axesLabels")
   lenSeqName <- length(labelsGrob$childrenOrder)
@@ -121,7 +121,7 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
     observationScaledActiveData = observationScaledActiveData,
     dataScaledActiveData = dataScaledActiveData,
     noneScaledActiveData = noneScaledActiveData,
-    display_order = display_order,
+    displayOrder = displayOrder,
     navbarMenuName = navbarMenuName,
     lastSelection = integer(0),
     loonColor = list(
@@ -129,7 +129,8 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
       foreground_color = loon::l_getOption("foreground"),
       guidesbackground_color = loon::l_getOption("guidesBackground"),
       guideslines_color = loon::l_getOption("guidelines")
-    )
+    ),
+    alpha = rep(1, N)
   )
 }
 

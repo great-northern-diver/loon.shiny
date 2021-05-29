@@ -151,6 +151,7 @@ get_loonWidgetsInfo.l_graph <- function(widgets, loon.grobs, ...) {
       foreground_color = loon::hex12tohex6(widgets["foreground"]),
       guidesbackground_color = loon::hex12tohex6(widgets["guidesBackground"]),
       guideslines_color = loon::hex12tohex6(widgets["guidelines"])
-    )
+    ),
+    alpha = rep(1, N)
   )
 }

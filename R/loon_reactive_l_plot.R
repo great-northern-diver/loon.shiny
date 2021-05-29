@@ -536,10 +536,8 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
     output.grob <- set_color_grob(
       loon.grob = output.grob,
       index = brushId,
-      color = select_color(),
-      pointsTreeName = loonWidgetsInfo$pointsTreeName,
-      size = loonWidgetsInfo$size,
-      pch = loonWidgetsInfo$pch
+      newColor = select_color(),
+      pointsTreeName = loonWidgetsInfo$pointsTreeName
     )
 
     # adjust color -------------------------------
@@ -557,10 +555,8 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
       loon.grob <- set_color_grob(
         loon.grob = loon.grob,
         index = brushId,
-        color = colorPicker,
-        pointsTreeName = loonWidgetsInfo$pointsTreeName,
-        size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch
+        newColor = colorPicker,
+        pointsTreeName = loonWidgetsInfo$pointsTreeName
       )
 
       loonWidgetsInfo$color[brushId] <- colorPicker
@@ -575,14 +571,37 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
         loon.grob <- set_color_grob(
           loon.grob = loon.grob,
           index = brushId,
-          color = col,
-          pointsTreeName = loonWidgetsInfo$pointsTreeName,
-          size = loonWidgetsInfo$size,
-          pch = loonWidgetsInfo$pch
+          newColor = col,
+          pointsTreeName = loonWidgetsInfo$pointsTreeName
         )
 
         loonWidgetsInfo$color[brushId] <- col
       }
+    }
+
+    # adjust transparency
+    alphaApply <- input[[paste0(tabPanelName, "alphaApply")]]
+    if(alphaApply > buttons["alphaApply"]) {
+
+      buttons["alphaApply"] <- alphaApply
+
+      alpha <- isolate(input[[paste0(tabPanelName, "alpha")]])
+
+      loon.grob <- set_alpha_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        newAlpha = alpha,
+        pointsTreeName = loonWidgetsInfo$pointsTreeName
+      )
+
+      output.grob <- set_alpha_grob(
+        loon.grob = output.grob,
+        index = brushId,
+        newAlpha = alpha,
+        pointsTreeName = loonWidgetsInfo$pointsTreeName
+      )
+
+      loonWidgetsInfo$alpha[brushId] <- alpha
     }
 
     # adjust deactive--------------------------------
@@ -909,7 +928,6 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
         pointsTreeName = loonWidgetsInfo$pointsTreeName,
         color = loonWidgetsInfo$color,
         size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch,
         x = if(swap) loonWidgetsInfo$y else loonWidgetsInfo$x,
         y = if(swap) loonWidgetsInfo$x else loonWidgetsInfo$y,
         grob_index = loonWidgetsInfo$index
@@ -923,7 +941,6 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
         pointsTreeName = loonWidgetsInfo$pointsTreeName,
         color = loonWidgetsInfo$color,
         size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch,
         x = if(swap) loonWidgetsInfo$y else loonWidgetsInfo$x,
         y = if(swap) loonWidgetsInfo$x else loonWidgetsInfo$y,
         grob_index = loonWidgetsInfo$index
@@ -998,15 +1015,13 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
                                    index = brushId,
                                    newSize = loonWidgetsInfo$size,
                                    roundings = loonWidgetsInfo$glyphArgs,
-                                   pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                   pch = loonWidgetsInfo$pch)
+                                   pointsTreeName = loonWidgetsInfo$pointsTreeName)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
                                      newSize = loonWidgetsInfo$size,
                                      roundings = loonWidgetsInfo$glyphArgs,
-                                     pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                     pch = loonWidgetsInfo$pch)
+                                     pointsTreeName = loonWidgetsInfo$pointsTreeName)
       }
     }
 
@@ -1024,15 +1039,13 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
                                    index = brushId,
                                    newSize = loonWidgetsInfo$size,
                                    roundings = loonWidgetsInfo$glyphArgs,
-                                   pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                   pch = loonWidgetsInfo$pch)
+                                   pointsTreeName = loonWidgetsInfo$pointsTreeName)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
                                      newSize = loonWidgetsInfo$size,
                                      roundings = loonWidgetsInfo$glyphArgs,
-                                     pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                     pch = loonWidgetsInfo$pch)
+                                     pointsTreeName = loonWidgetsInfo$pointsTreeName)
       }
     }
 
@@ -1049,15 +1062,13 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
                                    index = brushId,
                                    newSize = loonWidgetsInfo$size,
                                    roundings = loonWidgetsInfo$glyphArgs,
-                                   pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                   pch = loonWidgetsInfo$pch)
+                                   pointsTreeName = loonWidgetsInfo$pointsTreeName)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
                                      newSize = loonWidgetsInfo$size,
                                      roundings = loonWidgetsInfo$glyphArgs,
-                                     pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                     pch = loonWidgetsInfo$pch)
+                                     pointsTreeName = loonWidgetsInfo$pointsTreeName)
       }
     }
 
@@ -1076,15 +1087,13 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
                                    index = brushId,
                                    newSize = loonWidgetsInfo$size,
                                    roundings = loonWidgetsInfo$glyphArgs,
-                                   pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                   pch = loonWidgetsInfo$pch)
+                                   pointsTreeName = loonWidgetsInfo$pointsTreeName)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
                                      newSize = loonWidgetsInfo$size,
                                      roundings = loonWidgetsInfo$glyphArgs,
-                                     pointsTreeName = loonWidgetsInfo$pointsTreeName,
-                                     pch = loonWidgetsInfo$pch)
+                                     pointsTreeName = loonWidgetsInfo$pointsTreeName)
       }
     }
 
@@ -1255,7 +1264,7 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
     )
 
     # reset boundary
-    output.grob <- set_boundary_grob(loon.grob = output.grob,
+    output.grob <- set_boundaryGrob(loon.grob = output.grob,
                                      margins = margins,
                                      loonColor = loonColor)
 
