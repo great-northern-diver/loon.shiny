@@ -87,7 +87,7 @@ swap_layer_grob <- function(loon.grob, parent) {
                      vp = grobi$vp
                    )
                  )
-               } else stop("undefined layer name")
+               } else NULL
              }
            }
     )
