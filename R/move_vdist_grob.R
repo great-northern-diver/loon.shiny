@@ -84,10 +84,10 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "image_glyph")) {
 
                  imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  imageBorderGrob$y <- unit(vdistX[which(index %in% i)], "native")
-                 image_grob$y <- unit(vdistX[which(index %in% i)], "native")
+                 imageGrob$y <- unit(vdistX[which(index %in% i)], "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
@@ -98,7 +98,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else {
                  newGrob$children[[i]] <<- grid::editGrob(
@@ -178,10 +178,10 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "image_glyph")) {
 
                  imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  imageBorderGrob$x <- unit(vdistX[which(index %in% i)], "native")
-                 image_grob$x <- unit(vdistX[which(index %in% i)], "native")
+                 imageGrob$x <- unit(vdistX[which(index %in% i)], "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
@@ -192,7 +192,7 @@ move_vdist_grob.l_plot <- function(loon.grob, index, swap, vdistX, temporary = F
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else {
                  newGrob$children[[i]] <<- grid::editGrob(

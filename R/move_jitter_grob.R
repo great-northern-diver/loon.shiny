@@ -110,7 +110,7 @@ move_jitter_grob.l_plot <- function(loon.grob, index, swap, jitterxy, temporary 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
                  imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  imageBorderGrob <- grid::editGrob(
                    imageBorderGrob,
@@ -118,8 +118,8 @@ move_jitter_grob.l_plot <- function(loon.grob, index, swap, jitterxy, temporary 
                    x = unit(y[which(index %in% i)], "native")
                  )
 
-                 image_grob <- grid::editGrob(
-                   image_grob,
+                 imageGrob <- grid::editGrob(
+                   imageGrob,
                    y = unit(x[which(index %in% i)], "native"),
                    x = unit(y[which(index %in% i)], "native")
                  )
@@ -133,7 +133,7 @@ move_jitter_grob.l_plot <- function(loon.grob, index, swap, jitterxy, temporary 
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else stop("not implemented")
              }
@@ -230,7 +230,7 @@ move_jitter_grob.l_plot <- function(loon.grob, index, swap, jitterxy, temporary 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
                  imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  imageBorderGrob <- grid::editGrob(
                    imageBorderGrob,
@@ -238,8 +238,8 @@ move_jitter_grob.l_plot <- function(loon.grob, index, swap, jitterxy, temporary 
                    y = unit(y[which(index %in% i)], "native")
                  )
 
-                 image_grob <- grid::editGrob(
-                   image_grob,
+                 imageGrob <- grid::editGrob(
+                   imageGrob,
                    x = unit(x[which(index %in% i)], "native"),
                    y = unit(y[which(index %in% i)], "native")
                  )
@@ -253,7 +253,7 @@ move_jitter_grob.l_plot <- function(loon.grob, index, swap, jitterxy, temporary 
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else stop("not implemented")
              }

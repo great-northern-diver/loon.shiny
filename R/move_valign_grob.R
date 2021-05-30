@@ -83,10 +83,10 @@ move_valign_grob.l_plot <- function(loon.grob, index, swap, valignX, temporary =
                } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
                  imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  imageBorderGrob$y <- unit(valignX, "native")
-                 image_grob$y <- unit(valignX, "native")
+                 imageGrob$y <- unit(valignX, "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
@@ -97,7 +97,7 @@ move_valign_grob.l_plot <- function(loon.grob, index, swap, valignX, temporary =
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else stop("not inplemented")
              }
@@ -170,10 +170,10 @@ move_valign_grob.l_plot <- function(loon.grob, index, swap, valignX, temporary =
                } else if(grepl(newGrob$children[[i]]$name,pattern =  "image_glyph")) {
 
                  imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
                  imageBorderGrob$x <- unit(valignX, "native")
-                 image_grob$x <- unit(valignX, "native")
+                 imageGrob$x <- unit(valignX, "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
@@ -184,7 +184,7 @@ move_valign_grob.l_plot <- function(loon.grob, index, swap, valignX, temporary =
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else stop("not inplemented")
              }

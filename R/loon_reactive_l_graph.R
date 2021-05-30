@@ -892,8 +892,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         index = brushId,
         newPch = newPch,
         tmp = FALSE,
-        color = loonWidgetsInfo$color,
-        size = loonWidgetsInfo$size
+        color = loonWidgetsInfo$color
       )
 
       output.grob <- set_glyph_grob(
@@ -901,8 +900,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         index = brushId,
         newPch = newPch,
         tmp = TRUE,
-        color = loonWidgetsInfo$color,
-        size = loonWidgetsInfo$size
+        color = loonWidgetsInfo$color
       )
 
       loonWidgetsInfo$glyph[brushId] <- newGlyph
