@@ -13,12 +13,13 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
   if(pointsTreeName != "points: missing glyphs" && len > 0) {
 
     roundings <- args$roundings
-
+    changes <- args$changes
     newGrob <- grid::getGrob(loon.grob, pointsTreeName)
 
-    lapply(index,
-           function(i) {
+    lapply(seq(len),
+           function(k) {
 
+             i <- index[k]
              grobi <- newGrob$children[[i]]
 
              if(grepl(grobi$name, pattern = "primitive_glyph")) {
@@ -132,8 +133,8 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
 
                rounding <- roundings[[i]][[1]]
 
-               xRounding <- rounding$x * sqrt(newSize[i]/default_size())
-               yRounding <- rounding$y * sqrt(newSize[i]/default_size())
+               xRounding <- rounding$x * sqrt(newSize[i])
+               yRounding <- rounding$y * sqrt(newSize[i])
 
                newGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
@@ -142,24 +143,24 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
                )
              } else if(grepl(grobi$name, pattern = "image_glyph")) {
 
-               rounding <- roundings[[i]][[1]]
+               # rounding <- roundings[[i]][[1]]
 
                imageBorderGrob <- grid::getGrob(grobi, "image_border")
 
-               width <- rounding$width * sqrt(newSize[i]/default_size())
-               height <- rounding$height * sqrt(newSize[i]/default_size())
+               # width <- rounding$width * sqrt(newSize[i]/default_size())
+               # height <- rounding$height * sqrt(newSize[i]/default_size())
 
                imageBorderGrob <- grid::editGrob(
                  grob = imageBorderGrob,
-                 width = get_unit(imageBorderGrob$width, unit = "mm", as.numeric = FALSE) + unit(width, "cm"),
-                 height = get_unit(imageBorderGrob$height, unit = "mm", as.numeric = FALSE) + unit(height, "cm")
+                 width = imageBorderGrob$width + changes[k] * unit(2, "mm"),
+                 height = imageBorderGrob$height + changes[k] * unit(2, "mm")
                )
 
                imageGrob <- grid::getGrob(grobi, "image")
                imageGrob <- grid::editGrob(
                  grob = imageGrob,
-                 width = unit(width, "cm"),
-                 height = unit(height, "cm")
+                 width = imageGrob$width + changes[k] * unit(2, "mm"),
+                 height = imageGrob$height + changes[k] * unit(2, "mm")
                )
 
                newGrob$children[[i]] <<- gTree(

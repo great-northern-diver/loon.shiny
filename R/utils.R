@@ -89,6 +89,11 @@ get_unit <- function(x, unit = "native", is.unit = TRUE, as.numeric = FALSE) {
 
     y <- unclass(x)
 
+    if(!is.list(y)) {
+      if(as.numeric) return(as.numeric(x))
+      return(x)
+    }
+
     if(unit == "native" && is.unit) {
 
       unit.y <- y[[1]][[2]]

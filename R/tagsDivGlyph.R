@@ -47,6 +47,16 @@ tagsDivGlyph.default <- function(loon.grob, tabPanelName,
                        choices = "showArea",
                        selected = if(loonWidgetsInfo$nonePrimitiveGlyphSettings$showArea) "showArea")
                 )
+              } else if(any(grepl(glyphNames, pattern = "polygon"))) {
+
+                do.call(
+                  checkboxGroupInput,
+                  list(paste0(tabPanelName, "nonePrimitiveGlyphSettings"),
+                       label = "Polygon",
+                       choices = "showArea",
+                       selected = if(loonWidgetsInfo$nonePrimitiveGlyphSettings$showArea) "showArea")
+                )
+
               } else {
                 do.call(
                   helpText,

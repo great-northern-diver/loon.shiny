@@ -13,6 +13,7 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
     x <- args$x
     y <- args$y
     color <- args$color
+    alpha <- args$alpha
     loonColor <- args$loonColor
     nonePrimitiveGlyphSettings <- args$nonePrimitiveGlyphSettings
 
@@ -35,17 +36,19 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                points_grob$children[[i]] <<- if(showArea) {
 
                  grid::polygonGrob(x = grid::unit(x[i], "native") + grid::unit(poly_x, "mm"),
-                                         y = grid::unit(y[i], "native") + grid::unit(poly_y, "mm"),
-                                         gp = grid::gpar(
-                                           fill = color
-                                         ),
-                                         name = glyphNames
+                                   y = grid::unit(y[i], "native") + grid::unit(poly_y, "mm"),
+                                   gp = grid::gpar(
+                                     fill = color,
+                                     alpha = alpha[i]
+                                   ),
+                                   name = glyphNames
                  )
                } else {
                  grid::polylineGrob(x = grid::unit(x[i], "native") + grid::unit(c(poly_x, poly_x[1]), "mm"),
                                     y = grid::unit(y[i], "native") + grid::unit(c(poly_y, poly_y[1]), "mm"),
                                     gp = grid::gpar(
-                                      col =  color
+                                      col =  color,
+                                      alpha = alpha[i]
                                     ),
                                     name = glyphNames
                  )
@@ -71,14 +74,16 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                    children = gList(
                      if(nonePrimitiveGlyphSettings$showArea) {
                        grid::polygonGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
-                                               y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
-                                               gp = grid::gpar(fill = color,
-                                                               col = NA),
-                                               name = "polyline: showArea")
+                                         y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
+                                         gp = grid::gpar(fill = color,
+                                                         col = NA,
+                                                         alpha = alpha[i]),
+                                         name = "polyline: showArea")
                      } else {
                        grid::linesGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
                                        y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
-                                       gp = grid::gpar(col = color),
+                                       gp = grid::gpar(col = color,
+                                                       alpha = alpha[i]),
                                        name = "polyline")
                      },
                      loon::condGrob(
@@ -129,14 +134,16 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                      ),
                      if(nonePrimitiveGlyphSettings$showArea) {
                        grid::polygonGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
-                                               y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
-                                               gp = grid::gpar(fill = color,
-                                                               col = NA),
-                                               name = "polyline: showArea")
+                                         y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
+                                         gp = grid::gpar(fill = color,
+                                                         col = NA,
+                                                         alpha = alpha[i]),
+                                         name = "polyline: showArea")
                      } else {
                        grid::linesGrob(x = grid::unit(x[i], "native") + grid::unit(xRounding, "mm"),
                                        y = grid::unit(y[i], "native") + grid::unit(yRounding, "mm"),
-                                       gp = grid::gpar(col = color),
+                                       gp = grid::gpar(col = color,
+                                                       alpha = alpha[i]),
                                        name = "polyline")
                      }
                    ), name = glyphNames
@@ -157,7 +164,8 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                                   height = grid::unit(height, "cm") + grid::unit(2, "mm"),
                                   gp = grid::gpar(
                                     fill = color,
-                                    col = NA
+                                    col = NA,
+                                    alpha = alpha[i]
                                   ),
                                   name = "image_border"),
                    rasterGrob(rounding$raster,
@@ -177,7 +185,8 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                                                             x = grid::unit(x[i], "native"),
                                                             y = grid::unit(y[i], "native"),
                                                             gp=grid::gpar(fontsize = loon_default_size()[["adjusted_size"]] * size[i],
-                                                                          col = color),
+                                                                          col = color,
+                                                                          alpha = alpha[i]),
                                                             name = glyphNames
                )
              }  else if(grepl(glyphNames,pattern =  "pointrange_glyph")) {
@@ -189,14 +198,16 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                      grid::pointsGrob(x = grid::unit(x[i], "native"),
                                       y = grid::unit(y[i], "native"),
                                       gp = grid::gpar(fill = color,
-                                                      cex = size[i]),
+                                                      cex = size[i],
+                                                      alpha = alpha[i]),
                                       pch = 21,
                                       name = "point")
                    } else {
                      grid::pointsGrob(x = grid::unit(x[i], "native"),
                                       y = grid::unit(y[i], "native"),
                                       gp = grid::gpar(col = color,
-                                                      cex = size[i]),
+                                                      cex = size[i],
+                                                      alpha = alpha[i]),
                                       pch = 19,
                                       name = "point")
                    },

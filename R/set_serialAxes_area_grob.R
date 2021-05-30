@@ -1,55 +1,60 @@
-set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, showArea, swap = NULL, whichIsDeactive) {
+set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, showArea, whichIsDeactive) {
 
   newGrob <- grid::getGrob(loon.grob, pointsTreeName)
 
-  serialaxes_and_active <- setdiff(which(grepl(glyphNames, pattern = "serialaxes")), whichIsDeactive)
+  active <- setdiff(which(grepl(glyphNames, pattern = "serialaxes")), whichIsDeactive)
 
-  if(length(serialaxes_and_active) > 0) {
+  if(length(active) > 0) {
 
-    lapply(serialaxes_and_active,
+    lapply(active,
            function(i) {
-             serialaxes_tree <- newGrob$children[[i]]
+             grobi <- newGrob$children[[i]]
 
-             serialaxesGrob <- grid::getGrob(newGrob$children[[i]], "polyline")
+
+             serialaxesGrob <- grid::getGrob(grobi, "polyline")
              if(is.null(serialaxesGrob)) {
-               serialaxesGrob <- grid::getGrob(newGrob$children[[i]], "polyline: showArea")
-               serialaxesGrob_name <-  "polyline: showArea"
+               serialaxesGrob <- grid::getGrob(grobi, "polyline: showArea")
+               serialaxesGrobName <-  "polyline: showArea"
              } else {
-               serialaxesGrob_name <-  "polyline"
+               serialaxesGrobName <-  "polyline"
              }
 
-             if(grepl(serialaxes_tree$name, pattern = "parallel")) {
+             gp <- serialaxesGrob$gp
+
+             if(grepl(grobi$name, pattern = "parallel")) {
                if(showArea) {
                  if(!is(serialaxesGrob, "polygon")) {
+
+                   gp$fill <- gp$col
+
                    newGrob$children[[i]] <<- grid::setGrob(
-                     gTree = newGrob$children[[i]],
-                     gPath = serialaxesGrob_name,
+                     gTree = grobi,
+                     gPath = serialaxesGrobName,
                      newGrob =  grid::editGrob(
                        grob =  do.call(
                          grid::polygonGrob,
-                         args = polyline2gon(Filter(Negate(is.null),
-                                                    x = getGrobArgs(serialaxesGrob)))
+                         args = polyline2gon4parallel(Filter(Negate(is.null),
+                                                      getGrobArgs(serialaxesGrob)))
                        ),
-                       gp = gpar(
-                         fill = serialaxesGrob$gp$col
-                       )
+                       gp = gp
                      )
                    )
                  }
                } else {
                  if(!is(serialaxesGrob, "lines")) {
+
+                   gp$col <- gp$fill %||% gp$col
+
                    newGrob$children[[i]] <<- grid::setGrob(
-                     gTree = newGrob$children[[i]],
-                     gPath = serialaxesGrob_name,
+                     gTree = grobi,
+                     gPath = serialaxesGrobName,
                      newGrob = grid::editGrob(
                        grob = do.call(
                          grid::linesGrob,
-                         args = polygon2line(Filter(Negate(is.null),
-                                                    x = getGrobArgs(serialaxesGrob)))
+                         args = polygon2line4parallel(Filter(Negate(is.null),
+                                                      getGrobArgs(serialaxesGrob)))
                        ),
-                       gp = gpar(
-                         col = serialaxesGrob$gp$fill
-                       )
+                       gp = gp
                      )
                    )
                  }
@@ -58,34 +63,37 @@ set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, show
                # radial axes
                if(showArea) {
                  if(!is(serialaxesGrob, "polygon")) {
+
+                   gp$fill <- gp$col
+
                    newGrob$children[[i]] <<- grid::setGrob(
-                     gTree = newGrob$children[[i]],
-                     gPath = serialaxesGrob_name,
+                     gTree = grobi,
+                     gPath = serialaxesGrobName,
                      newGrob = grid::editGrob(
                        grob = do.call(
                          grid::polygonGrob,
                          args = Filter(Negate(is.null),
-                                       x = getGrobArgs(serialaxesGrob))
+                                       getGrobArgs(serialaxesGrob))
                        ),
-                       gp = gpar(
-                         fill = serialaxesGrob$gp$col
-                       )
+                       gp = gp
                      )
                    )
                  }
                } else {
                  if(!is(serialaxesGrob, "lines")) {
+
+                   gp$col <- gp$fill %||% gp$col
+
                    newGrob$children[[i]] <<- grid::setGrob(
-                     gTree = newGrob$children[[i]],
-                     gPath = serialaxesGrob_name,
+                     gTree = grobi,
+                     gPath = serialaxesGrobName,
                      newGrob = grid::editGrob(
                        grob = do.call(
                          grid::linesGrob,
-                         args = Filter(Negate(is.null), x = getGrobArgs(serialaxesGrob))
+                         args = Filter(Negate(is.null),
+                                       getGrobArgs(serialaxesGrob))
                        ),
-                       gp = gpar(
-                         col = serialaxesGrob$gp$fill
-                       )
+                       gp = gp
                      )
                    )
                  }
@@ -103,76 +111,53 @@ set_serialAxes_area_grob <- function(loon.grob, pointsTreeName, glyphNames, show
   )
 }
 
-polygon2line <- function(grobArgs) {
+polygon2line4parallel <- function(grobArgs) {
   x <- grobArgs$x
   y <- grobArgs$y
 
-  center_x <- unique(get_unit(x, "native", as.numeric = TRUE))
+  centerX <- unique(get_unit(x, "native", as.numeric = TRUE))
   xx <- get_unit(x, "native", is.unit = FALSE, as.numeric = TRUE)
-  rounding_x <- xx[1:(length(xx)/2)]
+  roundingX <- xx[seq(length(xx)/2)]
 
-  center_y <- unique(get_unit(y, "native", as.numeric = TRUE))
+  centerY <- unique(get_unit(y, "native", as.numeric = TRUE))
   yy <- get_unit(y, "native", is.unit = FALSE, as.numeric = TRUE)
-  rounding_y <- yy[1:(length(yy)/2)]
+  roundingY <- yy[seq(length(yy)/2)]
 
   grobArgs$x <- NULL
   grobArgs$y <- NULL
 
   c(
     list(
-      x = unit(center_x, "native") + unit(rounding_x, "mm"),
-      y = unit(center_y, "native") + unit(rounding_y, "mm")
+      x = unit(centerX, "native") + unit(roundingX, "mm"),
+      y = unit(centerY, "native") + unit(roundingY, "mm")
     ),
     grobArgs
   )
 
 }
 
-polygon2line <- function(grobArgs) {
-  x <- grobArgs$x
-  y <- grobArgs$y
 
-  center_x <- unique(get_unit(x, "native", as.numeric = TRUE))
-  xx <- get_unit(x, "native", is.unit = FALSE, as.numeric = TRUE)
-  rounding_x <- xx[1:(length(xx)/2)]
-
-  center_y <- unique(get_unit(y, "native", as.numeric = TRUE))
-  yy <- get_unit(y, "native", is.unit = FALSE, as.numeric = TRUE)
-  rounding_y <- yy[1:(length(yy)/2)]
-
-  grobArgs$x <- NULL
-  grobArgs$y <- NULL
-
-  c(
-    list(
-      x = unit(center_x, "native") + unit(rounding_x, "mm"),
-      y = unit(center_y, "native") + unit(rounding_y, "mm")
-    ),
-    grobArgs
-  )
-}
-
-polyline2gon <- function(grobArgs) {
+polyline2gon4parallel <- function(grobArgs) {
   x <- grobArgs$x
   y <- grobArgs$y
 
   scaleY <- serialAxes_scale()
 
-  center_x <- unique(get_unit(x, "native", as.numeric = TRUE))
+  centerX <- unique(get_unit(x, "native", as.numeric = TRUE))
   xx <- get_unit(x, "native", is.unit = FALSE, as.numeric = TRUE)
-  rounding_x <- c(xx, rev(xx))
+  roundingX <- c(xx, rev(xx))
 
-  center_y <- unique(get_unit(y, "native", as.numeric = TRUE))
+  centerY <- unique(get_unit(y, "native", as.numeric = TRUE))
   yy <- get_unit(y, "native", is.unit = FALSE, as.numeric = TRUE)
-  rounding_y <- c(yy, scaleY * rep(1,length(yy)))
+  roundingY <- c(yy, scaleY * rep(1,length(yy)))
 
   grobArgs$x <- NULL
   grobArgs$y <- NULL
 
   c(
     list(
-      x = unit(center_x, "native") + unit(rounding_x, "mm"),
-      y = unit(center_y, "native") + unit(rounding_y, "mm")
+      x = unit(centerX, "native") + unit(roundingX, "mm"),
+      y = unit(centerY, "native") + unit(roundingY, "mm")
     ),
     grobArgs
   )
