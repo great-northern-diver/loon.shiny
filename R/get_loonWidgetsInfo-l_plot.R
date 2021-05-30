@@ -1,6 +1,6 @@
 get_loonWidgetsInfo.l_plot <- function(widgets,
-                                        loon.grobs,
-                                        ...) {
+                                       loon.grobs,
+                                       ...) {
 
   ############# **all coordinates are un-flipped** #############
   args <- list(...)
@@ -20,9 +20,10 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
   N <- length(points_layer)
   # In loonGrob, selected points will be drawn on top. Hence, we need to reset it and maintain the original order
   displayOrder <- get_display_order(widgets)
+  widgetsSize <- widgets["size"]/as.numeric(loon::l_getOption("size"))
 
   if(N > 0) {
-    lapply(1:N,
+    lapply(seq(N),
            function(i){
 
              point_layer <- points_layer[[i]]
@@ -51,20 +52,20 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
                    )
                } else if(grepl(glyphName, pattern = "image_glyph")) {
 
-                 image_grob <- grid::getGrob(point_layer, "image")
+                 imageGrob <- grid::getGrob(point_layer, "image")
                  imageBorderGrob <- grid::getGrob(point_layer, "image_border")
 
-                 x[i] <<- image_grob$x
-                 y[i] <<- image_grob$y
+                 x[i] <<- imageGrob$x
+                 y[i] <<- imageGrob$y
                  pch[i] <<- "image"
-                 size[i] <<- default_size()
+                 size[i] <<- widgetsSize[i]
 
                  glyphArgs[[i]] <<- setNames(
                    list(
                      list(
-                       width =  as.numeric(image_grob$width),
-                       height = as.numeric(image_grob$height),
-                       raster = image_grob$raster
+                       width =  as.numeric(imageGrob$width),
+                       height = as.numeric(imageGrob$height),
+                       raster = imageGrob$raster
                      )
                    ),
                    glyphName
@@ -72,8 +73,8 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  xyOriginal[[i]] <<-
                    list(
-                     x = image_grob$x,
-                     y = image_grob$y,
+                     x = imageGrob$x,
+                     y = imageGrob$y,
                      x_border = imageBorderGrob$x,
                      y_border = imageBorderGrob$y
                    )
@@ -96,15 +97,15 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  xyOriginal[[i]] <<-
                    list(
-                     y = point_layer$x,
-                     x = point_layer$y
+                     y = point_layer$y,
+                     x = point_layer$x
                    )
 
                } else if(grepl(glyphName, pattern = "polygon_glyph")) {
 
                  x[i] <<- get_unit(point_layer$x, as.numeric = TRUE)
                  y[i] <<-get_unit(point_layer$y, as.numeric = TRUE)
-                 size[i] <<- default_size()
+                 size[i] <<- widgetsSize[i]
                  pch[i] <<- "polygon"
 
                  glyphArgs[[i]] <<- setNames(
@@ -208,7 +209,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  x[i] <<- get_unit(serialaxesGrob$x, as.numeric = TRUE)
                  y[i] <<- get_unit(serialaxesGrob$y, as.numeric = TRUE)
-                 size[i] <<- default_size()
+                 size[i] <<- widgetsSize[i]
                  pch[i] <<- ifelse(grepl(glyphName, pattern = "radial"),
                                    "serialaxes radial",
                                    "serialaxes parallel")
@@ -272,6 +273,17 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
         # showArea of not
         showArea <- if(pch[which_is_pointrange] == 21) TRUE else FALSE
+        list(
+          showArea  =  showArea
+        )
+      } else if(any(grepl(glyphNames, pattern = "polygon"))){
+        # pick the first one (They share the same enclosing and axes)
+        which_is_polygon <- which(grepl(glyphNames, pattern = "polygon"))[1L]
+        point_layer <- points_layer[[which_is_polygon]]
+
+        # showArea of not
+        showArea <- grepl(point_layer$name, pattern = "showArea")
+
         list(
           showArea  =  showArea
         )
