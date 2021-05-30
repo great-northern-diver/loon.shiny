@@ -166,9 +166,9 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  serialaxesGrob <- grid::getGrob(grobi, "polyline")
                  if(is.null(serialaxesGrob)) {
                    serialaxesGrob <- grid::getGrob(grobi, "polyline: showArea")
-                   serialaxesGrob_name <-  "polyline: showArea"
+                   serialaxesGrobName <-  "polyline: showArea"
                  } else {
-                   serialaxesGrob_name <-  "polyline"
+                   serialaxesGrobName <-  "polyline"
                  }
 
                  # set size
@@ -223,8 +223,8 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                  # set color
                  if("color" %in% linkedStates) {
-                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrob_name)
-                   if(serialaxesGrob_name == "polyline: showArea") {
+                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrobName)
+                   if(serialaxesGrobName == "polyline: showArea") {
                      serialaxesGrob$gp$fill <- color[i]
                    } else {
                      serialaxesGrob$gp$col <- color[i]
@@ -232,7 +232,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                    grobi <- grid::setGrob(
                      gTree = grobi,
-                     gPath = serialaxesGrob_name,
+                     gPath = serialaxesGrobName,
                      newGrob = serialaxesGrob
                    )
                  }
@@ -290,9 +290,9 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  new.loon.grob$children[[i]] <<- grobi
                  new.output.grob$children[[i]] <<- if("selected" %in% linkedStates && selected[i]) {
 
-                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrob_name)
+                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrobName)
 
-                   if(serialaxesGrob_name == "polyline: showArea") {
+                   if(serialaxesGrobName == "polyline: showArea") {
                      serialaxesGrob$gp$fill <- select_color()
                    } else {
                      serialaxesGrob$gp$col <- select_color()
@@ -300,7 +300,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                    grid::setGrob(
                      gTree = grobi,
-                     gPath = serialaxesGrob_name,
+                     gPath = serialaxesGrobName,
                      newGrob = serialaxesGrob
                    )
                  } else grobi
@@ -543,7 +543,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                        unit(rounding$height * sqrt(size[i]/default_size()), "cm")
                    )
 
-                   image_grob <- grid::editGrob(
+                   imageGrob <- grid::editGrob(
                      grob = grid::getGrob(grobi, "image"),
                      width = unit(rounding$width * sqrt(size[i]/default_size()), "cm"),
                      height = unit(rounding$height * sqrt(size[i]/default_size()), "cm")
@@ -552,7 +552,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    grobi <- gTree(
                      children = gList(
                        imageBorderGrob,
-                       image_grob
+                       imageGrob
                      ),
                      name =  grobi$name
                    )

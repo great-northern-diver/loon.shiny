@@ -51,10 +51,11 @@ set_color_grob.l_plot <- function(loon.grob, index, newColor, ...) {
                  polyline_grob <- grid::getGrob(grobi, "polyline: showArea")
                  polyline_grob_name <-  "polyline: showArea"
                  polyline_grob$gp$fill <- newColor[k]
-                 polyline_grob$gp$col <- NULL
+                 polyline_grob$gp$col <- newColor[k]
                } else {
                  polyline_grob_name <-  "polyline"
                  polyline_grob$gp$col <- newColor[k]
+                 polyline_grob$gp$fill <- newColor[k]
                }
 
                grid::setGrob(
