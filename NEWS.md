@@ -10,6 +10,8 @@
 
 5. new argument `displayedPanel`: The default is an empty string `""` so that none inspector components (`Plot`, `Linking`, `Select`, etc) are open automatically. The available strings are `c("Plot", "Select", "Linking", "Modify", "Layer", "Glyph")`
 
+6. Transparency can be adjusted for points
+
 # loon.shiny 0.1.0
 
 Date of Birth: 2021-05-10
