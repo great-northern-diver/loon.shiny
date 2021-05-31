@@ -20,7 +20,7 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
   x <- y <- list()
   N <- length(axesGrob$children)
 
-  lapply(1:N,
+  lapply(seq(N),
          function(i){
 
            child <- axesGrob$children[[i]]
@@ -71,14 +71,20 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
     minD <- min(dat)
     maxD <- max(dat)
 
+    denominator <- (apply2max  - apply2min)
+    denominator[denominator == 0] <- 1
+
     variableScaledActiveData <- t(
-      (t(activeData) - apply2min)/
-        (apply2max  - apply2min)
+      (t(activeData) - apply2min)/denominator
     )
 
-    observationScaledActiveData <- (activeData - apply1min) / (apply1max - apply1min)
+    denominator <- (apply1max - apply1min)
+    denominator[denominator == 0] <- 1
+    observationScaledActiveData <- (activeData - apply1min) / denominator
 
-    dataScaledActiveData <- (activeData - minD)/ (maxD - minD)
+    denominator <- (maxD - minD)
+    denominator[denominator == 0] <- 1
+    dataScaledActiveData <- (activeData - minD)/ denominator
     noneScaledActiveData <- activeData
   }
 
