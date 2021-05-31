@@ -10,7 +10,9 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
   loonWidgetsInfo <- outputInfo$loonWidgetsInfo
   pull <- input[[paste0(tabPanelName, "pull")]]
 
-  if(!is.null(output.grob) && (input[["navBarPage"]] != tabPanelName || pull > buttons["pull"])) {
+  initialDisplay <- is.null(output.grob)
+
+  if(!initialDisplay && (input[["navBarPage"]] != tabPanelName || pull > buttons["pull"])) {
 
     if(pull > buttons["pull"]) {
       buttons["pull"] <- pull
@@ -46,10 +48,9 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
     }
   } else {
 
-    isFirstDraw <- is.null(output.grob)
     output.grob <- loon.grob
-
     loonColor <- loonWidgetsInfo$loonColor
+
     # interactive ------------------------------------------------------
     plotAxes1 <- input[[paste0(tabPanelName, "plotAxes1")]]
     plotAxes2 <- input[[paste0(tabPanelName, "plotAxes2")]]
@@ -398,13 +399,16 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
                                      loonColor = loonColor)
 
     # +++++++++++++++++++++++++++++++++++++++++ set other aesthetic ++++++++++++++++++++++++++++++++++++++++
-    brushId <- if(isFirstDraw) {
+    brushId <- if(initialDisplay) {
 
       outputInfo$brushId
+
     } else {
 
       if(is.null(input$plotBrush) & is.null(input$plotClick)) {
+
         outputInfo$brushId
+
       } else {
 
         get_brushId(

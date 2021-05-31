@@ -30,7 +30,9 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
   loonWidgetsInfo <- outputInfo$loonWidgetsInfo
   pull <- input[[paste0(tabPanelName, "pull")]]
 
-  if(!is.null(output.grob) && (input[["navBarPage"]] != tabPanelName || pull > buttons["pull"])) {
+  initialDisplay <- is.null(output.grob)
+
+  if(!initialDisplay && (input[["navBarPage"]] != tabPanelName || pull > buttons["pull"])) {
 
     if(pull > buttons["pull"]) {
       buttons["pull"] <- pull
@@ -66,9 +68,9 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
     }
   } else {
 
-    isFirstDraw <- is.null(output.grob)
     output.grob <- loon.grob
     loonColor <- loonWidgetsInfo$loonColor
+
     # interactive ------------------------------------------------------
     plotAxes1 <- input[[paste0(tabPanelName, "plotAxes1")]]
     plotAxes2 <- input[[paste0(tabPanelName, "plotAxes2")]]
@@ -175,7 +177,7 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
     sliderylim <- input[[paste0(tabPanelName, "ylim")]]
 
     # TODO: more tests are needed
-    # brushId <- if(isFirstDraw) {
+    # brushId <- if(initialDisplay) {
     #
     #   outputInfo$brushId
     # } else {
@@ -200,6 +202,8 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
     #     )
     #   }
     # }
+
+    # for plot region
     brushId <- outputInfo$brushId
 
     if(swap) {
@@ -413,11 +417,16 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
     }
 
     ############ Begin: set brushId ############
-    brushId <- if(!isFirstDraw) {
+    brushId <- if(initialDisplay) {
+
+      outputInfo$brushId
+
+    } else {
       # sweeping or brushing
       if(is.null(input$plotBrush) && is.null(input$plotClick)) {
 
         outputInfo$brushId
+
       } else {
 
         get_brushId(
@@ -1326,8 +1335,8 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
     # reset boundary
     output.grob <- set_boundaryGrob(loon.grob = output.grob,
-                                     margins = margins,
-                                     loonColor = loonColor)
+                                    margins = margins,
+                                    loonColor = loonColor)
 
     # set linking info
     push <- input[[paste0(tabPanelName, "push")]]
