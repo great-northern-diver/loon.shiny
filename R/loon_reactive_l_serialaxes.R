@@ -1,8 +1,8 @@
 loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, buttons, position, selectBy,
                                        linkingGroup, input, colorList, tabPanelName, outputInfo) {
 
-  input$plotBrush
-  input$plotClick
+  plotBrush <- input$plotBrush
+  plotClick <- input$plotClick
 
   loonWidgetsInfo <- outputInfo$loonWidgetsInfo
   pull <- input[[paste0(tabPanelName, "pull")]]
@@ -431,7 +431,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
 
     } else {
 
-      if(is.null(input$plotBrush) & is.null(input$plotClick)) {
+      if(is.null(plotBrush) && is.null(plotClick)) {
 
         outputInfo$brushId
 
@@ -444,7 +444,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
             y = loonWidgetsInfo$y
           ),
           position = position,
-          brushInfo = input$plotBrush,
+          brushInfo = plotBrush,
           vp = viewPort,
           axesLayoutInShiny = axesLayoutInShiny
         )
@@ -459,7 +459,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
       if(!is.null(selectByColor)) {
 
         # when selectByColor is on, we can use brush to clear selection but keep brush id
-        loonWidgetsInfo$lastSelection <- if(!is.null(input$plotBrush) | !is.null(input$plotClick)) brushId else integer(0)
+        loonWidgetsInfo$lastSelection <- if(!is.null(plotBrush) || !is.null(plotClick)) brushId else integer(0)
         brushId <- which(loonWidgetsInfo$color %in% selectByColor)
       } else {
 
@@ -477,7 +477,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
         whichIsSelected <- which(loonWidgetsInfo$selected)
       }
 
-      if(is.null(input$plotBrush)) {
+      if(is.null(plotBrush)) {
         brushId <- whichIsSelected
       } else {
         brushId <- union(whichIsSelected, brushId)
