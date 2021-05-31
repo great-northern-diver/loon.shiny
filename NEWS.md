@@ -1,4 +1,4 @@
-# loon.shiny 0.1.1
+# loon.shiny 1.0.0 
 
 1. "clean" the code, i.e. representing variables with Camel case and functions with underscore case; give more meaningful names; remove hacks, etc.
 

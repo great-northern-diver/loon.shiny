@@ -1,8 +1,8 @@
 update_colorCheckboxGroupInput <- function(session, linkingGroup, linkingGroups, tabPanelName, tabPanelNames, selectByColor, input,
                                            loonGrob_color, buttons, colorList) {
 
-  input$plotClick
-  input$plotBrush
+  plotClick <- input$plotClick
+  plotBrush <- input$plotBrush
 
   colorListButtons <- setNames(
     lapply(colorList, function(col) input[[paste0(tabPanelName, col)]]),
@@ -57,7 +57,7 @@ update_colorCheckboxGroupInput <- function(session, linkingGroup, linkingGroups,
                                                                 style = paste0("color: ", hexColor[i], ";")))
                                       }),
                  choiceValues = unique(c(loonGrob_color, selectByColor)),
-                 selected = if(is.null(selectByColor) | !is.null(input$plotClick) | !is.null(input$plotBrush)) character(0) else selectByColor
+                 selected = if(is.null(selectByColor) || !is.null(plotClick) | !is.null(plotBrush)) character(0) else selectByColor
                )
              }
       )
@@ -80,7 +80,7 @@ update_colorCheckboxGroupInput <- function(session, linkingGroup, linkingGroups,
                                                                 style = paste0("color: ", hexColor[i], ";")))
                                       }),
                  choiceValues = unique(c(loonGrob_color, selectByColor, input[[paste0(tabPanelName, "colorPicker")]])),
-                 selected = if(is.null(selectByColor) || !is.null(input$plotClick) || !is.null(input$plotBrush)) character(0) else selectByColor
+                 selected = if(is.null(selectByColor) || !is.null(plotClick) || !is.null(plotBrush)) character(0) else selectByColor
                )
              }
       )
@@ -146,7 +146,7 @@ update_colorCheckboxGroupInput <- function(session, linkingGroup, linkingGroups,
     }
   }
 
-  if(!is.null(input$plotClick) || !is.null(input$plotBrush)) {
+  if(!is.null(plotClick) || !is.null(plotBrush)) {
     shiny::updateCheckboxGroupInput(
       session,
       inputId = paste0(tabPanelName, "selectByColor"),

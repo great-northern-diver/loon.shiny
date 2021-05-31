@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="Automatically Create a shiny App Based on Interactive Loon Widgets — loon.shiny" />
-<meta property="og:description" content="Interactive loon widgets displayed in shiny app" />
+<meta property="og:description" content="Interactive loon widgets displayed in a shiny app" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">loon.shiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Interactive <code>loon</code> widgets displayed in <code>shiny</code> app</p>
+    <p>Interactive <code>loon</code> widgets displayed in a <code>shiny</code> app</p>
     </div>
 
     <pre class="usage"><span class='fu'>loon.shiny</span><span class='op'>(</span>
@@ -247,9 +247,23 @@ parent container.</p></td>
 Printing the object or passing it to <code>runApp</code> will run the app.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Useful hints:</p><ul>
-<li><p>The effect of any <code>actionButton</code>s can be terminated by a simple click on canvas.</p></li>
-<li><p>The choices of 'selectByColor' can be updated by double click on color 'apply' <code>actionButton</code>.</p></li>
+    
+<ul>
+<li><p>Useful hints for a <code>loon.shiny</code> app
+ 
+ <ul>
+<li><p>The inspector can be switched either by ``toggling tabpanel'' in the bar menu or
+ the last mouse gesture input (<code>&lt;double-click&gt;</code>) on the plot region</p></li>
+<li><p>To downlight the selected elements, one has to double click on the plot region</p></li>
+<li><p>In <code>loon</code>, holding down the <code>&lt;shift&gt;</code> key while pressing the left button keeps the current selection states.
+ In <code>loon.shiny</code> app, <code>&lt;shift&gt;</code> key is replaced by a `sticky` radiobutton. If the `sticky` mode is on,
+ while sweeping, current selection states remain; else new selection will eliminate the previous selection states.</p></li>
+</ul></p></li>
+<li><p>Useful hints for a <code>loon.shiny</code> markdown file
+ <ul>
+<li><p>Based on our experience, setting `out.width` or `out.height` (try "10px") in the chunk could give a better layout</p></li>
+<li><p>To modify the app size, set `options = list(height = **, width = **)` in <code>loon.shiny()</code></p></li>
+</ul></p></li>
 </ul>
 
 

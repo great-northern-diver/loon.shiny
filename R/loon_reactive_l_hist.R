@@ -4,8 +4,8 @@
 loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, position, selectBy,
                                  linkingGroup, input, colorList, tabPanelName, outputInfo) {
 
-  input$plotBrush
-  input$plotClick
+  plotBrush <- input$plotBrush
+  plotClick <- input$plotClick
 
   loonWidgetsInfo <- outputInfo$loonWidgetsInfo
   pull <- input[[paste0(tabPanelName, "pull")]]
@@ -405,7 +405,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
     } else {
 
-      if(is.null(input$plotBrush) & is.null(input$plotClick)) {
+      if(is.null(plotBrush) && is.null(plotClick)) {
 
         outputInfo$brushId
 
@@ -416,14 +416,14 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
           coord = binxy,
           swapInShiny = swapInShiny,
           position = position,
-          brushInfo = input$plotBrush,
+          brushInfo = plotBrush,
           vp = grid::vpStack(
             grid::plotViewport(margins = margins, name = "grid::plotViewport"),
             grid::dataViewport(xscale = xlim,
                                yscale = ylim,
                                name = "dataViewport")
           ),
-          clickInfo = input$plotClick
+          clickInfo = plotClick
         )
       }
     }
@@ -439,7 +439,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
       if(!is.null(selectByColor)) {
 
         # when selectByColor is on, we can use brush to clear selection but keep brush id
-        loonWidgetsInfo$lastSelection <- if(!is.null(input$plotBrush) || !is.null(input$plotClick)) brushId else integer(0)
+        loonWidgetsInfo$lastSelection <- if(!is.null(plotBrush) || !is.null(plotClick)) brushId else integer(0)
         brushId <- which(color %in% selectByColor)
 
       } else {
@@ -449,7 +449,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
       }
 
       if("deselect" == selectDynamic) {
-        if(!is.null(input$plotBrush) | !is.null(input$plotClick)) brushId <- integer(0)
+        if(!is.null(plotBrush) || !is.null(plotClick)) brushId <- integer(0)
       }
 
     } else {
@@ -467,7 +467,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
       if("invert" == selectDynamic) {
 
-        if(is.null(input$plotBrush)) {
+        if(is.null(plotBrush)) {
           brushId <- whichIsSelected
         } else {
           brushId <- union(setdiff(whichIsSelected, brushId),
@@ -475,7 +475,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
         }
       } else if("deselect" == selectDynamic) {
 
-        if(is.null(input$plotBrush)) {
+        if(is.null(plotBrush)) {
           brushId <- whichIsSelected
         } else {
           brushId <- setdiff(whichIsSelected, brushId)
@@ -483,7 +483,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
       } else {
 
-        if(is.null(input$plotBrush)) {
+        if(is.null(plotBrush)) {
           brushId <- whichIsSelected
         } else {
           brushId <- union(whichIsSelected, brushId)

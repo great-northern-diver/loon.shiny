@@ -2,16 +2,16 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
                                   linkingGroup, input, colorList, tabPanelName, outputInfo) {
 
   # for loon_reactive.l_graph
-  # most logics are identical
-  input$plotBrush
-  input$plotClick
+  # most logics are identical to that of l_plot
+  plotBrush <- input$plotBrush
+  plotClick <- input$plotClick
 
   loonWidgetsInfo <- outputInfo$loonWidgetsInfo
   pull <- input[[paste0(tabPanelName, "pull")]]
 
   initialDisplay <- is.null(output.grob)
 
-  if(!is.null(output.grob) && (input[["navBarPage"]] != tabPanelName|| pull > buttons["pull"])) {
+  if(!is.null(output.grob) && (input[["navBarPage"]] != tabPanelName || pull > buttons["pull"])) {
 
     if(pull > buttons["pull"]) {
       buttons["pull"] <- pull
@@ -159,7 +159,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     #
     #   outputInfo$brushId
     # } else {
-    #   if(is.null(input$plotBrush) & is.null(input$plotClick)) {
+    #   if(is.null(plotBrush) & is.null(plotClick)) {
     #
     #     outputInfo$brushId
     #   } else {
@@ -173,9 +173,9 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     #       swapInShiny = swapInShiny,
     #       swapInLoon = swapInLoon,
     #       position = position,
-    #       brushInfo = input$plotBrush,
+    #       brushInfo = plotBrush,
     #       vp = get_viewPort(loon.grob = output.grob),
-    #       clickInfo = input$plotClick
+    #       clickInfo = plotClick
     #     )
     #   }
     # }
@@ -395,7 +395,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
     } else {
       # sweeping or brushing
-      if(is.null(input$plotBrush) && is.null(input$plotClick)) {
+      if(is.null(plotBrush) && is.null(plotClick)) {
 
         outputInfo$brushId
 
@@ -410,14 +410,14 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
           swapInShiny = swapInShiny,
           swapInLoon = swapInLoon,
           position = position,
-          brushInfo = input$plotBrush,
+          brushInfo = plotBrush,
           vp = grid::vpStack(
             grid::plotViewport(margins = margins, name = "grid::plotViewport"),
             grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
                          yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
                          name = "dataViewport")
           ),
-          clickInfo = input$plotClick
+          clickInfo = plotClick
         )
       }
     }
@@ -433,7 +433,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       if(!is.null(selectByColor)) {
 
         # when selectByColor is on, we can use brush to clear selection but keep brush id
-        loonWidgetsInfo$lastSelection <- if(!is.null(input$plotBrush) | !is.null(input$plotClick)) brushId else integer(0)
+        loonWidgetsInfo$lastSelection <- if(!is.null(plotBrush) || !is.null(plotClick)) brushId else integer(0)
         brushId <-  which(loonWidgetsInfo$color %in% selectByColor)
 
       } else {
@@ -443,7 +443,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       }
 
       if("deselect" == selectDynamic) {
-        if(!is.null(input$plotBrush) || !is.null(input$plotClick))
+        if(!is.null(plotBrush) || !is.null(plotClick))
           brushId <- integer(0)
       }
 
@@ -460,14 +460,14 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
       if("invert" == selectDynamic) {
 
-        if(is.null(input$plotBrush) | !is.null(input$plotClick)) {
+        if(is.null(plotBrush) | !is.null(plotClick)) {
           brushId <- whichIsSelected
         } else {
           brushId <- union(setdiff(whichIsSelected, brushId), setdiff(brushId, whichIsSelected))
         }
       } else if("deselect" == selectDynamic) {
 
-        if(is.null(input$plotBrush) | !is.null(input$plotClick)) {
+        if(is.null(plotBrush) | !is.null(plotClick)) {
           brushId <- whichIsSelected
         } else {
           brushId <- setdiff(whichIsSelected, brushId)
@@ -475,7 +475,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
       } else {
 
-        if(is.null(input$plotBrush) | !is.null(input$plotClick)) {
+        if(is.null(plotBrush) | !is.null(plotClick)) {
           brushId <- whichIsSelected
         } else {
           brushId <- union(whichIsSelected, brushId)
