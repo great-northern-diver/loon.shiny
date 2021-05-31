@@ -75,13 +75,27 @@ A \code{shiny.appobj} object that represents the \code{loon.shiny} app.
 Printing the object or passing it to \code{\link{runApp}} will run the app.
 }
 \description{
-Interactive \code{loon} widgets displayed in \code{shiny} app
+Interactive \code{loon} widgets displayed in a \code{shiny} app
 }
 \details{
-Useful hints:
 \itemize{
- \item{}{The effect of any \code{actionButton}s can be terminated by a simple click on canvas.}
- \item{}{The choices of 'selectByColor' can be updated by double click on color 'apply' \code{actionButton}.}
+ \item{Useful hints for a \code{loon.shiny} app}
+ {
+ \itemize{
+ \item{}{The inspector can be switched either by ``toggling tabpanel'' in the bar menu or
+ the last mouse gesture input (\code{<double-click>}) on the plot region}
+ \item{}{To downlight the selected elements, one has to double click on the plot region}
+ \item{}{In \code{loon}, holding down the \code{<shift>} key while pressing the left button keeps the current selection states.
+ In \code{loon.shiny} app, \code{<shift>} key is replaced by a `sticky` radiobutton. If the `sticky` mode is on,
+ while sweeping, current selection states remain; else new selection will eliminate the previous selection states.}
+ }
+ }
+ \item{Useful hints for a \code{loon.shiny} markdown file}{
+ \itemize{
+ \item{}{Based on our experience, setting `out.width` or `out.height` (try "10px") in the chunk could give a better layout}
+ \item{}{To modify the app size, set `options = list(height = **, width = **)` in \code{loon.shiny()}}
+ }
+ }
 }
 }
 \examples{
