@@ -6,9 +6,17 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
   input$plotBrush
   input$plotClick
 
-  if(!is.null(output.grob) && input[["navBarPage"]] != tabPanelName) {
+  loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+  pull <- input[[paste0(tabPanelName, "pull")]]
 
-    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+  initialDisplay <- is.null(output.grob)
+
+  if(!is.null(output.grob) && (input[["navBarPage"]] != tabPanelName|| pull > buttons["pull"])) {
+
+    if(pull > buttons["pull"]) {
+      buttons["pull"] <- pull
+      linkingGroup <- isolate(input[[paste0(tabPanelName, "linkingGroup")]])
+    }
 
     if(linkingGroup != "none") {
 
@@ -43,9 +51,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     }
   } else {
 
-    isFirstDraw <- is.null(output.grob)
     output.grob <- loon.grob
-    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
     loonColor <- loonWidgetsInfo$loonColor
 
     # interactive ------------------------------------------------------
@@ -75,7 +81,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     title <- labels$title
 
     layerSet <- input[[paste0(tabPanelName, "layerSet")]]
-    currentLayer <- input[[paste0(tabPanelName, "layer")]]
+    currentLayerName <- input[[paste0(tabPanelName, "layer")]]
     newLayerLabel <- isolate(input[[paste0(tabPanelName, "newLayerLabel")]])
 
     if(layerSet > buttons["layerSet"]) {
@@ -88,12 +94,12 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         layers <- loonWidgetsInfo$layers
         layersName <- names(layers)
 
-        currentLayer <- layers[which(layersName == currentLayer)]
+        currentLayer <- layers[which(layersName == currentLayerName)]
 
       } else {
         layers <- loonWidgetsInfo$layers
         layersName <- names(layers)
-        whichLayerIsEdited <- which(layersName == currentLayer)
+        whichLayerIsEdited <- which(layersName == currentLayerName)
 
         layersName[whichLayerIsEdited] <- newLayerLabel
         names(layers) <- layersName
@@ -106,7 +112,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       layers <- loonWidgetsInfo$layers
       layersName <- names(layers)
 
-      currentLayer <- layers[which(layersName == currentLayer)]
+      currentLayer <- layers[which(layersName == currentLayerName)]
     }
 
     layerMinus <- input[[paste0(tabPanelName, "layerMinus")]]
@@ -149,7 +155,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     sliderxlim <- input[[paste0(tabPanelName, "xlim")]]
     sliderylim <- input[[paste0(tabPanelName, "ylim")]]
 
-    # brushId <- if(isFirstDraw) {
+    # brushId <- if(initialDisplay) {
     #
     #   outputInfo$brushId
     # } else {
@@ -383,11 +389,16 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     }
 
     ############ Begin: set brushId ############
-    brushId <- if(!isFirstDraw) {
+    brushId <- if(initialDisplay) {
+
+      outputInfo$brushId
+
+    } else {
       # sweeping or brushing
       if(is.null(input$plotBrush) && is.null(input$plotClick)) {
 
         outputInfo$brushId
+
       } else {
 
         get_brushId(
@@ -413,7 +424,6 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
     sticky <- input[[paste0(tabPanelName, "sticky")]]
     selectByColor <- input[[paste0(tabPanelName, "selectByColor")]]
-    linkingGroup <- input[[paste0(tabPanelName, "linkingGroup")]]
 
     # select dynamic
     selectDynamic <- input[[paste0(tabPanelName, "selectDynamic")]]
@@ -506,9 +516,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     output.grob <- set_color_grob(
       loon.grob = output.grob,
       index = brushId,
-      color = select_color(),
-      size = loonWidgetsInfo$size,
-      pch = loonWidgetsInfo$pch
+      newColor = select_color()
     )
 
     # adjust color -------------------------------
@@ -526,9 +534,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       loon.grob <- set_color_grob(
         loon.grob = loon.grob,
         index = brushId,
-        color = colorPicker,
-        size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch
+        newColor = colorPicker
       )
 
       loonWidgetsInfo$color[brushId] <- colorPicker
@@ -543,13 +549,33 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         loon.grob <- set_color_grob(
           loon.grob = loon.grob,
           index = brushId,
-          color = col,
-          size = loonWidgetsInfo$size,
-          pch = loonWidgetsInfo$pch
+          newColor = col
         )
 
         loonWidgetsInfo$color[brushId] <- col
       }
+    }
+
+    alphaApply <- input[[paste0(tabPanelName, "alphaApply")]]
+    if(alphaApply > buttons["alphaApply"]) {
+
+      buttons["alphaApply"] <- alphaApply
+
+      alpha <- isolate(input[[paste0(tabPanelName, "alpha")]])
+
+      loon.grob <- set_alpha_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        newAlpha = alpha
+      )
+
+      output.grob <- set_alpha_grob(
+        loon.grob = output.grob,
+        index = brushId,
+        newAlpha = alpha
+      )
+
+      loonWidgetsInfo$alpha[brushId] <- alpha
     }
 
     # adjust deactive--------------------------------
@@ -876,10 +902,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         index = brushId,
         newPch = newPch,
         tmp = FALSE,
-        color = loonWidgetsInfo$color,
-        size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch,
-        loonColor = loonColor
+        color = loonWidgetsInfo$color
       )
 
       output.grob <- set_glyph_grob(
@@ -887,10 +910,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
         index = brushId,
         newPch = newPch,
         tmp = TRUE,
-        color = loonWidgetsInfo$color,
-        size = loonWidgetsInfo$size,
-        pch = loonWidgetsInfo$pch,
-        loonColor = loonColor
+        color = loonWidgetsInfo$color
       )
 
       loonWidgetsInfo$glyph[brushId] <- newGlyph
@@ -910,13 +930,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -932,13 +950,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -953,13 +969,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -976,13 +990,11 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
-                                   newSize = loonWidgetsInfo$size,
-                                   pch = loonWidgetsInfo$pch)
+                                   newSize = loonWidgetsInfo$size)
 
         output.grob <- set_size_grob(loon.grob = output.grob,
                                      index = brushId,
-                                     newSize = loonWidgetsInfo$size,
-                                     pch = loonWidgetsInfo$pch)
+                                     newSize = loonWidgetsInfo$size)
       }
     }
 
@@ -1074,11 +1086,19 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     )
 
     # reset boundary
-    output.grob <- set_boundary_grob(loon.grob = output.grob,
+    output.grob <- set_boundaryGrob(loon.grob = output.grob,
                                      margins = margins,
                                      loonColor = loonColor)
 
-
+    # set linking info
+    push <- input[[paste0(tabPanelName, "push")]]
+    if(push > buttons["push"]) {
+      buttons["push"] <- push
+      linkingGroup <- isolate(input[[paste0(tabPanelName, "linkingGroup")]])
+    } else {
+      newLinkingGroup <- isolate(input[[paste0(tabPanelName, "linkingGroup")]])
+      if(newLinkingGroup == "none") linkingGroup <- newLinkingGroup else NULL
+    }
     # set linking info
     linkingInfo <- update_linkingInfo(loon.grob,
                                       tabPanelName = tabPanelName,

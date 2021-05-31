@@ -1,9 +1,20 @@
 loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, buttons, position, selectBy,
                                        linkingGroup, input, colorList, tabPanelName, outputInfo) {
 
-  if(!is.null(output.grob) & input[["navBarPage"]] != tabPanelName) {
+  input$plotBrush
+  input$plotClick
 
-    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+  loonWidgetsInfo <- outputInfo$loonWidgetsInfo
+  pull <- input[[paste0(tabPanelName, "pull")]]
+
+  initialDisplay <- is.null(output.grob)
+
+  if(!initialDisplay && (input[["navBarPage"]] != tabPanelName || pull > buttons["pull"])) {
+
+    if(pull > buttons["pull"]) {
+      buttons["pull"] <- pull
+      linkingGroup <- isolate(input[[paste0(tabPanelName, "linkingGroup")]])
+    }
 
     if(linkingGroup != "none") {
 
@@ -35,12 +46,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
     }
   } else {
 
-    input$plotBrush
-    input$plotClick
-
-    isFirstDraw <- is.null(output.grob)
     output.grob <- loon.grob
-    loonWidgetsInfo <- outputInfo$loonWidgetsInfo
     loonColor <- loonWidgetsInfo$loonColor
 
     axesLayoutInShiny <- input[[paste0(tabPanelName, "axesLayout")]]
@@ -409,7 +415,6 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
       )
     } else NULL
 
-    linkingGroup <- input[[paste0(tabPanelName, "linkingGroup")]]
     defaultSerialaxesSettings <- get_defaultSerialaxesSettings(axesLayoutInShiny)
 
     viewPort <- grid::vpStack(
@@ -420,14 +425,16 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
     )
 
     # sweeping or brushing
-    brushId <- if(isFirstDraw) {
+    brushId <- if(initialDisplay) {
 
       outputInfo$brushId
+
     } else {
 
       if(is.null(input$plotBrush) & is.null(input$plotClick)) {
 
         outputInfo$brushId
+
       } else {
 
         get_brushId(
@@ -511,7 +518,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
     output.grob <- set_color_grob(
       loon.grob = output.grob,
       index = brushId,
-      color = select_color(),
+      newColor = select_color(),
       axesGpath = axesGpath
     )
 
@@ -530,7 +537,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
       loon.grob <- set_color_grob(
         loon.grob = loon.grob,
         index = brushId,
-        color = colorPicker,
+        newColor = colorPicker,
         axesGpath = axesGpath
       )
 
@@ -546,13 +553,37 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
         loon.grob <- set_color_grob(
           loon.grob = loon.grob,
           index = brushId,
-          color = col,
-          axesGpath = axesGpath,
-          loonColor = loonColor
+          newColor = col,
+          axesGpath = axesGpath
         )
 
         loonWidgetsInfo$color[brushId] <- col
       }
+    }
+
+    # adjust transparency
+    alphaApply <- input[[paste0(tabPanelName, "alphaApply")]]
+    if(alphaApply > buttons["alphaApply"]) {
+
+      buttons["alphaApply"] <- alphaApply
+
+      alpha <- isolate(input[[paste0(tabPanelName, "alpha")]])
+
+      loon.grob <- set_alpha_grob(
+        loon.grob = loon.grob,
+        index = brushId,
+        newAlpha = alpha,
+        axesGpath = axesGpath
+      )
+
+      output.grob <- set_alpha_grob(
+        loon.grob = output.grob,
+        index = brushId,
+        newAlpha = alpha,
+        axesGpath = axesGpath
+      )
+
+      loonWidgetsInfo$alpha[brushId] <- alpha
     }
 
     # adjust deactive--------------------------------
@@ -718,12 +749,21 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
     output.grob <- grid::setGrob(
       gTree = output.grob,
       gPath = "l_serialaxes",
-      newGrob = editGrob(
+      newGrob = grid::editGrob(
         grob = grid::getGrob(output.grob, "l_serialaxes"),
         vp = viewPort
       )
     )
 
+    # set linking info
+    push <- input[[paste0(tabPanelName, "push")]]
+    if(push > buttons["push"]) {
+      buttons["push"] <- push
+      linkingGroup <- isolate(input[[paste0(tabPanelName, "linkingGroup")]])
+    } else {
+      newLinkingGroup <- isolate(input[[paste0(tabPanelName, "linkingGroup")]])
+      if(newLinkingGroup == "none") linkingGroup <- newLinkingGroup else NULL
+    }
     # set linking info
     linkingInfo <- update_linkingInfo(loon.grob,
                                       tabPanelName = tabPanelName,

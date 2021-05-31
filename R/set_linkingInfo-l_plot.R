@@ -101,7 +101,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    grobi_size <- size[i]
                  } else grobi_size <- grobi$gp$cex
 
-                 grobi <- editGrob(
+                 grobi <- grid::editGrob(
                    grob = grobi,
                    gp = if(grobi_pch %in% 21:24) {
                      gpar(
@@ -131,7 +131,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                  new.output.grob$children[[i]] <<- if("selected" %in% linkedStates && selected[i]) {
 
-                   editGrob(
+                   grid::editGrob(
                      grob = grobi,
                      gp = if(grobi_pch %in% 21:24) {
                        gpar(
@@ -152,9 +152,9 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                } else if(grepl(grobi$name, pattern = "serialaxes_glyph"))  {
 
                  # reset boundary
-                 boundary_grob <- grid::getGrob(grobi, "boundary")
-                 if(is.null(boundary_grob)) {
-                   boundary_grob <- grid::getGrob(grobi, "boundary: polylineGrob arguments")
+                 boundaryGrob <- grid::getGrob(grobi, "boundary")
+                 if(is.null(boundaryGrob)) {
+                   boundaryGrob <- grid::getGrob(grobi, "boundary: polylineGrob arguments")
                  }
 
                  # axes serialaxes
@@ -166,9 +166,9 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  serialaxesGrob <- grid::getGrob(grobi, "polyline")
                  if(is.null(serialaxesGrob)) {
                    serialaxesGrob <- grid::getGrob(grobi, "polyline: showArea")
-                   serialaxesGrob_name <-  "polyline: showArea"
+                   serialaxesGrobName <-  "polyline: showArea"
                  } else {
-                   serialaxesGrob_name <-  "polyline"
+                   serialaxesGrobName <-  "polyline"
                  }
 
                  # set size
@@ -176,35 +176,35 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                    rounding <- roundings[[i]][[1]]
 
-                   boundary_grob <- editGrob(
-                     grob = boundary_grob,
-                     x = get_unit(boundary_grob$x, as.numeric = FALSE) +
-                       unit(rounding$boundary_grob_rounding$x * sqrt(size[i]/default_size()), "mm"),
-                     y = get_unit(boundary_grob$y, as.numeric = FALSE) +
-                       unit(rounding$boundary_grob_rounding$y * sqrt(size[i]/default_size()), "mm")
+                   boundaryGrob <- grid::editGrob(
+                     grob = boundaryGrob,
+                     x = get_unit(boundaryGrob$x, as.numeric = FALSE) +
+                       unit(rounding$boundaryGrobRounding$x * sqrt(size[i]/default_size()), "mm"),
+                     y = get_unit(boundaryGrob$y, as.numeric = FALSE) +
+                       unit(rounding$boundaryGrobRounding$y * sqrt(size[i]/default_size()), "mm")
                    )
 
-                   axesGrob <- editGrob(
+                   axesGrob <- grid::editGrob(
                      grob = axesGrob,
                      x = get_unit(axesGrob$x, as.numeric = FALSE) +
-                       unit(rounding$axesGrob_rounding$x * sqrt(size[i]/default_size()), "mm"),
+                       unit(rounding$axesGrobRounding$x * sqrt(size[i]/default_size()), "mm"),
                      y = get_unit(axesGrob$y, as.numeric = FALSE) +
-                       unit(rounding$axesGrob_rounding$y * sqrt(size[i]/default_size()), "mm")
+                       unit(rounding$axesGrobRounding$y * sqrt(size[i]/default_size()), "mm")
                    )
 
-                   serialaxesGrob <- editGrob(
+                   serialaxesGrob <- grid::editGrob(
                      grob = serialaxesGrob,
                      x = get_unit(serialaxesGrob$x, as.numeric = FALSE) +
-                       unit(rounding$serialaxesGrob_rounding$x * sqrt(size[i]/default_size()), "mm"),
+                       unit(rounding$serialaxesGrobRounding$x * sqrt(size[i]/default_size()), "mm"),
                      y = get_unit(serialaxesGrob$y, as.numeric = FALSE) +
-                       unit(rounding$serialaxesGrob_rounding$y * sqrt(size[i]/default_size()), "mm")
+                       unit(rounding$serialaxesGrobRounding$y * sqrt(size[i]/default_size()), "mm")
                    )
                  }
 
                  grobi <- if(grepl(grobi$name, pattern = "parallel")){
                    gTree(
                      children = gList(
-                       boundary_grob,
+                       boundaryGrob,
                        axesGrob,
                        serialaxesGrob
                      ),
@@ -214,7 +214,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    gTree(
                      children = gList(
                        serialaxesGrob,
-                       boundary_grob,
+                       boundaryGrob,
                        axesGrob
                      ),
                      name =  grobi$name
@@ -223,8 +223,8 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                  # set color
                  if("color" %in% linkedStates) {
-                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrob_name)
-                   if(serialaxesGrob_name == "polyline: showArea") {
+                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrobName)
+                   if(serialaxesGrobName == "polyline: showArea") {
                      serialaxesGrob$gp$fill <- color[i]
                    } else {
                      serialaxesGrob$gp$col <- color[i]
@@ -232,7 +232,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                    grobi <- grid::setGrob(
                      gTree = grobi,
-                     gPath = serialaxesGrob_name,
+                     gPath = serialaxesGrobName,
                      newGrob = serialaxesGrob
                    )
                  }
@@ -290,9 +290,9 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  new.loon.grob$children[[i]] <<- grobi
                  new.output.grob$children[[i]] <<- if("selected" %in% linkedStates && selected[i]) {
 
-                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrob_name)
+                   serialaxesGrob <- grid::getGrob(grobi, serialaxesGrobName)
 
-                   if(serialaxesGrob_name == "polyline: showArea") {
+                   if(serialaxesGrobName == "polyline: showArea") {
                      serialaxesGrob$gp$fill <- select_color()
                    } else {
                      serialaxesGrob$gp$col <- select_color()
@@ -300,7 +300,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                    grid::setGrob(
                      gTree = grobi,
-                     gPath = serialaxesGrob_name,
+                     gPath = serialaxesGrobName,
                      newGrob = serialaxesGrob
                    )
                  } else grobi
@@ -312,7 +312,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    rounding <- roundings[[i]][[1]]
 
 
-                   grobi <- editGrob(
+                   grobi <- grid::editGrob(
                      grob = grobi,
                      x = get_unit(grobi$x, as.numeric = FALSE) +
                        unit(rounding$x * sqrt(size[i]/default_size()), "mm"),
@@ -323,7 +323,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                  # set color
                  if("color" %in% linkedStates) {
-                   grobi <- editGrob(
+                   grobi <- grid::editGrob(
                      grob = grobi,
                      gp = gpar(
                        fill = color[i],
@@ -353,7 +353,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  new.loon.grob$children[[i]] <<- grobi
                  new.output.grob$children[[i]] <<- if("selected" %in% linkedStates && selected[i]) {
 
-                   editGrob(
+                   grid::editGrob(
                      grob = grobi,
                      gp = gpar(
                        fill = select_color(),
@@ -365,27 +365,27 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                } else if(grepl(grobi$name, pattern = "pointrange_glyph")) {
 
-                 point_grob <- grid::getGrob(grobi, "point")
+                 pointGrob <- grid::getGrob(grobi, "point")
                  line_grob <- grid::getGrob(grobi, "range")
 
                  # set glyph
                  if("glyph" %in% linkedStates) {
 
-                   point_grob_pch <- pch[i]
-                   if(!is.numeric(point_grob_pch)) point_grob_pch <- point_grob$pch
-                   point_grob$pch <- point_grob_pch
+                   pointGrob_pch <- pch[i]
+                   if(!is.numeric(pointGrob_pch)) pointGrob_pch <- pointGrob$pch
+                   pointGrob$pch <- pointGrob_pch
 
                    grobi <- grid::setGrob(
                      gTree = grobi,
                      gPath = "point",
-                     newGrob = point_grob
+                     newGrob = pointGrob
                    )
-                 } else point_grob_pch <- point_grob$pch
+                 } else pointGrob_pch <- pointGrob$pch
 
                  # set color
                  if("color" %in% linkedStates) {
 
-                   if(point_grob_pch %in% 21:24) point_grob$gp$fill <- color[i] else point_grob$gp$col <- color[i]
+                   if(pointGrob_pch %in% 21:24) pointGrob$gp$fill <- color[i] else pointGrob$gp$col <- color[i]
 
                    line_grob$gp$col <- color[i]
 
@@ -393,7 +393,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                      gTree = grid::setGrob(
                        gTree = grobi,
                        gPath = "point",
-                       newGrob = point_grob
+                       newGrob = pointGrob
                      ),
                      gPath = "range",
                      newGrob = line_grob
@@ -406,7 +406,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    grobi <- grid::setGrob(
                      gTree = grobi,
                      gPath = "point",
-                     newGrob = editGrob(
+                     newGrob = grid::editGrob(
                        grob = grid::getGrob(grobi, "point"),
                        gp = if(grobi$pch %in% 21:24) {
                          gpar(
@@ -452,17 +452,17 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  new.loon.grob$children[[i]] <<- grobi
                  new.output.grob$children[[i]] <<- if("selected" %in% linkedStates && selected[i]) {
 
-                   point_grob <- grid::getGrob(grobi, "point")
+                   pointGrob <- grid::getGrob(grobi, "point")
                    line_grob <- grid::getGrob(grobi, "range")
 
-                   point_grob$gp$col <- select_color()
+                   pointGrob$gp$col <- select_color()
                    line_grob$gp$col <- select_color()
 
                    grobi <- grid::setGrob(
                      gTree = grid::setGrob(
                        gTree = grobi,
                        gPath = "point",
-                       newGrob = point_grob
+                       newGrob = pointGrob
                      ),
                      gPath = "range",
                      newGrob = line_grob
@@ -484,7 +484,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    grobi_size <- grobi$gp$fontsize
                  }
 
-                 grobi <- editGrob(
+                 grobi <- grid::editGrob(
                    grob = grobi,
                    gp = gpar(
                      col = grobi_color,
@@ -503,7 +503,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  new.loon.grob$children[[i]] <<- grobi
                  new.output.grob$children[[i]] <<- if("selected" %in% linkedStates && selected[i]) {
 
-                   editGrob(
+                   grid::editGrob(
                      grob = grobi,
                      gp = gpar(
                        col = select_color(),
@@ -519,7 +519,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    grobi <- grid::setGrob(
                      gTree = grobi,
                      gPath = "image_border",
-                     newGrob = editGrob(
+                     newGrob = grid::editGrob(
                        grob = grid::getGrob(grobi, "image_border"),
                        gp = gpar(
                          fill = color[i],
@@ -533,17 +533,17 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  if("size" %in% linkedStates) {
                    rounding <- roundings[[i]][[1]]
 
-                   image_border_grob <- grid::getGrob(grobi, "image_border")
+                   imageBorderGrob <- grid::getGrob(grobi, "image_border")
 
-                   image_border_grob <- editGrob(
-                     grob = image_border_grob,
-                     width = get_unit(image_border_grob$width, unit = "mm", as.numeric = FALSE) +
+                   imageBorderGrob <- grid::editGrob(
+                     grob = imageBorderGrob,
+                     width = get_unit(imageBorderGrob$width, unit = "mm", as.numeric = FALSE) +
                        unit(rounding$width * sqrt(size[i]/default_size()), "cm"),
-                     height = get_unit(image_border_grob$height, unit = "mm", as.numeric = FALSE) +
+                     height = get_unit(imageBorderGrob$height, unit = "mm", as.numeric = FALSE) +
                        unit(rounding$height * sqrt(size[i]/default_size()), "cm")
                    )
 
-                   image_grob <- editGrob(
+                   imageGrob <- grid::editGrob(
                      grob = grid::getGrob(grobi, "image"),
                      width = unit(rounding$width * sqrt(size[i]/default_size()), "cm"),
                      height = unit(rounding$height * sqrt(size[i]/default_size()), "cm")
@@ -551,8 +551,8 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                    grobi <- gTree(
                      children = gList(
-                       image_border_grob,
-                       image_grob
+                       imageBorderGrob,
+                       imageGrob
                      ),
                      name =  grobi$name
                    )
@@ -589,7 +589,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    grid::setGrob(
                      gTree = grobi,
                      gPath = "image_border",
-                     newGrob = editGrob(
+                     newGrob = grid::editGrob(
                        grob = grid::getGrob(grobi, "image_border"),
                        gp = gpar(
                          fill = select_color(),

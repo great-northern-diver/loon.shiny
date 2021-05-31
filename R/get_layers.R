@@ -1,44 +1,31 @@
-get_layers <- function(loon.grob) {
+get_layers <- function(loon.grob, recursive = FALSE) {
   obj <- character(0)
   class(obj) <- names(loon.grob$children)
   UseMethod("get_layers", obj)
 }
 
-get_layers.default <- function(loon.grob) NULL
+get_layers.default <- function(loon.grob, recursive = FALSE) NULL
 
-get_layers.l_plot <- function(loon.grob) {
+get_layers.l_plot <- function(loon.grob, recursive = FALSE) {
 
-  get_loon_layers(loon.grob,
-                  "l_plot_layers")
+  get_loon_layers(loon.grob, "l_plot_layers", recursive = recursive)
 }
 
-get_layers.l_plot3D <- function(loon.grob) {
-  get_layers.l_plot(loon.grob)
+get_layers.l_plot3D <- function(loon.grob, recursive = FALSE) {
+  get_layers.l_plot(loon.grob, recursive = recursive)
 }
 
-get_layers.l_hist <- function(loon.grob) {
+get_layers.l_hist <- function(loon.grob, recursive = FALSE) {
 
-  get_loon_layers(loon.grob,
-                  "l_hist_layers")
+  get_loon_layers(loon.grob, "l_hist_layers", recursive = recursive)
 }
 
-get_layers.l_graph <- function(loon.grob) {
+get_layers.l_graph <- function(loon.grob, recursive = FALSE) {
 
-  layers <- get_loon_layers(loon.grob,
-                            "l_graph_layers")
-
-  layers <- lapply(layers,
-                   function(layer) {
-                     if(layer == "graph") {
-                       get_group_children(grid::getGrob(loon.grob, layer),
-                                          go = TRUE)
-                     } else layer
-                   })
-
-  unlist(layers)
+  get_loon_layers(loon.grob, "l_graph_layers", recursive = recursive)
 }
 
-get_loon_layers <- function(loon.grob, gPath) {
+get_loon_layers <- function(loon.grob, gPath, recursive = FALSE) {
 
   x <- grid::getGrob(loon.grob, gPath)
   layers <- x$children
@@ -50,10 +37,14 @@ get_loon_layers <- function(loon.grob, gPath) {
                if(grepl(grobName(layer), pattern = "null")) {
                  NA
                } else {
-
                  if(grepl(layer$name, pattern = "l_layer_group")) {
-                   get_group_children(layer)
-                 } else layer$name
+                   get_group_children(layer, recursive = recursive)
+                 } else {
+                   if(recursive)
+                     get_group_children(layer, recursive = recursive)
+                   else
+                     layer$name
+                 }
                }
              }
       )
@@ -63,7 +54,7 @@ get_loon_layers <- function(loon.grob, gPath) {
   unname(loon_layers[which(!is.na(loon_layers))])
 }
 
-get_group_children <- function(layer, go = FALSE) {
+get_group_children <- function(layer, recursive = FALSE) {
 
   children <- layer$children
 
@@ -73,12 +64,12 @@ get_group_children <- function(layer, go = FALSE) {
              function(i) {
                child <- children[[i]]
                if(grepl(child$name, pattern = "l_layer_group")) {
-                 get_group_children(child, go)
+                 get_group_children(child, recursive)
                } else {
 
-                 if(go) {
+                 if(recursive) {
                    if(isgTree(child))
-                     get_group_children(child, go)
+                     get_group_children(child, recursive)
                    else
                      child$name
                  } else {

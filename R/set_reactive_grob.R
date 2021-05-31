@@ -127,7 +127,7 @@ set_reactive_grob.l_graph <- function(loon.grob, index, ...) {
 
                    grobi <- edgesTree$children[[i]]
                    if(!is.null(grobi$x) & !is.null(grobi$y)) {
-                     editGrob(grobi,
+                     grid::editGrob(grobi,
                               x = grobi$y,
                               y = grobi$x
                      )

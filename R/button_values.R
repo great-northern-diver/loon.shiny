@@ -9,7 +9,7 @@ button_values.default <- function(loon.grob, tabPanelName, input, colorList, ...
 button_values.l_plot <- function(loon.grob, tabPanelName, input, colorList, ...) {
 
   names <- c("all", "none", "invert", "deactive", "reactive", c(colorList, "colorApply"),
-             "circle", "square", "triangle", "push", "pull",
+             "circle", "square", "triangle", "push", "pull", "alphaApply",
              "ocircle", "osquare", "otriangle",
              "ccircle", "csquare", "ctriangle",
              "glyphSet", "halign", "valign", "hdist",
@@ -44,7 +44,8 @@ button_values.l_hist <- function(loon.grob, tabPanelName, input, colorList, ...)
 button_values.l_serialaxes <- function(loon.grob, tabPanelName, input, colorList, ...) {
 
   names <- c("all", "none", "invert", "deactive", "reactive", c(colorList, "colorApply"),
-             "absToPlus", "absToMinus",  "relToPlus", "relToMinus", "push", "pull")
+             "alphaApply", "absToPlus", "absToMinus",  "relToPlus", "relToMinus",
+             "push", "pull")
   setNames(rep(0L, length(names)), names)
 }
 

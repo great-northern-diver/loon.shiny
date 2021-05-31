@@ -61,10 +61,10 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
             offset = 1
           ),
           column(
-            3,
+            2,
             actionButton(paste0(tabPanelName, "colorApply"),
                          label = "apply",
-                         width = "150%",
+                         width = "200%",
                          style='font-size:80%; background-color: white')
           )
         ),
@@ -225,7 +225,9 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               width = '150%',
               style='font-size:80%; background-color: white'
             )
-          ),
+          )
+        ),
+        fixedRow(
           column(
             2,
             actionButton(
@@ -236,10 +238,9 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               ),
               width = '150%',
               style='font-size:80%; background-color: white'
-            )
-          )
-        ),
-        fixedRow(
+            ),
+            offset = 2
+          ),
           column(
             2,
             actionButton(
@@ -250,8 +251,7 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               ),
               width = '150%',
               style='font-size:80%; background-color: white'
-            ),
-            offset = 2
+            )
           ),
           column(
             2,
@@ -264,7 +264,9 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               width = '150%',
               style='font-size:80%; background-color: white'
             )
-          ),
+          )
+        ),
+        fixedRow(
           column(
             2,
             actionButton(
@@ -275,7 +277,8 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               ),
               width = '150%',
               style='font-size:80%; background-color: white'
-            )
+            ),
+            offset = 2
           ),
           column(
             2,
@@ -288,9 +291,7 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               width = '150%',
               style='font-size:80%; background-color: white'
             )
-          )
-        ),
-        fixedRow(
+          ),
           column(
             2,
             actionButton(
@@ -301,8 +302,7 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               ),
               width = '150%',
               style='font-size:80%; background-color: white'
-            ),
-            offset = 2
+            )
           ),
           column(
             3,
@@ -368,6 +368,34 @@ tagsDivModify.l_graph <- function(loon.grob, tabPanelName, colorList,
               width = "150%",
               style='font-size:80%; background-color: white'
             )
+          )
+        ),
+        h6(""),
+        fixedRow(
+          column(
+            2,
+            h6("alpha:")
+          ),
+          column(
+            7,
+            do.call(
+              sliderInput,
+              list(
+                inputId = paste0(tabPanelName, "alpha"),
+                label = NULL,
+                min = 0,
+                max = 1,
+                step = 0.1,
+                value = 1
+              )
+            )
+          ),
+          column(
+            2,
+            actionButton(paste0(tabPanelName, "alphaApply"),
+                         label = "apply",
+                         width = "200%",
+                         style='font-size:80%; background-color: white')
           )
         ),
         h6("")

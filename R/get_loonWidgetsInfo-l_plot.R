@@ -1,6 +1,6 @@
 get_loonWidgetsInfo.l_plot <- function(widgets,
-                                        loon.grobs,
-                                        ...) {
+                                       loon.grobs,
+                                       ...) {
 
   ############# **all coordinates are un-flipped** #############
   args <- list(...)
@@ -19,10 +19,11 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
   N <- length(points_layer)
   # In loonGrob, selected points will be drawn on top. Hence, we need to reset it and maintain the original order
-  display_order <- get_display_order(widgets)
+  displayOrder <- get_display_order(widgets)
+  widgetsSize <- widgets["size"]/as.numeric(loon::l_getOption("size"))
 
   if(N > 0) {
-    lapply(1:N,
+    lapply(seq(N),
            function(i){
 
              point_layer <- points_layer[[i]]
@@ -51,20 +52,20 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
                    )
                } else if(grepl(glyphName, pattern = "image_glyph")) {
 
-                 image_grob <- grid::getGrob(point_layer, "image")
-                 image_border_grob <- grid::getGrob(point_layer, "image_border")
+                 imageGrob <- grid::getGrob(point_layer, "image")
+                 imageBorderGrob <- grid::getGrob(point_layer, "image_border")
 
-                 x[i] <<- image_grob$x
-                 y[i] <<- image_grob$y
+                 x[i] <<- imageGrob$x
+                 y[i] <<- imageGrob$y
                  pch[i] <<- "image"
-                 size[i] <<- default_size()
+                 size[i] <<- widgetsSize[i]
 
                  glyphArgs[[i]] <<- setNames(
                    list(
                      list(
-                       width =  as.numeric(image_grob$width),
-                       height = as.numeric(image_grob$height),
-                       raster = image_grob$raster
+                       width =  as.numeric(imageGrob$width),
+                       height = as.numeric(imageGrob$height),
+                       raster = imageGrob$raster
                      )
                    ),
                    glyphName
@@ -72,10 +73,10 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  xyOriginal[[i]] <<-
                    list(
-                     x = image_grob$x,
-                     y = image_grob$y,
-                     x_border = image_border_grob$x,
-                     y_border = image_border_grob$y
+                     x = imageGrob$x,
+                     y = imageGrob$y,
+                     x_border = imageBorderGrob$x,
+                     y_border = imageBorderGrob$y
                    )
 
                } else if(grepl(glyphName, pattern = "text_glyph")) {
@@ -96,15 +97,15 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  xyOriginal[[i]] <<-
                    list(
-                     y = point_layer$x,
-                     x = point_layer$y
+                     y = point_layer$y,
+                     x = point_layer$x
                    )
 
                } else if(grepl(glyphName, pattern = "polygon_glyph")) {
 
                  x[i] <<- get_unit(point_layer$x, as.numeric = TRUE)
                  y[i] <<-get_unit(point_layer$y, as.numeric = TRUE)
-                 size[i] <<- default_size()
+                 size[i] <<- widgetsSize[i]
                  pch[i] <<- "polygon"
 
                  glyphArgs[[i]] <<- setNames(
@@ -125,13 +126,13 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                } else if(grepl(glyphName, pattern = "pointrange_glyph")) {
 
-                 point_grob <- grid::getGrob(point_layer, "point")
+                 pointGrob <- grid::getGrob(point_layer, "point")
                  range_grob <- grid::getGrob(point_layer, "range")
 
-                 x[i] <<- point_grob$x
-                 y[i] <<- point_grob$y
-                 size[i] <<- point_grob$gp$cex
-                 pch[i] <<- point_grob$pch
+                 x[i] <<- pointGrob$x
+                 y[i] <<- pointGrob$y
+                 size[i] <<- pointGrob$gp$cex
+                 pch[i] <<- pointGrob$pch
 
                  glyphArgs[[i]] <<- setNames(
                    list(
@@ -151,14 +152,14 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                } else if(grepl(glyphName, pattern = "serialaxes_glyph")) {
 
-                 boundary_grob <- grid::getGrob(point_layer, "boundary")
-                 if(is.null(boundary_grob)) {
-                   boundary_grob <- grid::getGrob(point_layer, "boundary: polylineGrob arguments")
+                 boundaryGrob <- grid::getGrob(point_layer, "boundary")
+                 if(is.null(boundaryGrob)) {
+                   boundaryGrob <- grid::getGrob(point_layer, "boundary: polylineGrob arguments")
                  }
 
-                 boundary_grob_rounding <- list(
-                   x = get_unit(boundary_grob$x, unit = "native", is.unit = FALSE, as.numeric = TRUE),
-                   y = get_unit(boundary_grob$y, unit = "native", is.unit = FALSE, as.numeric = TRUE)
+                 boundaryGrobRounding <- list(
+                   x = get_unit(boundaryGrob$x, unit = "native", is.unit = FALSE, as.numeric = TRUE),
+                   y = get_unit(boundaryGrob$y, unit = "native", is.unit = FALSE, as.numeric = TRUE)
                  )
 
                  # axes serialaxes
@@ -167,7 +168,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
                    axesGrob <- grid::getGrob(point_layer, "axes: polylineGrob arguments")
                  }
 
-                 axesGrob_rounding <-  list(
+                 axesGrobRounding <-  list(
                    x = get_unit(axesGrob$x, unit = "native",is.unit = FALSE, as.numeric = TRUE),
                    y = get_unit(axesGrob$y, unit = "native",is.unit = FALSE, as.numeric = TRUE)
                  )
@@ -177,7 +178,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
                    serialaxesGrob <- grid::getGrob(point_layer, "polyline: showArea")
                  }
 
-                 serialaxesGrob_rounding <- list(
+                 serialaxesGrobRounding <- list(
                    x = get_unit(serialaxesGrob$x,
                                 unit = "native",
                                 is.unit = FALSE,
@@ -191,9 +192,9 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
                  glyphArgs[[i]] <<- setNames(
                    list(
                      list(
-                       boundary_grob_rounding = boundary_grob_rounding,
-                       axesGrob_rounding =  axesGrob_rounding,
-                       serialaxesGrob_rounding = serialaxesGrob_rounding
+                       boundaryGrobRounding = boundaryGrobRounding,
+                       axesGrobRounding =  axesGrobRounding,
+                       serialaxesGrobRounding = serialaxesGrobRounding
                      )
                    ),
                    glyphName
@@ -208,7 +209,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  x[i] <<- get_unit(serialaxesGrob$x, as.numeric = TRUE)
                  y[i] <<- get_unit(serialaxesGrob$y, as.numeric = TRUE)
-                 size[i] <<- default_size()
+                 size[i] <<- widgetsSize[i]
                  pch[i] <<- ifelse(grepl(glyphName, pattern = "radial"),
                                    "serialaxes radial",
                                    "serialaxes parallel")
@@ -219,15 +220,15 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
            }
     )
 
-    x <- x[display_order]
-    y <- y[display_order]
-    size <- size[display_order]
-    pch <- pch[display_order]
-    index <- index[display_order]
-    glyphNames <- glyphNames[display_order]
+    x <- x[displayOrder]
+    y <- y[displayOrder]
+    size <- size[displayOrder]
+    pch <- pch[displayOrder]
+    index <- index[displayOrder]
+    glyphNames <- glyphNames[displayOrder]
 
-    glyphArgs <- if(length(glyphArgs) > 0) glyphArgs[display_order]
-    xyOriginal <- xyOriginal[display_order]
+    glyphArgs <- if(length(glyphArgs) > 0) glyphArgs[displayOrder]
+    xyOriginal <- xyOriginal[displayOrder]
 
   } else {
 
@@ -272,6 +273,17 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
         # showArea of not
         showArea <- if(pch[which_is_pointrange] == 21) TRUE else FALSE
+        list(
+          showArea  =  showArea
+        )
+      } else if(any(grepl(glyphNames, pattern = "polygon"))){
+        # pick the first one (They share the same enclosing and axes)
+        which_is_polygon <- which(grepl(glyphNames, pattern = "polygon"))[1L]
+        point_layer <- points_layer[[which_is_polygon]]
+
+        # showArea of not
+        showArea <- grepl(point_layer$name, pattern = "showArea")
+
         list(
           showArea  =  showArea
         )
@@ -371,7 +383,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
     plotViewYlim = plotViewYlim,
     worldViewXlim = worldViewXlim,
     worldViewYlim = worldViewYlim,
-    display_order = display_order,
+    displayOrder = displayOrder,
     navbarMenuName = navbarMenuName,
     layers = layers,
     glyph_id = loon::l_glyph_ids(widgets),
@@ -382,6 +394,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
       foreground_color = loon::hex12tohex6(widgets["foreground"]),
       guidesbackground_color = loon::hex12tohex6(widgets["guidesBackground"]),
       guideslines_color = loon::hex12tohex6(widgets["guidelines"])
-    )
+    ),
+    alpha = rep(1, N)
   )
 }

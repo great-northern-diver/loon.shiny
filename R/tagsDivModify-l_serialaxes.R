@@ -134,6 +134,34 @@ tagsDivModify.l_serialaxes <- function(loon.grob, tabPanelName, colorList,
             )
           )
         ),
+        h6(""),
+        fixedRow(
+          column(
+            2,
+            h6("alpha:")
+          ),
+          column(
+            7,
+            do.call(
+              sliderInput,
+              list(
+                inputId = paste0(tabPanelName, "alpha"),
+                label = NULL,
+                min = 0,
+                max = 1,
+                step = 0.1,
+                value = 1
+              )
+            )
+          ),
+          column(
+            2,
+            actionButton(paste0(tabPanelName, "alphaApply"),
+                         label = "apply",
+                         width = "200%",
+                         style='font-size:80%; background-color: white')
+          )
+        ),
         h6("")
       ),
       as_list = FALSE)

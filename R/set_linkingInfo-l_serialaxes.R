@@ -74,7 +74,7 @@ set_linkingInfo.l_serialaxes <- function(loon.grob, output.grob,
                loon.grobi$gp$lwd
              }
 
-             loon.grobi <- editGrob(
+             loon.grobi <- grid::editGrob(
                grob = loon.grobi,
                gp = if(loon.grob_showArea) {
                  gpar(fill = grobi_color, col = NA)
@@ -83,7 +83,7 @@ set_linkingInfo.l_serialaxes <- function(loon.grob, output.grob,
                }
              )
 
-             output.grobi <- editGrob(
+             output.grobi <- grid::editGrob(
                grob = output.grobi,
                gp = if(output.grob_showArea) {
                  gpar(fill = grobi_color, col = NA)
@@ -119,7 +119,7 @@ set_linkingInfo.l_serialaxes <- function(loon.grob, output.grob,
 
              new.output.grob$children[[i]] <<- if("selected" %in% linkedStates & selected[i]) {
 
-               editGrob(
+               grid::editGrob(
                  grob = output.grobi,
                  gp = if(output.grob_showArea) {
                    gpar(fill = select_color(), col = NA)

@@ -20,7 +20,7 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
              function(i) {
 
                if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(halignY, "native")
                  )
@@ -45,7 +45,7 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "polygon_glyph")) {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(halignY, "native") +
                      get_unit(newGrob$children[[i]]$x,
@@ -56,10 +56,10 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "pointrange_glyph")) {
 
-                 point_grob <- grid::getGrob(newGrob$children[[i]], "point")
+                 pointGrob <- grid::getGrob(newGrob$children[[i]], "point")
                  line_grob <- grid::getGrob(newGrob$children[[i]], "range")
 
-                 point_grob$x <- unit(halignY, "native")
+                 pointGrob$x <- unit(halignY, "native")
 
                  range <- diff(sort(as.numeric(line_grob$x)))/2
                  line_grob$x <- unit(c(halignY - range, halignY + range), "native")
@@ -67,7 +67,7 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "point",
-                   newGrob = point_grob
+                   newGrob = pointGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
@@ -78,29 +78,29 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "text_glyph"))  {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    x = unit(halignY, "native")
                  )
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
-                 image_border_grob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
-                 image_border_grob$x <- unit(halignY, "native")
-                 image_grob$x <- unit(halignY, "native")
+                 imageBorderGrob$x <- unit(halignY, "native")
+                 imageGrob$x <- unit(halignY, "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "image_border",
-                   newGrob = image_border_grob
+                   newGrob = imageBorderGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else stop("not implemented")
              }
@@ -110,7 +110,7 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
              function(i) {
 
                if(grepl(newGrob$children[[i]]$name, pattern = "primitive_glyph")) {
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(halignY, "native")
                  )
@@ -135,7 +135,7 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "polygon_glyph")) {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(halignY, "native") +
                      get_unit(newGrob$children[[i]]$y,
@@ -145,10 +145,10 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "pointrange_glyph")) {
 
-                 point_grob <- grid::getGrob(newGrob$children[[i]], "point")
+                 pointGrob <- grid::getGrob(newGrob$children[[i]], "point")
                  line_grob <- grid::getGrob(newGrob$children[[i]], "range")
 
-                 point_grob$y <- unit(halignY, "native")
+                 pointGrob$y <- unit(halignY, "native")
 
                  range <- diff(sort(as.numeric(line_grob$y)))/2
                  line_grob$y <- unit(c(halignY - range, halignY + range), "native")
@@ -156,7 +156,7 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "point",
-                   newGrob = point_grob
+                   newGrob = pointGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
@@ -167,29 +167,29 @@ move_halign_grob.l_plot <- function(loon.grob, index, swap, halignY, temporary =
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "text_glyph"))  {
 
-                 newGrob$children[[i]] <<- editGrob(
+                 newGrob$children[[i]] <<- grid::editGrob(
                    grob = newGrob$children[[i]],
                    y = unit(halignY, "native")
                  )
 
                } else if(grepl(newGrob$children[[i]]$name, pattern = "image_glyph")) {
 
-                 image_border_grob <- grid::getGrob(newGrob$children[[i]], "image_border")
-                 image_grob <- grid::getGrob(newGrob$children[[i]], "image")
+                 imageBorderGrob <- grid::getGrob(newGrob$children[[i]], "image_border")
+                 imageGrob <- grid::getGrob(newGrob$children[[i]], "image")
 
-                 image_border_grob$y <- unit(halignY, "native")
-                 image_grob$y <- unit(halignY, "native")
+                 imageBorderGrob$y <- unit(halignY, "native")
+                 imageGrob$y <- unit(halignY, "native")
 
                  tmpGrob <- grid::setGrob(
                    gTree = newGrob$children[[i]],
                    gPath = "image_border",
-                   newGrob = image_border_grob
+                   newGrob = imageBorderGrob
                  )
 
                  newGrob$children[[i]] <<- grid::setGrob(
                    gTree = tmpGrob,
                    gPath = "image",
-                   newGrob = image_grob
+                   newGrob = imageGrob
                  )
                } else stop("not implemented")
              }
@@ -217,7 +217,7 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
     lapply(index,
            function(i) {
 
-             nodesGrob$children[[i]] <<- editGrob(
+             nodesGrob$children[[i]] <<- grid::editGrob(
                grob = nodesGrob$children[[i]],
                x = unit(halignY, "native")
              )
@@ -237,7 +237,7 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
 
                grobi <- labelsGrob$children[[i]]
 
-               labelsGrob$children[[i]] <<- editGrob(
+               labelsGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
                  x = unit(halignY, "native") +
                    get_unit(grobi$y,
@@ -272,12 +272,12 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
                  if(length(change_id) > 0) {
 
                    x[change_id] <- halignY
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      x = unit(x,"native")
                    )
                  } else {
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      x = unit(x,"native")
                    )
@@ -290,7 +290,7 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
                  if(length(change_id) > 0) {
 
                    x[change_id] <- halignY
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      x = unit(x,"native")
                    )
@@ -310,7 +310,7 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
     lapply(index,
            function(i) {
 
-             nodesGrob$children[[i]] <<- editGrob(
+             nodesGrob$children[[i]] <<- grid::editGrob(
                grob = nodesGrob$children[[i]],
                y = unit(halignY, "native")
              )
@@ -330,7 +330,7 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
 
                grobi <- labelsGrob$children[[i]]
 
-               labelsGrob$children[[i]] <<- editGrob(
+               labelsGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
                  y = unit(halignY, "native") +
                    get_unit(grobi$y,
@@ -365,12 +365,12 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
                  if(length(change_id) > 0) {
 
                    y[change_id] <- halignY
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      y = unit(y,"native")
                    )
                  } else {
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      y = unit(y,"native")
                    )
@@ -383,7 +383,7 @@ move_halign_grob.l_graph <- function(loon.grob, index, swap, halignY, temporary 
                  if(length(change_id) > 0) {
 
                    y[change_id] <- halignY
-                   editGrob(
+                   grid::editGrob(
                      grobi,
                      y = unit(y,"native")
                    )

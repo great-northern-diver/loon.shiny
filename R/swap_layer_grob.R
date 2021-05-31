@@ -20,7 +20,7 @@ swap_layer_grob <- function(loon.grob, parent) {
                  loon.grob <<- grid::setGrob(
                    gTree = loon.grob,
                    gPath = layer,
-                   newGrob = editGrob(
+                   newGrob = grid::editGrob(
                      grob = grobi,
                      x = grobi$y,
                      y = grobi$x
@@ -31,7 +31,7 @@ swap_layer_grob <- function(loon.grob, parent) {
                  loon.grob <<- grid::setGrob(
                    gTree = loon.grob,
                    gPath = layer,
-                   newGrob = editGrob(
+                   newGrob = grid::editGrob(
                      grob = grobi,
                      x = grobi$y,
                      y = grobi$x,
@@ -51,7 +51,7 @@ swap_layer_grob <- function(loon.grob, parent) {
                        gList,
                        lapply(grobi$children,
                               function(child){
-                                editGrob(
+                                grid::editGrob(
                                   child,
                                   x = child$y,
                                   y = child$x
@@ -73,7 +73,7 @@ swap_layer_grob <- function(loon.grob, parent) {
                        gList,
                        lapply(grobi$children,
                               function(child){
-                                editGrob(
+                                grid::editGrob(
                                   child,
                                   x = child$y,
                                   y = child$x,
@@ -87,7 +87,7 @@ swap_layer_grob <- function(loon.grob, parent) {
                      vp = grobi$vp
                    )
                  )
-               } else stop("undefined layer name")
+               } else NULL
              }
            }
     )

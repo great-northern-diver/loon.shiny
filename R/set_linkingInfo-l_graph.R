@@ -87,7 +87,7 @@ set_linkingInfo.l_graph <- function(loon.grob, output.grob,
                grobi_size <- size[i]
              } else grobi_size <- grobi$gp$cex
 
-             grobi <- editGrob(
+             grobi <- grid::editGrob(
                grob = grobi,
                gp = if(grobi_pch %in% 21:24) {
                  gpar(
@@ -108,7 +108,7 @@ set_linkingInfo.l_graph <- function(loon.grob, output.grob,
 
              new.output.grob$children[[i]] <<- if("selected" %in% linkedStates && selected[i]) {
 
-               editGrob(
+               grid::editGrob(
                  grob = grobi,
                  gp = if(grobi_pch %in% 21:24) {
                    gpar(

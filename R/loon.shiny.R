@@ -40,7 +40,7 @@
 #' @import loon shiny grid gridExtra methods tcltk grDevices
 #' @importFrom colourpicker colourInput
 #' @importFrom base64enc dataURI
-#' @importFrom stats rnorm setNames
+#' @import stats
 #'
 #' @export
 #'
