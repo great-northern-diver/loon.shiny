@@ -45,16 +45,19 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
   linewidth <- linewidth[displayOrder]
   index <- index[displayOrder]
 
-  labelsGrob <- grid::getGrob(loon.grob, "axesLabels")
-  lenSeqName <- length(labelsGrob$childrenOrder)
-  seqName <- vapply(seq(lenSeqName),
-                    function(i){
-                      labelsGrob$children[[i]]$label
-                    }, character(1L)
-  )
+  # labelsGrob <- grid::getGrob(loon.grob, "axesLabels")
+  # lenSeqName <- length(labelsGrob$childrenOrder)
+  # seqName <- vapply(seq(lenSeqName),
+  #                   function(i){
+  #                     labelsGrob$children[[i]]$label
+  #                   }, character(1L)
+  # )
 
   dat <- char2num.data.frame(widgets['data'])   # convert to numeric
+  seqName <- widgets['sequence']
+
   activeData <- dat[, seqName]
+  lenSeqName <- length(seqName)
 
   if(is.null(activeData)) {
 
@@ -62,29 +65,11 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
     observationScaledActiveData <- NULL
     dataScaledActiveData <- NULL
     noneScaledActiveData <- NULL
+
   } else {
-
-    apply2min <- apply(dat, 2, "min")
-    apply2max <- apply(dat, 2, "max")
-    apply1min <- apply(activeData, 1, "min")
-    apply1max <- apply(activeData, 1, "max")
-    minD <- min(dat)
-    maxD <- max(dat)
-
-    denominator <- (apply2max  - apply2min)
-    denominator[denominator == 0] <- 1
-
-    variableScaledActiveData <- t(
-      (t(activeData) - apply2min)/denominator
-    )
-
-    denominator <- (apply1max - apply1min)
-    denominator[denominator == 0] <- 1
-    observationScaledActiveData <- (activeData - apply1min) / denominator
-
-    denominator <- (maxD - minD)
-    denominator[denominator == 0] <- 1
-    dataScaledActiveData <- (activeData - minD)/ denominator
+    variableScaledActiveData <- loon::l_getScaledData(activeData, scaling = "variable")
+    observationScaledActiveData <- loon::l_getScaledData(activeData, scaling = "observation")
+    dataScaledActiveData <- loon::l_getScaledData(activeData, scaling = "data")
     noneScaledActiveData <- activeData
   }
 
