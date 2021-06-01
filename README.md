@@ -55,8 +55,8 @@ p3 <- l_hist(iris$Sepal.Length, linkingGroup = "iris",
              showLabels = FALSE, swapAxes = TRUE,
              showStackedColors = TRUE)
 loon.shiny(list(p1, p2, p3),
-           layout_matrix = matrix(c(2, NA, 1, 3), nrow = 2, byrow = TRUE),
-           plot_width = "400px")
+           layoutMatrix = matrix(c(2, NA, 1, 3), nrow = 2, byrow = TRUE),
+           plotRegionWidth = "400px")
 ```    
 
 Note that the plots are linked and the inspector is shared by/addresses all three plots (see tabs on the inspector).
@@ -74,9 +74,7 @@ g <- ggplot(mtcars, mapping = aes(x = wt, y = hp)) +
        geom_point(mapping = aes(color = factor(gear))) + 
        geom_smooth()
 
-loon.shiny(loon.ggplot(g),
-           left = 20,
-           right = "auto")
+loon.shiny(loon.ggplot(g))
 ```
 
 which results in
