@@ -1,29 +1,58 @@
 char2num.data.frame <- utils::getFromNamespace("char2num.data.frame", "loon")
 l_getSubtitles <- utils::getFromNamespace("l_getSubtitles", "loon.ggplot")
 
-# it is exported in loon >= 1.3.7 version
-# and should be removed later.
-l_colorName <- function(x, error = TRUE) {
+# This function is temporary
+# after loon is updated to 1.3.7
+# this function will be switched to
+# `loon::l_colorName`
+l_colorName <- function(color, error = TRUE) {
 
-  if(utils::packageVersion("loon") > "1.3.6") {
+  color.id <- function(x, error = TRUE, env = environment()) {
 
-    loon::l_colorName(x, error = error)
+    invalid.color <- c()
 
-  } else {
+    colors <- vapply(x,
+                     function(color) {
 
-    color.id <- utils::getFromNamespace("color.id", "loon")
+                       # hex code color
+                       # hex12to6 will give warnings if the hex code is not 12
+                       # as_hex6color can accommodate 6 digits and 12 digits code
+                       tryCatch(
+                         expr = {
+                           color <- as_hex6color(color)
+                           c2 <- grDevices::col2rgb(color)
+                           coltab <- grDevices::col2rgb(colors())
+                           cdist <- apply(coltab, 2, function(z) sum((z - c2)^2))
+                           colors()[which(cdist == min(cdist))][1]
+                         },
+                         error = function(e) {
 
-    hex2colorName <- function(color) {
-      # the input colors are 6/12 digits hex code
-      uniColor <- unique(color)
-      colorName <- color.id(uniColor)
-      len <- length(colorName)
+                           assign("invalid.color",
+                                  c(invalid.color, color),
+                                  envir = env)
 
-      for(i in seq(len)) {
-        color[color == uniColor[i]] <- colorName[i]
-      }
-      color
+                           return(color)
+
+                         }
+                       )
+
+                     }, character(1))
+
+    if(error && length(invalid.color) > 0) {
+      stop("The input " ,
+           paste(invalid.color, collapse = ", "),
+           " are not valid color names", call. = FALSE)
     }
-    hex2colorName(x)
+    colors
   }
+
+  # the input colors are 6/12 digits hex code
+  uniColor <- unique(color)
+  colorName <- color.id(uniColor, error = error)
+  len <- length(colorName)
+
+  for(i in seq(len)) {
+    color[color == uniColor[i]] <- colorName[i]
+  }
+  color
 }
