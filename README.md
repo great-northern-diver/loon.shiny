@@ -1,7 +1,7 @@
 # loon.shiny <img src="man/figures/logo.png" align="right" width="120" />
 
 [![Travis build status](https://travis-ci.com/great-northern-diver/loon.shiny.svg?branch=master)](https://travis-ci.com/great-northern-diver/loon.shiny)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/loon.shiny)](https://cran.r-project.org/package=loon.shiny)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/loon.shiny)](https://cran.r-project.org/package=loon.shiny)
 
 
 ## Display loon widgets in shiny app
@@ -16,7 +16,7 @@ Such *curated* interaction is immensely important for both sharing analytic resu
 In contrast, the [`loon`](https://great-northern-diver.github.io/loon/) `R` package provides an interactive visualization toolkit for unconstrained, unscripted, and open-ended data exploration.
 It is intended for data analysts themselves.  
 
-The  [`loon.shiny`](http://great-northern-diver.github.io/loon.shiny/) `R` package enables `loon` plots and `loon` style interaction (e.g., brushing, linked plots, panning, zooming, etc., as well as a `shiny` version of `loon` inspectors) to be incorporated into a `shiny` application (including an `RMarkdown` file).  The `loon` widgets are rendered into an html file by `Rmarkdown` so that analysts who explore data in `loon` now can present their interactive graphics in `Rmarkdown`.
+The  [`loon.shiny`](https://great-northern-diver.github.io/loon.shiny/) `R` package enables `loon` plots and `loon` style interaction (e.g., brushing, linked plots, panning, zooming, etc., as well as a `shiny` version of `loon` inspectors) to be incorporated into a `shiny` application (including an `RMarkdown` file).  The `loon` widgets are rendered into an html file by `Rmarkdown` so that analysts who explore data in `loon` now can present their interactive graphics in `Rmarkdown`.
 Other users can then explore the data online using the rich set of visual interactions available in `loon` as provided by the
 creator of the curated analysis.
 
