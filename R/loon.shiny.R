@@ -52,10 +52,9 @@
 #' @return A \code{shiny.appobj} object that represents the \code{loon.shiny} app.
 #' Printing the object or passing it to \code{\link{runApp}} will run the app.
 #'
-#' @import loon shiny grid gridExtra methods tcltk grDevices
+#' @import loon shiny grid gridExtra methods tcltk grDevices stats loon.ggplot
 #' @importFrom colourpicker colourInput
 #' @importFrom base64enc dataURI
-#' @import stats
 #'
 #' @export
 #'

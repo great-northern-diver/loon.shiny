@@ -1,4 +1,5 @@
 char2num.data.frame <- utils::getFromNamespace("char2num.data.frame", "loon")
+as_hex6color <- utils::getFromNamespace("as_hex6color", "loon")
 l_getSubtitles <- utils::getFromNamespace("l_getSubtitles", "loon.ggplot")
 
 # This function is temporary
