@@ -67,6 +67,12 @@ get_layer_worldView <- function(loon.grob, layer) {
 
   grobi <- grid::getGrob(loon.grob, layer)
 
+  if(is.nullGrob(grobi))
+    return(
+      list(xlim = numeric(0),
+           ylim = numeric(0))
+    )
+
   if(grepl(layer, pattern = "l_layer_polygon:") ||
      grepl(layer, pattern = "l_layer_line:") ||
      grepl(layer, pattern = "l_layer_oval:") ||

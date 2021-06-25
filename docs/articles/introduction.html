@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Introduction to loon.shiny</h1>
                         <h4 class="author">Zehao Xu</h4>
             
-            <h4 class="date">2021-05-31</h4>
+            <h4 class="date">2021-06-20</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -123,7 +123,7 @@
 <li><p><code>loon</code> has a powerful inspector involving almost many of the components considered essential for interaction on each graphic. With <code>loon.shiny</code>, this powerful interface can be inserted into a <code>shiny</code> app to provide a multitude of interactions at once.</p></li>
 <li><p><code>loon.shiny</code> provides analysts who explore data in <code>loon</code> the ability to incorporate selected interactive components of that analysis in <code>Rmarkdown</code>. In addition to extending the possibilities for reproducible research, this can further empower the viewer of that research to explore other possibilities within the document itself.</p></li>
 </ul>
-<p><strong>The idea behind the implementation:</strong> In <code>loon.shiny</code>, <code>loon</code> widgets are transformed to static <code>loonGrob</code>s created by the <code>R</code> base <a href="https://cran.r-project.org/web/packages/gridGraphics/gridGraphics.pdf"><code>grid</code></a> package to provide low-level, general purpose graphics functions. Note that, a <code>loonGrob</code> contains all elements of a <code>loon</code> plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty <code>grob</code> possessing the argument values necessary to draw them. When the <code>server</code> function is fired, the interactivity is realized by editing and redisplaying these <code>loonGrob</code>s.</p>
+<p><strong>The idea behind the implementation:</strong> In <code>loon.shiny</code>, <code>loon</code> widgets are transformed to static <code>loonGrob</code>s created by the <code>R</code> base <code>grid</code> package to provide low-level, general purpose graphics functions. Note that, a <code>loonGrob</code> contains all elements of a <code>loon</code> plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty <code>grob</code> possessing the argument values necessary to draw them. When the <code>server</code> function is fired, the interactivity is realized by editing and redisplaying these <code>loonGrob</code>s.</p>
 </div>
 </div>
 <div id="basic-usage" class="section level2">

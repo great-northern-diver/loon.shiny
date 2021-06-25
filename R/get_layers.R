@@ -68,7 +68,7 @@ get_group_children <- function(layer, recursive = FALSE) {
                } else {
 
                  if(recursive) {
-                   if(isgTree(child))
+                   if(is.gTree(child))
                      get_group_children(child, recursive)
                    else
                      child$name

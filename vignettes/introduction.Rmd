@@ -52,7 +52,7 @@ For `loon` users, it is a challenge to provide a *curated* analysis that is stil
 
 * `loon.shiny` provides analysts who explore data in `loon` the ability to incorporate selected interactive components of that analysis in `Rmarkdown`.  In addition to extending the possibilities for reproducible research, this can further empower the viewer of that research to explore other possibilities within the document itself. 
 
-**The idea behind the implementation:** In `loon.shiny`, `loon` widgets are transformed to static `loonGrob`s created by the `R` base  [`grid`](https://cran.r-project.org/web/packages/gridGraphics/gridGraphics.pdf) package to provide  low-level, general purpose graphics functions. Note that, a `loonGrob` contains all elements of a `loon` plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty `grob` possessing the  argument values necessary to draw them. When the `server` function is fired, the interactivity is realized by editing and redisplaying these `loonGrob`s.
+**The idea behind the implementation:** In `loon.shiny`, `loon` widgets are transformed to static `loonGrob`s created by the `R` base  `grid` package to provide  low-level, general purpose graphics functions. Note that, a `loonGrob` contains all elements of a `loon` plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty `grob` possessing the  argument values necessary to draw them. When the `server` function is fired, the interactivity is realized by editing and redisplaying these `loonGrob`s.
 
 ## Basic Usage
 

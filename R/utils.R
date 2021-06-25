@@ -17,8 +17,14 @@ isZero <- function (x, neps = 1, eps = .Machine$double.eps, ...) {
   (abs(x) < neps * eps)
 }
 
-isgTree <- function(x) {
+is.gTree <- function(x) {
   inherits(x, "gTree")
+}
+
+is.nullGrob <- function(x) {
+  if(grid::is.grob(x)) {
+    inherits(x, "null")
+  } else FALSE # it is not even a grob
 }
 
 select_color <- function() loon::l_getOption("select-color")
