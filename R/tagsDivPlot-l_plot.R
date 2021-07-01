@@ -83,7 +83,25 @@ tagsDivPlot.l_plot <- function(loon.grob, tabPanelName,
         fixedRow(
           column(
             2,
-            h6("scale to:")
+            h6("glyph:")
+          ),
+          column(
+            4,
+            do.call(
+              checkboxGroupInput,
+              list(paste0(tabPanelName, "itemLabels"),
+                   label = NULL,
+                   choices = c("itemLabels"),
+                   selected = if(loonWidgetsInfo$showItemLabels) "itemLabels",
+                   inline = TRUE)
+
+            )
+          )
+        ),
+        fixedRow(
+          column(
+            2,
+            h6("scale:")
           ),
           column(
             3,

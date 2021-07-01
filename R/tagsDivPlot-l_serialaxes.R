@@ -22,6 +22,15 @@ tagsDivPlot.l_serialaxes <- function(loon.grob, tabPanelName,
             if(loonWidgetsInfo$andrews) "andrews"
           )
         ),
+        do.call(
+          checkboxGroupInput,
+          list(paste0(tabPanelName, "itemLabels"),
+               label = NULL,
+               choices = c("itemLabels"),
+               selected = if(loonWidgetsInfo$showItemLabels) "itemLabels",
+               inline = TRUE)
+
+        ),
         radioButtons(
           inputId = paste0(tabPanelName, "axesLayout"),
           label = "axes layout",
