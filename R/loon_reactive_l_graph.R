@@ -155,30 +155,6 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     sliderxlim <- input[[paste0(tabPanelName, "xlim")]]
     sliderylim <- input[[paste0(tabPanelName, "ylim")]]
 
-    # brushId <- if(initialDisplay) {
-    #
-    #   outputInfo$brushId
-    # } else {
-    #   if(is.null(plotBrush) & is.null(plotClick)) {
-    #
-    #     outputInfo$brushId
-    #   } else {
-    #
-    #     get_brushId(
-    #       loon.grob = output.grob,
-    #       coord = list(
-    #         x = loonWidgetsInfo$x,
-    #         y = loonWidgetsInfo$y
-    #       ),
-    #       swapInShiny = swapInShiny,
-    #       swapInLoon = swapInLoon,
-    #       position = position,
-    #       brushInfo = plotBrush,
-    #       vp = get_viewPort(loon.grob = output.grob),
-    #       clickInfo = plotClick
-    #     )
-    #   }
-    # }
     brushId <- outputInfo$brushId
 
     if(swap) {
@@ -369,9 +345,9 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
     if("guides" %in% plotAxes2) {
 
       output.grob <- set_guidesGrob(loon.grob = output.grob,
-                                     xaxis = xaxis,
-                                     yaxis = yaxis,
-                                     loonColor = loonColor)
+                                    xaxis = xaxis,
+                                    yaxis = yaxis,
+                                    loonColor = loonColor)
 
       loonWidgetsInfo$showGuides <- TRUE
     } else {
@@ -401,24 +377,25 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
       } else {
 
-        get_brushId(
-          loon.grob = output.grob,
-          coord = list(
-            x = loonWidgetsInfo$x,
-            y = loonWidgetsInfo$y
-          ),
-          swapInShiny = swapInShiny,
-          swapInLoon = swapInLoon,
-          position = position,
-          brushInfo = plotBrush,
-          vp = grid::vpStack(
-            grid::plotViewport(margins = margins, name = "grid::plotViewport"),
-            grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
-                         yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
-                         name = "dataViewport")
-          ),
-          clickInfo = plotClick
-        )
+        if(!is.null(position))
+          get_brushId(
+            loon.grob = output.grob,
+            coord = list(
+              x = loonWidgetsInfo$x,
+              y = loonWidgetsInfo$y
+            ),
+            swapInShiny = swapInShiny,
+            swapInLoon = swapInLoon,
+            position = position,
+            brushInfo = plotBrush,
+            vp = grid::vpStack(
+              grid::plotViewport(margins = margins, name = "grid::plotViewport"),
+              grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
+                                 yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
+                                 name = "dataViewport")
+            ),
+            clickInfo = plotClick
+          )
       }
     }
 
@@ -1087,8 +1064,8 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
     # reset boundary
     output.grob <- set_boundaryGrob(loon.grob = output.grob,
-                                     margins = margins,
-                                     loonColor = loonColor)
+                                    margins = margins,
+                                    loonColor = loonColor)
 
     # set linking info
     push <- input[[paste0(tabPanelName, "push")]]

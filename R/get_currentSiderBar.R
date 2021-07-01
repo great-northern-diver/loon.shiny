@@ -3,7 +3,7 @@ get_currentSiderBar <- function(positions, input, noneInteractiveGrobs_index) {
   pos <- integer(0)
   plotClick <- input$plotClick
 
-  if(!is.null(plotClick)) {
+  if(!is.null(plotClick) && !is.null(positions)) {
 
     n <- dim(positions)[1]
     for(i in 1:n) {

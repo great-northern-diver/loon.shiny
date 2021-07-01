@@ -22,7 +22,6 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
                                  linkingGroup, input, colorList, tabPanelName, outputInfo) {
 
   # NOTE: for shiny, try to put the `input[[**]]` outside of a logical check
-  # especially, the logical check is determined other `input[[**]]` conditions
   # why: avoid some issue that the `input[[**]]` fails to get fired.
   plotBrush <- input$plotBrush
   plotClick <- input$plotClick
@@ -175,33 +174,6 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
     sliderxlim <- input[[paste0(tabPanelName, "xlim")]]
     sliderylim <- input[[paste0(tabPanelName, "ylim")]]
-
-    # TODO: more tests are needed
-    # brushId <- if(initialDisplay) {
-    #
-    #   outputInfo$brushId
-    # } else {
-    #
-    #   if(is.null(plotBrush) && is.null(plotClick)) {
-    #
-    #     outputInfo$brushId
-    #   } else {
-    #
-    #     get_brushId(
-    #       loon.grob = output.grob,
-    #       coord = list(
-    #         x = loonWidgetsInfo$x,
-    #         y = loonWidgetsInfo$y
-    #       ),
-    #       swapInShiny = swapInShiny,
-    #       swapInLoon = swapInLoon,
-    #       position = position,
-    #       brushInfo = plotBrush,
-    #       vp = get_viewPort(loon.grob = output.grob),
-    #       clickInfo = plotClick
-    #     )
-    #   }
-    # }
 
     # for plot region
     brushId <- outputInfo$brushId
@@ -429,24 +401,25 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
       } else {
 
-        get_brushId(
-          loon.grob = output.grob,
-          coord = list(
-            x = loonWidgetsInfo$x,
-            y = loonWidgetsInfo$y
-          ),
-          swapInShiny = swapInShiny,
-          swapInLoon = swapInLoon,
-          position = position,
-          brushInfo = plotBrush,
-          vp = grid::vpStack(
-            grid::plotViewport(margins = margins, name = "grid::plotViewport"),
-            grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
-                               yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
-                               name = "dataViewport")
-          ),
-          clickInfo = plotClick
-        )
+        if(!is.null(position))
+          get_brushId(
+            loon.grob = output.grob,
+            coord = list(
+              x = loonWidgetsInfo$x,
+              y = loonWidgetsInfo$y
+            ),
+            swapInShiny = swapInShiny,
+            swapInLoon = swapInLoon,
+            position = position,
+            brushInfo = plotBrush,
+            vp = grid::vpStack(
+              grid::plotViewport(margins = margins, name = "grid::plotViewport"),
+              grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
+                                 yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
+                                 name = "dataViewport")
+            ),
+            clickInfo = plotClick
+          )
       }
     }
 
