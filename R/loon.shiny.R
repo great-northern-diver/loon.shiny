@@ -1,13 +1,14 @@
 #' @title Automatically Create a \code{shiny} App Based on Interactive \code{Loon} Widgets
 #' @name loon.shiny
 #' @description Interactive \code{loon} widgets displayed in a \code{shiny} app
-#' @param widgets A \code{loon} widget or a list of \code{loon} widgets.
+#' @param widgets A \code{loon} widget or a list of \code{loon} widgets. If the input is a
+#' \code{ggplot} object, the \code{ggplot} object will be turned into a \code{loon} widget
+#' via \code{\link{ggplot2loon}}.
 #' @param selectBy The way to brush, can be 'brushing' (keep the brush whenever the plot is updated),
-#' 'sweeping' (clear the brush whenever the plot is updated) or 'byDefault' (determined by \code{loon} widget 'selectBy',
-#' if 'selectBy' is sweeping, then \code{selectBy} will be assigned to 'sweeping', vice versa)
+#' 'sweeping' (clear the brush whenever the plot is updated) or 'byDefault' (determined by \code{loon} widget 'selectBy')
 #' @param showWorldView Logical; whether to show the world view.
 #' @param plotRegionWidth Plot region width. Must be a valid \code{CSS} unit (like '100%', '400px') or a number,
-#' which will be coerced to a string and have 'px' appended. More details, check \code{\link{plotOutput}}.
+#' which will be coerced to a string and have 'px' appended.
 #' @param plotRegionHeight Plot region height.
 #' @param plotRegionBackground Plot region background color
 #' @param layoutMatrix Optional layout matrix to place \code{loon} widgets. See \code{layout_matrix} in \code{\link{grid.arrange}}.
@@ -132,7 +133,10 @@ loon.shiny <- function(widgets,
                        options = list(),
                        ...) {
 
-  stopifnot(length(inspectorLocation) == 4)
+  if(is.ggplot(widgets)) {
+    message("The input is a `ggplot` object and will be transformed to a `loon` widget.")
+    widgets <- loon.ggplot::ggplot2loon(widgets)
+  }
 
   if(!loon::l_isLoonWidget(widgets) & !is(widgets, "l_compound")) {
     lapply(widgets,
@@ -146,6 +150,8 @@ loon.shiny <- function(widgets,
   # use the underscore case to match argument in the `arrangeGrob`
   layout_matrix <- layoutMatrix
   if(length(colorList) == 0) stop("`colorList` cannot be length zero")
+
+  stopifnot(length(inspectorLocation) == 4)
 
   # html background color may have chance to fail recognizing the color name
   # but it can understand the hex code 100%
