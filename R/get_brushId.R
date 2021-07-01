@@ -1,12 +1,12 @@
 get_brushId <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                         position, brushInfo, vp, ...) {
+                         position, brushInfo, vp, offset = TRUE, ...) {
   obj <- character(0)
   class(obj) <- names(loon.grob$children)
   UseMethod("get_brushId", obj)
 }
 
 get_brushId.l_plot <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                position, brushInfo, vp, clickInfo){
+                                position, brushInfo, vp, offset = TRUE, clickInfo){
 
   if(length(coord$x) == 0 & length(coord$y) == 0) {
 
@@ -16,7 +16,7 @@ get_brushId.l_plot <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon
 
     if(!is.null(brushInfo)) {
 
-      newbound <- coordConvert(position, brushInfo, vp)
+      newbound <- coordConvert(position, brushInfo, vp, offset = offset)
       newl <- newbound$newl
       newr <- newbound$newr
       newt <- newbound$newt
@@ -76,7 +76,7 @@ get_brushId.l_plot <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon
       )
     } else if (!is.null(clickInfo)) {
 
-      newbound <- coordConvert(position, clickInfo, vp)
+      newbound <- coordConvert(position, clickInfo, vp, offset = offset)
       newl <- newbound$newl
       newr <- newbound$newr
       newt <- newbound$newt
@@ -139,11 +139,11 @@ get_brushId.l_plot <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon
 }
 
 get_brushId.l_hist <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                position, brushInfo, vp, clickInfo) {
+                                position, brushInfo, vp, offset = TRUE, clickInfo) {
 
   if(!is.null(brushInfo)) {
 
-    newbound <- coordConvert(position, brushInfo, vp)
+    newbound <- coordConvert(position, brushInfo, vp, offset = offset)
     newl <- newbound$newl
     newr <- newbound$newr
     newt <- newbound$newt
@@ -208,7 +208,7 @@ get_brushId.l_hist <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon
 
   } else if(!is.null(clickInfo)) {
 
-    newbound <- coordConvert(position, clickInfo, vp)
+    newbound <- coordConvert(position, clickInfo, vp, offset = offset)
     newl <- newbound$newl
     newr <- newbound$newr
     newt <- newbound$newt
@@ -267,18 +267,18 @@ get_brushId.l_hist <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon
 }
 
 get_brushId.l_graph <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                 position, brushInfo, vp, clickInfo){
+                                 position, brushInfo, vp, offset = TRUE, clickInfo){
 
   get_brushId.l_plot(loon.grob, coord, swapInShiny, swapInLoon,
                       position, brushInfo, vp, clickInfo)
 }
 
 get_brushId.l_serialaxes <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                      position, brushInfo, vp, axesLayoutInShiny) {
+                                      position, brushInfo, vp, offset = TRUE, axesLayoutInShiny) {
 
   if(!is.null(brushInfo)) {
 
-    newbound <- coordConvert(position, brushInfo, vp)
+    newbound <- coordConvert(position, brushInfo, vp, offset = offset)
     newl <- newbound$newl
     newr <- newbound$newr
     newt <- newbound$newt
@@ -322,19 +322,25 @@ get_brushId.l_serialaxes <- function(loon.grob, coord, swapInShiny = FALSE, swap
   } else numeric(0)
 }
 
-coordConvert <- function(position, brushInfo, vp) {
+coordConvert <- function(position, brushInfo, vp, offset = TRUE) {
 
   l <- brushInfo$domain$left
   r <- brushInfo$domain$right
   b <- brushInfo$domain$bottom
   t <- brushInfo$domain$top
 
-  offset <- get_offset(vp, t, b, l, r)
-  t_offset <- offset$t_offset
-  b_offset <- offset$b_offset
-  l_offset <- offset$l_offset
-  r_offset <- offset$r_offset
-
+  if(offset) {
+    off <- get_offset(vp, t, b, l, r)
+    t_offset <- off$t_offset
+    b_offset <- off$b_offset
+    l_offset <- off$l_offset
+    r_offset <- off$r_offset
+  } else {
+    t_offset <- 0
+    b_offset <- 0
+    l_offset <- 0
+    r_offset <- 0
+  }
   domain_l <- l + (r - l) * position$l
   domain_r <- l + (r - l) * position$r
   domain_t <- t - (t - b) * position$t
@@ -348,15 +354,15 @@ coordConvert <- function(position, brushInfo, vp) {
   )
 }
 
-offset_unit <- function(x, unit = "native", is.unit = TRUE, as.numeric = FALSE) {
-  if(getRversion() >= "4.0.0") {
-    -get_unit(x, unit, is.unit, as.numeric)
-  } else {
-    get_unit(x, unit, is.unit, as.numeric)
-  }
-}
-
 get_offset <- function(vp, t, b, l, r) {
+
+  offset_unit <- function(x, unit = "native", is.unit = TRUE, as.numeric = FALSE) {
+    if(getRversion() >= "4.0.0") {
+      -get_unit(x, unit, is.unit, as.numeric)
+    } else {
+      get_unit(x, unit, is.unit, as.numeric)
+    }
+  }
 
   # grid::plotViewport
   plot_viewport <- vp[[1]]
@@ -401,7 +407,7 @@ homo_trans <- function(r, l, t, b, newr, newl, newt, newb, x, y) {
 
 extendPoints <- function(x, length.out = 100) {
   unlist(
-    lapply(1:(length(x) - 1),
+    lapply(seq(length(x) - 1),
            function(i){
              seq(x[i], x[i+1], length.out = length.out)
            }
