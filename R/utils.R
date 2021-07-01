@@ -21,6 +21,9 @@ is.gTree <- function(x) {
   inherits(x, "gTree")
 }
 
+is.ggplot <- function (x)
+  inherits(x, "ggplot")
+
 is.nullGrob <- function(x) {
   if(grid::is.grob(x)) {
     inherits(x, "null")
