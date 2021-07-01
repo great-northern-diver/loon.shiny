@@ -308,7 +308,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
   }
 
 
-  # x and y are swapped, so does xlim and ylim
+  # x and y are swapped
   xNoNA <- na.omit(x)
   plotViewXlim <- if(length(xNoNA) == 0) {
     c(-0.05, 0.05)
@@ -330,8 +330,10 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
   # the world view is swapped as well
   worldView <- get_worldViewPort(loon.grob = loon.grob, parent = "scatterplot",
                                  parentExcluded = TRUE)
-  worldViewXlim <- range(c(plotViewXlim, worldView$xlim))
-  worldViewYlim <- range(c(plotViewYlim, worldView$ylim))
+  worldViewXlim <- range(c(plotViewXlim, worldView$xlim,
+                           if(swapAxes) ylim else xlim))
+  worldViewYlim <- range(c(plotViewYlim, worldView$ylim,
+                           if(swapAxes) xlim else ylim))
 
   layers <- get_layers(loon.grob)
   names(layers) <- layers
