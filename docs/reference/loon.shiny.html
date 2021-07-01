@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">loon.shiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -161,13 +161,14 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>widgets</th>
-      <td><p>A <code>loon</code> widget or a list of <code>loon</code> widgets.</p></td>
+      <td><p>A <code>loon</code> widget or a list of <code>loon</code> widgets. If the input is a
+<code>ggplot</code> object, the <code>ggplot</code> object will be turned into a <code>loon</code> widget
+via <code><a href='https://rdrr.io/pkg/loon.ggplot/man/ggplot2loon.html'>ggplot2loon</a></code>.</p></td>
     </tr>
     <tr>
       <th>selectBy</th>
       <td><p>The way to brush, can be 'brushing' (keep the brush whenever the plot is updated),
-'sweeping' (clear the brush whenever the plot is updated) or 'byDefault' (determined by <code>loon</code> widget 'selectBy',
-if 'selectBy' is sweeping, then <code>selectBy</code> will be assigned to 'sweeping', vice versa)</p></td>
+'sweeping' (clear the brush whenever the plot is updated) or 'byDefault' (determined by <code>loon</code> widget 'selectBy')</p></td>
     </tr>
     <tr>
       <th>showWorldView</th>
@@ -176,7 +177,7 @@ if 'selectBy' is sweeping, then <code>selectBy</code> will be assigned to 'sweep
     <tr>
       <th>plotRegionWidth</th>
       <td><p>Plot region width. Must be a valid <code>CSS</code> unit (like '100<!-- %', '400px') or a number, -->
-which will be coerced to a string and have 'px' appended. More details, check <code>plotOutput</code>.</p></td>
+which will be coerced to a string and have 'px' appended.</p></td>
     </tr>
     <tr>
       <th>plotRegionHeight</th>
