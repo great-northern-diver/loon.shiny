@@ -7,15 +7,23 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
 
   noneInteractiveGrobs_index <- get_noneInteractiveGrobs_index(loon.grobs)
 
+  # Get each grob position
+  # The position is calculated twice, the other is in `server` function,.
+  # Check that for details
+  positions <- tryCatch(
+    expr = {
+      loonGrob_positions(gtable,
+                         loon.grobs,
+                         arrangeGrobArgs = arrangeGrobArgs)
+    },
+    error = function(e) NULL
+  )
+
   # 1. check whether the layout_matrix, nrow, ncol, widths, heights are valid
   # 2. rearrange the grobs if widths are heights provided
   # since in the position specification (next line), no widths and heights are considered
   # if the layout_matrix is not rearranged, the selection in shiny will not work properly
   arrangeGrobArgs <- adjust_arrangeGrobArgs(arrangeGrobArgs, n = length(loon.grobs))
-  # get each grob position
-  positions <- loonGrob_positions(gtable,
-                                  loon.grobs,
-                                  arrangeGrobArgs = arrangeGrobArgs)
 
   n <- length(loon.grobs)
   tabPanelNames <- names(loon.grobs)
@@ -29,6 +37,7 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
   linkingGroups <- sapply(runIndex, function(j) loonWidgetsInfo[[j]]$linkingGroup)
   linkingInfo <- get_linkingInfo(linkingGroups, loonWidgetsInfo, tabPanelNames, n)
 
+  count <- 0L
   server <- function(input, output, session) {
 
     # set action buttons
@@ -44,7 +53,6 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
 
     # In server function, the order of execution is
     # `update_sidebarPanel` --> render `plot` --> render `world view` --> `update_sidebarPanel`
-
     # update tab panel
     shiny::observe({
 
@@ -119,6 +127,20 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
                                         return(reactive_grobs_info$output.grob)
                                       }
         )
+
+        # the `positions` matrix is calculated again.
+        # reason: inside the function, we call `grid::convertUnit()` to
+        # to convert an equivalent unit object.
+        # The new "unit" (`unitTo`) is `npc`, only if the graphics are drawn,
+        # the conversion is precise.
+        if(count == 0) {
+          positions <<- loonGrob_positions(gtable,
+                                           loon.grobs,
+                                           arrangeGrobArgs = arrangeGrobArgs)
+
+          count <<- count + 1
+        }
+
         # Update display
         # If it is a facet grob or ggplot grob
         # since, rather than displays
@@ -130,21 +152,27 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
                                            arrangeGrobArgs = arrangeGrobArgs))
       })
 
+      if("itemLabels" %in% input[[paste0(currentSiderBar, "itemLabels")]]) {
+        output$text <- shiny::renderText({
+          info <- outputInfo[[runIndex[1L]]]
+          brushId <- info$brushId
+          loonWidgetsInfo <- info$loonWidgetsInfo
+          itemLabel <- loonWidgetsInfo$itemLabel
+
+          if(length(brushId) == 0 || length(itemLabel) == 0) NULL
+          else {
+            itemLabel[brushId]
+          }
+        })
+      } else {
+        output$text <- shiny::renderText({NULL})
+      }
+
       if(showWorldView) {
         # only update the current world view
         output[[paste0(currentSiderBar, "plot_world_view")]] <- shiny::renderPlot({
 
           id <- which(tabPanelNames %in% currentSiderBar)
-
-          # loon_reactive_worldView_grob <- loon_reactive_worldView(
-          #   loon.grob = loon.grobs[[id]],
-          #   buttons = button_list[[id]],
-          #   input,
-          #   tabPanelName = currentSiderBar,
-          #   outputInfo = outputInfo[[id]]
-          # )
-          #
-          # grid::grid.draw(loon_reactive_worldView_grob)
 
           grid::grid.draw(loon_worldView(output.grobs[[id]],
                                          input, currentSiderBar,

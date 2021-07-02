@@ -437,17 +437,18 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
 
       } else {
 
-        get_brushId(
-          loon.grob = output.grob,
-          coord = list(
-            x = loonWidgetsInfo$x,
-            y = loonWidgetsInfo$y
-          ),
-          position = position,
-          brushInfo = plotBrush,
-          vp = viewPort,
-          axesLayoutInShiny = axesLayoutInShiny
-        )
+        if(!is.null(position))
+          get_brushId(
+            loon.grob = output.grob,
+            coord = list(
+              x = loonWidgetsInfo$x,
+              y = loonWidgetsInfo$y
+            ),
+            position = position,
+            brushInfo = plotBrush,
+            vp = viewPort,
+            axesLayoutInShiny = axesLayoutInShiny
+          )
       }
     }
 

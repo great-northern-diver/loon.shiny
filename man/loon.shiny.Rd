@@ -26,16 +26,17 @@ loon.shiny(
 )
 }
 \arguments{
-\item{widgets}{A \code{loon} widget or a list of \code{loon} widgets.}
+\item{widgets}{A \code{loon} widget or a list of \code{loon} widgets. If the input is a
+\code{ggplot} object, the \code{ggplot} object will be turned into a \code{loon} widget
+via \code{\link{ggplot2loon}}.}
 
 \item{selectBy}{The way to brush, can be 'brushing' (keep the brush whenever the plot is updated),
-'sweeping' (clear the brush whenever the plot is updated) or 'byDefault' (determined by \code{loon} widget 'selectBy',
-if 'selectBy' is sweeping, then \code{selectBy} will be assigned to 'sweeping', vice versa)}
+'sweeping' (clear the brush whenever the plot is updated) or 'byDefault' (determined by \code{loon} widget 'selectBy')}
 
 \item{showWorldView}{Logical; whether to show the world view.}
 
 \item{plotRegionWidth}{Plot region width. Must be a valid \code{CSS} unit (like '100%', '400px') or a number,
-which will be coerced to a string and have 'px' appended. More details, check \code{\link{plotOutput}}.}
+which will be coerced to a string and have 'px' appended.}
 
 \item{plotRegionHeight}{Plot region height.}
 

@@ -67,12 +67,18 @@ loon.ui <- function(loon.grobs,
                          height = inspectorHeight,
                          set_tabPanel(sidebarPanel_args, navbarMenuNames)
     ),
-    shiny::plotOutput(outputId="plots",
+    shiny::plotOutput(outputId = "plots",
+                      width = plotRegionWidth,
+                      height = plotRegionHeight,
                       brush = shiny::brushOpts(id = "plotBrush",
                                                resetOnNew = (selectBy == "sweeping")),
-                      dblclick = "plotClick",
-                      width = plotRegionWidth,
-                      height = plotRegionHeight)
+                      dblclick = "plotClick"),
+    div(
+      style= paste0("width: ", plotRegionWidth, ";"),
+      shiny::fluidRow(
+        shiny::verbatimTextOutput("text", placeholder = FALSE)
+      )
+    )
   )
 
   ui

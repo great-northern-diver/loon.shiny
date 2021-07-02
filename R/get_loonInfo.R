@@ -44,7 +44,7 @@ get_loonInfo.l_facet_ggplot <- function(widgets, layout_matrix, nrow, ncol,
   info <- get_compoundInfo(widgets = widgets, loon.grobs = loon.grobs,
                            layout = layout,
                            navbarMenuName = navbarMenuName)
-  # info$gtable <- gtable
+  info$gtable <- gtable
   info
 }
 
@@ -62,7 +62,7 @@ get_loonInfo.l_facet_wrap <- function(widgets, layout_matrix, nrow, ncol,
                            loon.grobs = loon.grobs,
                            layout = layout,
                            navbarMenuName = navbarMenuName)
-  # info$gtable <- gtable
+  info$gtable <- gtable
   info
 }
 
@@ -82,7 +82,7 @@ get_loonInfo.l_facet_grid <- function(widgets, layout_matrix, nrow, ncol,
                            loon.grobs = loon.grobs,
                            layout = layout,
                            navbarMenuName = navbarMenuName)
-  # info$gtable <- gtable
+  info$gtable <- gtable
   info
 }
 

@@ -1,3 +1,15 @@
+# loon.shiny 1.0.1
+
+1. Fix two bugs: 
+
+    - once a layer is removed, the names of the rest layers should remain. 
+  
+    - once a layer is removed, the region should be adjusted (world view is changed)
+  
+2. For facets (`l_facet_grid`, `l_facet_wrap` and `l_facet_ggplot`), the labels of each panel can be displayed. The selection for each panel works well.
+
+3. Item labels: a check box `itemLabels` is added on the inspector. If it is checked, once the points are selected, a patch will be shown right beneath the plot region and the labels of the selected points will be displayed.
+
 # loon.shiny 1.0.0 
 
 1. "clean" the code, i.e. representing variables with Camel case and functions with underscore case; give more meaningful names; remove hacks, etc.

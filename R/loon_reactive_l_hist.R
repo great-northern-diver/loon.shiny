@@ -395,8 +395,8 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
     # reset boundary
     output.grob <- set_boundaryGrob(loon.grob = output.grob,
-                                     margins = margins,
-                                     loonColor = loonColor)
+                                    margins = margins,
+                                    loonColor = loonColor)
 
     # +++++++++++++++++++++++++++++++++++++++++ set other aesthetic ++++++++++++++++++++++++++++++++++++++++
     brushId <- if(initialDisplay) {
@@ -411,20 +411,21 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
       } else {
 
-        get_brushId(
-          loon.grob = output.grob,
-          coord = binxy,
-          swapInShiny = swapInShiny,
-          position = position,
-          brushInfo = plotBrush,
-          vp = grid::vpStack(
-            grid::plotViewport(margins = margins, name = "grid::plotViewport"),
-            grid::dataViewport(xscale = xlim,
-                               yscale = ylim,
-                               name = "dataViewport")
-          ),
-          clickInfo = plotClick
-        )
+        if(!is.null(position))
+          get_brushId(
+            loon.grob = output.grob,
+            coord = binxy,
+            swapInShiny = swapInShiny,
+            position = position,
+            brushInfo = plotBrush,
+            vp = grid::vpStack(
+              grid::plotViewport(margins = margins, name = "grid::plotViewport"),
+              grid::dataViewport(xscale = xlim,
+                                 yscale = ylim,
+                                 name = "dataViewport")
+            ),
+            clickInfo = plotClick
+          )
       }
     }
 
