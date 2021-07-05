@@ -20,31 +20,38 @@ The  [`loon.shiny`](https://great-northern-diver.github.io/loon.shiny/) `R` pack
 Other users can then explore the data online using the rich set of visual interactions available in `loon` as provided by the
 creator of the curated analysis.
 
-A single function, `loon.shiny()`, does the work.
+A single function, `loon.shiny()`, does the work. It produces a web based shiny app containing the `loon` plot together with its `loon` inspector.
 
 -----
 
-## 1. Basic `shiny` app
+## 1. Selecting and Querying: select and query on a plot in a `shiny` app
+
+Selection can raise the focus of the interest. One can sweep (or brush) to form a region, and then, points inside this region will be highlighted. 
+
+Quering shows detailed information of each point. It is realized by hovering.
 
 ```r
 library(loon.shiny)
-p <- with(mtcars, l_plot(hp, mpg, color = cyl, size = wt))
+p <- with(mtcars, 
+          l_plot(hp, mpg, 
+                 color = cyl, 
+                 size = wt,
+                 itemLabel = rownames(mtcars)))
 loon.shiny(p)
 ```
-produces a web based shiny app containing the `loon` plot `p`  together with its `loon` inspector:
 
 ![](man/figures/loonShiny.gif)
 
-## 2. Several linked plots in a `shiny` app
+## 2. Linking: several linked plots in a `shiny` app
 
-Here we show three plots
-appearing as the output of knitting an `RMarkdown` file.
+Here we show three plots appearing as the output of knitting an `RMarkdown` file.
 This is the more typical case. 
+
+With several plots, linking allows brushing across several plots. 
 
 ![](man/figures/shinyDemo.gif)
 
-The code for the three plot shiny app on its own would be
-(as shown above):
+The code for the three plot shiny app on its own would be (as shown above):
 
 ```r
 p1 <- l_plot(iris, linkingGroup = "iris",
@@ -59,9 +66,9 @@ loon.shiny(list(p1, p2, p3),
            plotRegionWidth = "400px")
 ```    
 
-Note that the plots are linked and the inspector is shared by/addresses all three plots (see tabs on the inspector).
+Note that the plots are linked and the inspector is shared by/addresses all three plots (see tabs on the inspector). 
 
-## 3. Start with ggplot --> loon --> shiny
+## 3. Start with `ggplot` --> `loon` --> `shiny`
 
 Some users may prefer to begin with a `ggplot` and construct their plots
 using the **grammar of interactive graphics** provided by 
@@ -71,20 +78,19 @@ A simple example follows:
 ```r
 library(loon.ggplot)
 g <- ggplot(mtcars, mapping = aes(x = wt, y = hp)) + 
-       geom_point(mapping = aes(color = factor(gear))) + 
-       geom_smooth()
-
+       geom_point() + 
+       geom_smooth(method = "lm", se = FALSE) + 
+       facet_wrap(~cyl)
+       
+# or simply call `loon.shiny(g)`
 loon.shiny(loon.ggplot(g))
 ```
 
 which results in
     
-![](man/figures/ggplotLoonShiny.PNG)
-   
+![](man/figures/ggplotLoonShiny.gif)
 
-Compared to `ggplot` to `shiny`, `ggplot` --> `loon` --> `shiny` extends the app to give more interactivity to the user. Users can now direct manipulate plots, such as highlighting points, changing colours and sizes, modifying layer orders, and more.
-
-With several plots, linking allows brushing across several plots.
+Compared to `ggplot` to `shiny`, `ggplot` --> `loon` --> `shiny` extends the app to give more interactivity to the user. Users can now direct manipulate plots, such as highlighting points, changing colours and sizes, modifying the points transparency, and more.
 
 -----
 
