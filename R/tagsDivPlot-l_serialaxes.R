@@ -12,24 +12,17 @@ tagsDivPlot.l_serialaxes <- function(loon.grob, tabPanelName,
         checkboxGroupInput(
           inputId = paste0(tabPanelName, "plot"),
           label = NULL,
-          choices = c("showGuides", "showAxes", "showAxesLabels", "showLabels", "showArea", "andrews"),
+          choices = c("showGuides", "showAxes", "showAxesLabels", "showLabels",
+                      "showItemLabels", "showArea", "andrews"),
           selected = c(
             if(loonWidgetsInfo$showGuides) "showGuides",
             if(loonWidgetsInfo$showAxes) "showAxes",
             if(loonWidgetsInfo$showAxesLabels) "showAxesLabels",
             if(loonWidgetsInfo$showLabels) "showLabels",
+            if(loonWidgetsInfo$showItemLabels) "showItemLabels",
             if(loonWidgetsInfo$showArea) "showArea",
             if(loonWidgetsInfo$andrews) "andrews"
           )
-        ),
-        do.call(
-          checkboxGroupInput,
-          list(paste0(tabPanelName, "itemLabels"),
-               label = NULL,
-               choices = c("itemLabels"),
-               selected = if(loonWidgetsInfo$showItemLabels) "itemLabels",
-               inline = TRUE)
-
         ),
         radioButtons(
           inputId = paste0(tabPanelName, "axesLayout"),
