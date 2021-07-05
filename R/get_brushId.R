@@ -1,157 +1,134 @@
 get_brushId <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                         position, brushInfo, vp, offset = TRUE, ...) {
+                        position, brushInfo, vp, offset = NULL, clickAdj = 1e-2,
+                        clickInfo, ...) {
   obj <- character(0)
   class(obj) <- names(loon.grob$children)
   UseMethod("get_brushId", obj)
 }
 
+get_brushId.default <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
+                                position, brushInfo, vp, offset = NULL, clickAdj = 1e-2,
+                                clickInfo, ...){
+  integer(0L)
+}
+
 get_brushId.l_plot <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                position, brushInfo, vp, offset = TRUE, clickInfo){
+                               position, brushInfo, vp, offset = NULL, clickAdj = 1e-2,
+                               clickInfo, ...){
 
-  if(length(coord$x) == 0 & length(coord$y) == 0) {
+  if(length(coord$x) == 0 && length(coord$y) == 0) return(integer(0L))
+  if(is.null(swapInShiny)) return(integer(0L))
+  if(is.null(swapInLoon)) return(integer(0L))
+  if(is.null(position)) return(integer(0L))
+  if(is.null(vp)) return(integer(0L))
 
-    numeric(0)
-
-  } else {
+  if(!is.null(brushInfo) || !is.null(clickInfo)) {
 
     if(!is.null(brushInfo)) {
+      newbound <- coordConvert(position, brushInfo, vp, offset)
+      xmax <- brushInfo$xmax
+      xmin <- brushInfo$xmin
+      ymax <- brushInfo$ymax
+      ymin <- brushInfo$ymin
+    } else {
+      newbound <- coordConvert(position, clickInfo, vp, offset)
+      xmax <- (clickInfo$x + clickAdj)
+      xmin <- (clickInfo$x - clickAdj)
+      ymax <- (clickInfo$y + clickAdj)
+      ymin <- (clickInfo$y - clickAdj)
+    }
 
-      newbound <- coordConvert(position, brushInfo, vp, offset = offset)
-      newl <- newbound$newl
-      newr <- newbound$newr
-      newt <- newbound$newt
-      newb <- newbound$newb
+    newl <- newbound$newl
+    newr <- newbound$newr
+    newt <- newbound$newt
+    newb <- newbound$newb
 
-      xlim <- vp[[2]]$xscale
-      ylim <- vp[[2]]$yscale
+    # dataViewport <- vp["dataViewport"]
+    dataViewport <- get_vp_from_vpStack(vp, "dataViewport")
 
-      if(swapInLoon) {
-        if(swapInShiny) {
+    xlim <- dataViewport$xscale
+    ylim <- dataViewport$yscale
 
-          l <- ylim[1]
-          r <- ylim[2]
-          b <- xlim[1]
-          t <- xlim[2]
+    if(swapInLoon) {
+      if(swapInShiny) {
 
-          x <- coord$x
-          y <- coord$y
-        } else {
-          l <- xlim[1]
-          r <- xlim[2]
-          b <- ylim[1]
-          t <- ylim[2]
+        l <- ylim[1]
+        r <- ylim[2]
+        b <- xlim[1]
+        t <- xlim[2]
 
-          x <- coord$y
-          y <- coord$x
-        }
-        newxy <- homo_trans(t, b, r, l, newr, newl, newt, newb, x, y)
+        x <- coord$x
+        y <- coord$y
       } else {
-        if(swapInShiny) {
+        l <- xlim[1]
+        r <- xlim[2]
+        b <- ylim[1]
+        t <- ylim[2]
 
-          l <- ylim[1]
-          r <- ylim[2]
-          b <- xlim[1]
-          t <- xlim[2]
-
-          x <- coord$y
-          y <- coord$x
-        } else {
-          l <- xlim[1]
-          r <- xlim[2]
-          b <- ylim[1]
-          t <- ylim[2]
-
-          x <- coord$x
-          y <- coord$y
-        }
-        newxy <- homo_trans(r, l, t, b, newr, newl, newt, newb, x, y)
+        x <- coord$y
+        y <- coord$x
       }
+      newxy <- homo_trans(t, b, r, l, newr, newl, newt, newb, x, y)
+    } else {
+      if(swapInShiny) {
 
-      xx <- newxy$x
-      yy <- newxy$y
+        l <- ylim[1]
+        r <- ylim[2]
+        b <- xlim[1]
+        t <- xlim[2]
 
-      intersect(
-        which(xx >= brushInfo$xmin & xx <= brushInfo$xmax),
-        which(yy >= brushInfo$ymin & yy <= brushInfo$ymax)
-      )
-    } else if (!is.null(clickInfo)) {
-
-      newbound <- coordConvert(position, clickInfo, vp, offset = offset)
-      newl <- newbound$newl
-      newr <- newbound$newr
-      newt <- newbound$newt
-      newb <- newbound$newb
-
-      xlim <- vp[[2]]$xscale
-      ylim <- vp[[2]]$yscale
-
-      if(swapInLoon) {
-        if(swapInShiny) {
-
-          l <- ylim[1]
-          r <- ylim[2]
-          b <- xlim[1]
-          t <- xlim[2]
-
-          x <- coord$x
-          y <- coord$y
-        } else {
-          l <- xlim[1]
-          r <- xlim[2]
-          b <- ylim[1]
-          t <- ylim[2]
-
-          x <- coord$y
-          y <- coord$x
-        }
-        newxy <- homo_trans(t, b, r, l, newr, newl, newt, newb, x, y)
+        x <- coord$y
+        y <- coord$x
       } else {
-        if(swapInShiny) {
+        l <- xlim[1]
+        r <- xlim[2]
+        b <- ylim[1]
+        t <- ylim[2]
 
-          l <- ylim[1]
-          r <- ylim[2]
-          b <- xlim[1]
-          t <- xlim[2]
-
-          x <- coord$y
-          y <- coord$x
-        } else {
-          l <- xlim[1]
-          r <- xlim[2]
-          b <- ylim[1]
-          t <- ylim[2]
-
-          x <- coord$x
-          y <- coord$y
-        }
-        newxy <- homo_trans(r, l, t, b, newr, newl, newt, newb, x, y)
+        x <- coord$x
+        y <- coord$y
       }
+      newxy <- homo_trans(r, l, t, b, newr, newl, newt, newb, x, y)
+    }
 
-      xx <- newxy$x
-      yy <- newxy$y
+    xx <- newxy$x
+    yy <- newxy$y
 
-      intersect(
-        which(xx >= (clickInfo$x - click_selection_adjustment()) & xx <= (clickInfo$x + click_selection_adjustment())),
-        which(yy >= (clickInfo$y - click_selection_adjustment()) & yy <= (clickInfo$y + click_selection_adjustment()))
-      )
-    } else numeric(0)
-  }
+    intersect(
+      which(xx >= xmin & xx <= xmax),
+      which(yy >= ymin & yy <= ymax)
+    )
+  } else integer(0L)
 }
 
 get_brushId.l_hist <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                position, brushInfo, vp, offset = TRUE, clickInfo) {
+                               position, brushInfo, vp, offset = NULL, clickAdj = 1e-2,
+                               clickInfo, ...) {
 
-  if(!is.null(brushInfo)) {
+  if(is.null(swapInShiny)) return(integer(0L))
+  if(is.null(swapInLoon)) return(integer(0L))
+  if(is.null(position)) return(integer(0L))
+  if(is.null(vp)) return(integer(0L))
 
-    newbound <- coordConvert(position, brushInfo, vp, offset = offset)
+  if(!is.null(brushInfo) || !is.null(clickInfo)) {
+
+    if(!is.null(brushInfo)) {
+      newbound <- coordConvert(position, brushInfo, vp, offset)
+    } else {
+      newbound <- coordConvert(position, clickInfo, vp, offset)
+    }
+
     newl <- newbound$newl
     newr <- newbound$newr
     newt <- newbound$newt
     newb <- newbound$newb
 
     # vp has been rotated, no need to swap xlim, ylim
-    xlim <- vp[[2]]$xscale
-    ylim <- vp[[2]]$yscale
+    # dataViewport <- vp["dataViewport"]
+    dataViewport <- get_vp_from_vpStack(vp, "dataViewport")
+
+    xlim <- dataViewport$xscale
+    ylim <- dataViewport$yscale
 
     l <- xlim[1]
     r <- xlim[2]
@@ -189,103 +166,80 @@ get_brushId.l_hist <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon
       ymax <- newxy_max$y
     }
 
-    brush_bin <- intersect(
-      which(
-        (xmin <= brushInfo$xmin & brushInfo$xmin <= xmax) |
-          (xmin <= brushInfo$xmax & brushInfo$xmax <= xmax) |
-          (brushInfo$xmin <= xmin & xmax <= brushInfo$xmax)
-      ),
-      which(
-        (ymin <= brushInfo$ymin & brushInfo$ymin <= ymax) |
-          (ymin <= brushInfo$ymax & brushInfo$ymax <= ymax) |
-          (brushInfo$ymin <= ymin & ymax <= brushInfo$ymax)
+    if(!is.null(brushInfo)) {
+      brush_bin <- intersect(
+        which(
+          (xmin <= brushInfo$xmin & brushInfo$xmin <= xmax) |
+            (xmin <= brushInfo$xmax & brushInfo$xmax <= xmax) |
+            (brushInfo$xmin <= xmin & xmax <= brushInfo$xmax)
+        ),
+        which(
+          (ymin <= brushInfo$ymin & brushInfo$ymin <= ymax) |
+            (ymin <= brushInfo$ymax & brushInfo$ymax <= ymax) |
+            (brushInfo$ymin <= ymin & ymax <= brushInfo$ymax)
+        )
       )
-    )
-
-    binId2brushId(binNames = coord$binNames,
-                  binId_group = coord$binId_group,
-                  brush_bin = brush_bin)
-
-  } else if(!is.null(clickInfo)) {
-
-    newbound <- coordConvert(position, clickInfo, vp, offset = offset)
-    newl <- newbound$newl
-    newr <- newbound$newr
-    newt <- newbound$newt
-    newb <- newbound$newb
-
-    # vp has been rotated, no need to swap xlim, ylim
-    xlim <- vp[[2]]$xscale
-    ylim <- vp[[2]]$yscale
-
-    l <- xlim[1]
-    r <- xlim[2]
-    b <- ylim[1]
-    t <- ylim[2]
-
-    if(swapInShiny) {
-
-      xmax <- coord$ymax
-      xmin <- coord$ymin
-      ymax <- coord$xmax
-      ymin <- coord$xmin
-
-      newxy_min <- homo_trans(r, l, t, b, newr, newl, newt, newb, xmin, ymin)
-      newxy_max <- homo_trans(r, l, t, b, newr, newl, newt, newb, xmax, ymax)
-
-      xmin <- newxy_min$x
-      xmax <- newxy_max$x
-      ymin <- newxy_min$y
-      ymax <- newxy_max$y
-
     } else {
-
-      xmax <- coord$xmax
-      xmin <- coord$xmin
-      ymax <- coord$ymax
-      ymin <- coord$ymin
-
-      newxy_min <- homo_trans(r, l, t, b, newr, newl, newt, newb, xmin, ymin)
-      newxy_max <- homo_trans(r, l, t, b, newr, newl, newt, newb, xmax, ymax)
-
-      xmin <- newxy_min$x
-      xmax <- newxy_max$x
-      ymin <- newxy_min$y
-      ymax <- newxy_max$y
+      brush_bin <- intersect(
+        which(xmin <= clickInfo$x & clickInfo$x <= xmax),
+        which(ymin <= clickInfo$y & clickInfo$y <= ymax)
+      )
     }
 
-    brush_bin <- intersect(
-      which(xmin <= clickInfo$x & clickInfo$x <= xmax),
-      which(ymin <= clickInfo$y & clickInfo$y <= ymax)
-    )
-
     binId2brushId(binNames = coord$binNames,
                   binId_group = coord$binId_group,
                   brush_bin = brush_bin)
 
-  } else integer(0)
+  } else integer(0L)
 }
 
 get_brushId.l_graph <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                 position, brushInfo, vp, offset = TRUE, clickInfo){
+                                position, brushInfo, vp, offset = NULL, clickAdj = 1e-2,
+                                clickInfo, ...){
 
   get_brushId.l_plot(loon.grob, coord, swapInShiny, swapInLoon,
-                      position, brushInfo, vp, clickInfo)
+                     position, brushInfo, vp, offset, clickAdj,
+                     clickInfo, ...)
 }
 
 get_brushId.l_serialaxes <- function(loon.grob, coord, swapInShiny = FALSE, swapInLoon = FALSE,
-                                      position, brushInfo, vp, offset = TRUE, axesLayoutInShiny) {
+                                     position, brushInfo, vp, offset = NULL, clickAdj = 1e-2,
+                                     clickInfo, ...) {
 
-  if(!is.null(brushInfo)) {
+  if(length(coord$x) == 0 && length(coord$y) == 0) return(integer(0L))
+  if(is.null(position)) return(integer(0L))
+  if(is.null(vp)) return(integer(0L))
+  args <- list(...)
 
-    newbound <- coordConvert(position, brushInfo, vp, offset = offset)
+  if(!is.null(brushInfo) || !is.null(clickInfo)) {
+
+    if(!is.null(brushInfo)) {
+      newbound <- coordConvert(position, brushInfo, vp, offset)
+      # the brushInfo is not NULL
+      xmin <- brushInfo$xmin
+      xmax <- brushInfo$xmax
+      ymin <- brushInfo$ymin
+      ymax <- brushInfo$ymax
+    } else {
+      newbound <- coordConvert(position, clickInfo, vp, offset)
+      # create a region
+      # the clickInfo is not NULL
+      xmin <- clickInfo$x - clickAdj
+      xmax <- clickInfo$x + clickAdj
+      ymin <- clickInfo$y - clickAdj
+      ymax <- clickInfo$y + clickAdj
+    }
+
     newl <- newbound$newl
     newr <- newbound$newr
     newt <- newbound$newt
     newb <- newbound$newb
 
-    xlim <- vp[[2]]$xscale
-    ylim <- vp[[2]]$yscale
+    # dataViewport <- vp["dataViewport"]
+    dataViewport <- get_vp_from_vpStack(vp, "dataViewport")
+
+    xlim <- dataViewport$xscale
+    ylim <- dataViewport$yscale
 
     l <- xlim[1]
     r <- xlim[2]
@@ -297,50 +251,43 @@ get_brushId.l_serialaxes <- function(loon.grob, coord, swapInShiny = FALSE, swap
 
     brushId <- c()
 
-    # to make the `convert` function work properly
-    grid::pushViewport(vp)
+    native.x <- args$native.x
+    native.y <- args$native.y
 
-    lapply(seq(length(x)),
+    lapply(seq(args$N),
            function(i) {
 
-             x_i <- convertX(x[[i]], unitTo = "native", TRUE)
-             y_i <- convertY(y[[i]], unitTo = "native", TRUE)
+             x_i <- native.x[[i]] %||% grid::convertX(x[[i]], unitTo = "native", TRUE)
+             y_i <- native.y[[i]] %||% grid::convertY(y[[i]], unitTo = "native", TRUE)
 
              newxy <- homo_trans(r, l, t, b, newr, newl, newt, newb, x_i, y_i)
              xx <- extendPoints(newxy$x, length.out = 100)
              yy <- extendPoints(newxy$y, length.out = 100)
 
-             intersectX <- intersect(which(xx >= brushInfo$xmin), which(xx <= brushInfo$xmax))
-             intersectY <- intersect(which(yy >= brushInfo$ymin), which(yy <= brushInfo$ymax))
+             intersectX <- intersect(which(xx >= xmin), which(xx <= xmax))
+             intersectY <- intersect(which(yy >= ymin), which(yy <= ymax))
 
              if(length(intersect(intersectX, intersectY)) > 0) brushId[i] <<- i
-           }
-    )
+           })
 
     brushId <- brushId[which(!is.na(brushId))]
 
-  } else numeric(0)
+  } else integer(0L)
 }
 
-coordConvert <- function(position, brushInfo, vp, offset = TRUE) {
+coordConvert <- function(position, brushInfo, vp, offset = NULL) {
 
   l <- brushInfo$domain$left
   r <- brushInfo$domain$right
   b <- brushInfo$domain$bottom
   t <- brushInfo$domain$top
 
-  if(offset) {
-    off <- get_offset(vp, t, b, l, r)
-    t_offset <- off$t_offset
-    b_offset <- off$b_offset
-    l_offset <- off$l_offset
-    r_offset <- off$r_offset
-  } else {
-    t_offset <- 0
-    b_offset <- 0
-    l_offset <- 0
-    r_offset <- 0
-  }
+  offset <- offset %||% get_offset(vp, t, b, l, r)
+  t_offset <- offset$t_offset
+  b_offset <- offset$b_offset
+  l_offset <- offset$l_offset
+  r_offset <- offset$r_offset
+
   domain_l <- l + (r - l) * position$l
   domain_r <- l + (r - l) * position$r
   domain_t <- t - (t - b) * position$t
@@ -364,16 +311,16 @@ get_offset <- function(vp, t, b, l, r) {
     }
   }
 
-  # grid::plotViewport
-  plot_viewport <- vp[[1]]
+  # plotViewport <- vp["plotViewport"]
+  plotViewport <- get_vp_from_vpStack(vp, "plotViewport")
 
-  l_offset <- plot_viewport$x
-  b_offset <- plot_viewport$y
+  l_offset <- plotViewport$x
+  b_offset <- plotViewport$y
 
-  width <- plot_viewport$width
+  width <- plotViewport$width
   r_offset <- offset_unit(width, "lines", as.numeric = FALSE) - l_offset
 
-  height <- plot_viewport$height
+  height <- plotViewport$height
   t_offset <- offset_unit(height, "lines", as.numeric = FALSE) - b_offset
 
   list(
