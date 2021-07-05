@@ -11,6 +11,10 @@ loonGrob_positions.default <- function(gtable, loon.grobs, arrangeGrobArgs = NUL
   ncol <- arrangeGrobArgs$ncol
 
   if (is.null(layout_matrix)) {
+
+    nrow <- nrow %||% 1
+    ncol <- ncol %||% 1
+
     positions <- expand.grid(t = seq_len(nrow), l = seq_len(ncol))
     positions$b <- positions$t
     positions$r <- positions$l
