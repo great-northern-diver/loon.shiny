@@ -3,16 +3,18 @@ tagsDivPlot.l_hist <- function(loon.grob, tabPanelName,
                                linkingGroup, displayedPanel) {
 
   viewPort <- get_viewPort(loon.grob)
+  # dataViewport <- viewPort["dataViewport"]
+  dataViewport <- get_vp_from_vpStack(viewPort, "dataViewport")
 
   if(loonWidgetsInfo$swapInLoon) {
 
-    xlim <- viewPort[[2]]$yscale
-    ylim <- viewPort[[2]]$xscale
+    xlim <- dataViewport$yscale
+    ylim <- dataViewport$xscale
 
   } else {
 
-    xlim <- viewPort[[2]]$xscale
-    ylim <- viewPort[[2]]$yscale
+    xlim <- dataViewport$xscale
+    ylim <- dataViewport$yscale
   }
 
   worldViewXlim <- range(c(loonWidgetsInfo$layerXlim, xlim))
