@@ -45,7 +45,6 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       loonWidgetsInfo <- modifiedLinkingInfo$loonWidgetsInfo
 
     } else {
-
       brushId <- outputInfo$brushId
       selectByColor <- outputInfo$selectByColor
     }
@@ -364,6 +363,13 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       margins <- apply(cbind(margins, loonMargins$minimumMargins), 1, max)
     }
 
+    vp <- grid::vpStack(
+      grid::plotViewport(margins = margins, name = "plotViewport"),
+      grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
+                         yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
+                         name = "dataViewport")
+    )
+
     ############ Begin: set brushId ############
     brushId <- if(initialDisplay) {
 
@@ -388,16 +394,18 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
             swapInLoon = swapInLoon,
             position = position,
             brushInfo = plotBrush,
-            vp = grid::vpStack(
-              grid::plotViewport(margins = margins, name = "grid::plotViewport"),
-              grid::dataViewport(xscale = if(swap) loonWidgetsInfo$ylim else loonWidgetsInfo$xlim,
-                                 yscale = if(swap) loonWidgetsInfo$xlim else loonWidgetsInfo$ylim,
-                                 name = "dataViewport")
-            ),
+            vp = vp,
             clickInfo = plotClick
           )
       }
     }
+
+    # query the `offset`
+    loonWidgetsInfo$offset <- get_offset(vp = vp,
+                                         l = plotBrush$domain$left %||% plotClick$domain$left %||% -0.04,
+                                         r = plotBrush$domain$right %||% plotClick$domain$right %||% 1.04,
+                                         b = plotBrush$domain$bottom %||% plotClick$domain$bottom %||% -0.04,
+                                         t = plotBrush$domain$top %||% plotClick$domain$top %||% 1.04)
 
     sticky <- input[[paste0(tabPanelName, "sticky")]]
     selectByColor <- input[[paste0(tabPanelName, "selectByColor")]]

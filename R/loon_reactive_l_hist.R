@@ -46,6 +46,7 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
       brushId <- outputInfo$brushId
       selectByColor <- outputInfo$selectByColor
     }
+
   } else {
 
     output.grob <- loon.grob
@@ -399,6 +400,13 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
                                     loonColor = loonColor)
 
     # +++++++++++++++++++++++++++++++++++++++++ set other aesthetic ++++++++++++++++++++++++++++++++++++++++
+    vp <- grid::vpStack(
+      grid::plotViewport(margins = margins, name = "plotViewport"),
+      grid::dataViewport(xscale = xlim,
+                         yscale = ylim,
+                         name = "dataViewport")
+    )
+
     brushId <- if(initialDisplay) {
 
       outputInfo$brushId
@@ -418,16 +426,18 @@ loon_reactive.l_hist <- function(loon.grob, output.grob, linkingInfo, buttons, p
             swapInShiny = swapInShiny,
             position = position,
             brushInfo = plotBrush,
-            vp = grid::vpStack(
-              grid::plotViewport(margins = margins, name = "grid::plotViewport"),
-              grid::dataViewport(xscale = xlim,
-                                 yscale = ylim,
-                                 name = "dataViewport")
-            ),
+            vp = vp,
             clickInfo = plotClick
           )
       }
     }
+
+    # query the `offset`
+    loonWidgetsInfo$offset <- get_offset(vp = vp,
+                                         l = plotBrush$domain$left %||% plotClick$domain$left %||% -0.04,
+                                         r = plotBrush$domain$right %||% plotClick$domain$right %||% 1.04,
+                                         b = plotBrush$domain$bottom %||% plotClick$domain$bottom %||% -0.04,
+                                         t = plotBrush$domain$top %||% plotClick$domain$top %||% 1.04)
 
     # dynamic select -----------------------------------------------
     selectDynamic <- input[[paste0(tabPanelName, "selectDynamic")]]

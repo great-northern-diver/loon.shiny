@@ -38,6 +38,9 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
   linkingInfo <- get_linkingInfo(linkingGroups, loonWidgetsInfo, tabPanelNames, n)
 
   count <- 0L
+  # global environment
+  itemLabel <- NULL
+
   server <- function(input, output, session) {
 
     # set action buttons
@@ -56,6 +59,7 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
     # update tab panel
     shiny::observe({
 
+      ######################## window focus ########################
       pos <- get_currentSiderBar(positions, input, noneInteractiveGrobs_index)
 
       if(length(pos) > 0) {
@@ -65,9 +69,10 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
       }
 
       currentSiderBar <- input[["navBarPage"]]
-      runIndex <<- c(which(tabPanelNames == currentSiderBar), which(tabPanelNames!= currentSiderBar))
+      runIndex <<- c(which(tabPanelNames == currentSiderBar),
+                     which(tabPanelNames!= currentSiderBar))
 
-      # update ui
+      ######################## update dynamic ui ########################
       # slider bar names (xlim to ylim, vice versa), values, ...
       # color check box
       lapply(runIndex,
@@ -89,7 +94,8 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
              }
       )
 
-      output$plots <-  shiny::renderPlot({
+      ######################## graphics ########################
+      output$plots <- shiny::renderPlot({
 
         loon_reactive_grobs <- lapply(runIndex,
                                       function(j) {
@@ -152,22 +158,7 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
                                            arrangeGrobArgs = arrangeGrobArgs))
       })
 
-      if("itemLabels" %in% input[[paste0(currentSiderBar, "itemLabels")]]) {
-        output$text <- shiny::renderText({
-          info <- outputInfo[[runIndex[1L]]]
-          brushId <- info$brushId
-          loonWidgetsInfo <- info$loonWidgetsInfo
-          itemLabel <- loonWidgetsInfo$itemLabel
-
-          if(length(brushId) == 0 || length(itemLabel) == 0) NULL
-          else {
-            itemLabel[brushId]
-          }
-        })
-      } else {
-        output$text <- shiny::renderText({NULL})
-      }
-
+      ######################## world view ########################
       if(showWorldView) {
         # only update the current world view
         output[[paste0(currentSiderBar, "plot_world_view")]] <- shiny::renderPlot({
@@ -180,7 +171,36 @@ loon.server <- function(input, output, session, update = TRUE, loon.grobs, gtabl
                                          loonWidgetsInfo = outputInfo[[id]]$loonWidgetsInfo))
         })
       }
+
+      ######################## querying ########################
+      output$tooltip <- shiny::renderUI({
+        plotHover <- input$plotHover
+        # Ensure that values are available before creating the toolbox
+        ## a scatter plot or a serial axes plot
+        shiny::req("itemLabels" %in% input[[paste0(currentSiderBar, "itemLabels")]] ||
+                     "showItemLabels" %in% input[[paste0(currentSiderBar, "plot")]])
+        # update the itemLabel in the global env
+        itemLabel <<- get_itemLabel(
+          loon.grob = output.grobs[[runIndex[1L]]],
+          plotHover = plotHover,
+          outputInfo = outputInfo[[runIndex[1L]]],
+          position = positions[runIndex[1L], ])
+        shiny::req(itemLabel)
+        verbatimTextOutput("vals")
+      })
+
+      output$vals <- shiny::renderPrint({
+        plotHover <- input$plotHover
+        # Ensure that values are available before creating the toolbox
+        ## a scatter plot or a serial axes plot
+        shiny::req("itemLabels" %in% input[[paste0(currentSiderBar, "itemLabels")]] ||
+                     "showItemLabels" %in% input[[paste0(currentSiderBar, "plot")]])
+        shiny::req(itemLabel)
+        write(paste(itemLabel, collapse = "\n\n"), file = "")
+      })
+
     })
+
   }
 
   server

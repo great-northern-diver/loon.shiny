@@ -21,5 +21,3 @@ pixels_2_lines <- function(x) {
 point_default_pch <- function() 19
 
 minimumSize <- function() 0.1
-
-click_selection_adjustment <- function() 1e-2

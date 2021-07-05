@@ -8,8 +8,10 @@ get_worldViewPort <- function(loon.grob, parent = "",
   grid::pushViewport(vp)
 
   viewPort <- get_viewPort(loon.grob = loon.grob)
-  plotViewXlim <- viewPort[[2]]$xscale
-  plotViewYlim <- viewPort[[2]]$yscale
+  # dataViewport <- viewPort["dataViewport"]
+  dataViewport <- get_vp_from_vpStack(viewPort, "dataViewport")
+  plotViewXlim <- dataViewport$xscale
+  plotViewYlim <- dataViewport$yscale
 
   xlim <- ylim <- list()
 

@@ -152,6 +152,8 @@
   inspectorLocation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"auto"</span>, <span class='st'>"auto"</span>, <span class='st'>"60px"</span>, <span class='st'>"20px"</span><span class='op'>)</span>,
   inspectorWidth <span class='op'>=</span> <span class='st'>"350px"</span>,
   inspectorHeight <span class='op'>=</span> <span class='st'>"auto"</span>,
+  toolboxWidth <span class='op'>=</span> <span class='st'>"300px"</span>,
+  toolboxLocation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='op'>-</span><span class='fl'>20</span><span class='op'>)</span>,
   options <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -231,6 +233,17 @@ parent container.</p></td>
     <tr>
       <th>inspectorHeight</th>
       <td><p>Height of the inspector panel.</p></td>
+    </tr>
+    <tr>
+      <th>toolboxWidth</th>
+      <td><p>The width of a toolbox</p></td>
+    </tr>
+    <tr>
+      <th>toolboxLocation</th>
+      <td><p>The position of a toolbox (if any) which is
+a length two numerical vector ("pixel") representing the location (<code>x</code>, <code>y</code>) of
+the top-left corner. A positive <code>x</code> pushes the toolbox to the right of the mouse and
+a positive <code>y</code> pushes the toolbox down.</p></td>
     </tr>
     <tr>
       <th>options</th>

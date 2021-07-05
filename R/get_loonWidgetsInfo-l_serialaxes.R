@@ -11,8 +11,10 @@ get_loonWidgetsInfo.l_serialaxes <- function(widgets, loon.grobs, ...) {
   showArea <- get_showArea(loon.grob)
 
   viewPort <- get_viewPort(loon.grob)
-  xlim <- viewPort[[2]]$xscale
-  ylim <- viewPort[[2]]$yscale
+  # dataViewport <- viewPort["dataViewport"]
+  dataViewport <- get_vp_from_vpStack(viewPort, "dataViewport")
+  xlim <- dataViewport$xscale
+  ylim <- dataViewport$yscale
 
   displayOrder <- get_display_order(widgets)
 

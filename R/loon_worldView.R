@@ -170,7 +170,7 @@ loon_worldView.l_plot <- function(loon.grob, input, tabPanelName, colorList,
     newGrob = grid::editGrob(
       grob = grid::getGrob(loon.grob, "loon plot"),
       vp = grid::vpStack(
-        grid::plotViewport(margins = rep(1,4), name = "grid::plotViewport"),
+        grid::plotViewport(margins = rep(1,4), name = "plotViewport"),
         grid::dataViewport(xscale = xscale,
                      yscale = yscale,
                      name = "dataViewport")
@@ -323,7 +323,7 @@ loon_worldView.l_hist <- function(loon.grob, input, tabPanelName, colorList,
     newGrob = grid::editGrob(
       grob = grid::getGrob(loon.grob, "loon plot"),
       vp = grid::vpStack(
-        grid::plotViewport(margins = rep(1,4), name = "grid::plotViewport"),
+        grid::plotViewport(margins = rep(1,4), name = "plotViewport"),
         grid::dataViewport(xscale = xscale,
                      yscale = yscale,
                      name = "dataViewport")

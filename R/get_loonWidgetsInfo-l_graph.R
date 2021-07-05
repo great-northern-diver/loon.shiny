@@ -53,8 +53,13 @@ get_loonWidgetsInfo.l_graph <- function(widgets, loon.grobs, ...) {
 
   # xlim and ylim is swapped
   viewPort <- get_viewPort(loon.grob)
-  xlim <- viewPort[[2]]$xscale
-  ylim <- viewPort[[2]]$yscale
+
+  # dataViewport <- viewPort["dataViewport"]
+  dataViewport <- get_vp_from_vpStack(viewPort, "dataViewport")
+
+  xlim <- dataViewport$xscale
+  ylim <- dataViewport$yscale
+
   if(swapAxes) {
 
     ylabel <- widgets['xlabel']

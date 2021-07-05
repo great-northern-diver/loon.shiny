@@ -29,7 +29,7 @@ set_viewPort_grob.default <- function(loon.grob, margins, xlim, ylim) {
     newGrob = grid::editGrob(
       grob = grid::getGrob(loon.grob, "loon plot"),
       vp = grid::vpStack(
-        grid::plotViewport(margins = margins, name = "grid::plotViewport"),
+        grid::plotViewport(margins = margins, name = "plotViewport"),
         grid::dataViewport(xscale = xlim, yscale = ylim,
                      name = "dataViewport")
       )

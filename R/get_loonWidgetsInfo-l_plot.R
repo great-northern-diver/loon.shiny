@@ -293,8 +293,11 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
   # xlim and ylim is swapped
   viewPort <- get_viewPort(loon.grob)
-  xlim <- viewPort[[2]]$xscale
-  ylim <- viewPort[[2]]$yscale
+  # dataViewport <- viewPort["dataViewport"]
+  dataViewport <- get_vp_from_vpStack(viewPort, "dataViewport")
+
+  xlim <- dataViewport$xscale
+  ylim <- dataViewport$yscale
 
   swapAxes <- widgets['swapAxes']
   if(swapAxes) {
