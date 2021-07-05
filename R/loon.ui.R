@@ -12,6 +12,8 @@ loon.ui <- function(loon.grobs,
                     colorList = loon::l_getColorList(),
                     showWorldView = TRUE,
                     displayedPanel = NULL,
+                    toolboxWidth = "300px",
+                    toolboxLocation = c(-20, 10),
                     envir = parent.frame(),
                     ...) {
 
@@ -48,14 +50,74 @@ loon.ui <- function(loon.grobs,
                               }
   )
 
+  toolbox.x <- if(toolboxLocation[1] > 0) {
+    paste0("+", toolboxLocation[1])
+  } else {
+    paste0("-", abs(toolboxLocation[1]))
+  }
+
+
+  toolbox.y <- if(toolboxLocation[2] > 0) {
+    paste0("+", toolboxLocation[2])
+  } else {
+    paste0("-", abs(toolboxLocation[2]))
+  }
+
   # set ui
   args <- list(...)
   ui <- shiny::fluidPage(
     if(!is.null(args$titlePanel_title)) {
-      if(is.null(args$titlePanel_align)) args$titlePanel_align <- "center"
-      if(is.null(args$titlePanel_size)) args$titlePanel_size <- function(title, align) shiny::h2(title, align)
-      titlePanel(title = args$titlePanel_size(args$titlePanel_title, align = args$titlePanel_align))
+      if(is.null(args$titlePanel_align))
+        args$titlePanel_align <- "center"
+      if(is.null(args$titlePanel_size))
+        args$titlePanel_size <- function(title, align) shiny::h2(title, align)
+      titlePanel(title = args$titlePanel_size(args$titlePanel_title,
+                                              align = args$titlePanel_align))
     },
+    ##################### tooltip #####################
+    # Inspired by https://stackoverflow.com/questions/27965931/tooltip-when-you-mouseover-a-ggplot-on-shiny
+    #   tags$head(tags$style('
+    #    #tooltip {
+    #     position: absolute;
+    #     width: 300px;
+    #     z-index: 100;
+    #    }
+    # ')),
+    # tags$script('
+    #   $(document).ready(function(){
+    #     // id of the plot
+    #     $("#plots").mousemove(function(e){
+    #
+    #       // ID of uiOutput
+    #       $("#tooltip").show();
+    #       $("#tooltip").css({
+    #         top: (e.pageY + 5) + "px",
+    #         left: (e.pageX + 5) + "px"
+    #       });
+    #     });
+    #   });
+    # '),
+    tags$head(
+      tags$style(
+        paste0(
+          "#tooltip {position: absolute;width: ",
+          toolboxWidth,
+          ";z-index: 100;}"
+        )
+      )
+    ),
+    tags$script(
+      paste0(
+        "$(document).ready(function(){$('#plots').mousemove(function(e){
+         $('#tooltip').show(); $('#tooltip').css({top: (e.pageY ",
+      toolbox.y,
+      ") + 'px',left: (e.pageX ",
+      toolbox.x,
+      ") + 'px'});});});"
+      )
+    ),
+    ##################### end #####################
+
     shiny::absolutePanel(id = "controls",
                          class = "panel panel-default",
                          draggable = TRUE,
@@ -65,20 +127,18 @@ loon.ui <- function(loon.grobs,
                          bottom = bottom,
                          width = inspectorWidth,
                          height = inspectorHeight,
-                         set_tabPanel(sidebarPanel_args, navbarMenuNames)
+                         set_tabPanel(sidebarPanel_args,
+                                      navbarMenuNames)
     ),
     shiny::plotOutput(outputId = "plots",
                       width = plotRegionWidth,
                       height = plotRegionHeight,
                       brush = shiny::brushOpts(id = "plotBrush",
                                                resetOnNew = (selectBy == "sweeping")),
-                      dblclick = "plotClick"),
-    div(
-      style= paste0("width: ", plotRegionWidth, ";"),
-      shiny::fluidRow(
-        shiny::verbatimTextOutput("text", placeholder = FALSE)
-      )
-    )
+                      dblclick = "plotClick",
+                      hover = shiny::hoverOpts(id = "plotHover", delay = 0)
+    ),
+    shiny::uiOutput("tooltip")
   )
 
   ui
