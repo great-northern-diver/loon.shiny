@@ -21,6 +21,8 @@ loon.shiny(
   inspectorLocation = c("auto", "auto", "60px", "20px"),
   inspectorWidth = "350px",
   inspectorHeight = "auto",
+  toolboxWidth = "300px",
+  toolboxLocation = c(10, -20),
   options = list(),
   ...
 )
@@ -66,6 +68,13 @@ parent container.}
 \item{inspectorWidth}{Width of the inspector panel.}
 
 \item{inspectorHeight}{Height of the inspector panel.}
+
+\item{toolboxWidth}{The width of a toolbox}
+
+\item{toolboxLocation}{The position of a toolbox (if any) which is
+a length two numerical vector ("pixel") representing the location (\code{x}, \code{y}) of
+the top-left corner. A positive \code{x} pushes the toolbox to the right of the mouse and
+a positive \code{y} pushes the toolbox down.}
 
 \item{options}{\code{shinyApp} argument that should be passed to the \code{runApp} call, see \code{\link{shinyApp}}.}
 
