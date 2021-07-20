@@ -1048,8 +1048,8 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
         oldSize <- loonWidgetsInfo$size
         minSize <- min(loonWidgetsInfo$size[brushId])
         newSize <- minSize - step_size(loonWidgetsInfo$pch[brushId])
-        if(newSize <= 0) {
-          newSize <- 0.1
+        if(any(newSize <= 0)) {
+          newSize[newSize <= 0] <- 0.1
           warning("new size is less than 0 and will be set as 0.1",
                   call. = FALSE)
         }
@@ -1108,9 +1108,11 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
         oldSize <- loonWidgetsInfo$size
         newSize <- loonWidgetsInfo$size[brushId] -
           step_size(loonWidgetsInfo$pch[brushId])
-        if(newSize <= 0) {
-          newSize <- 0.1
-          warning("new size is less than 0 and will be set as 0.1", call. = FALSE)
+
+        if(any(newSize <= 0)) {
+          newSize[newSize <= 0] <- 0.1
+          warning("new size is less than 0 and will be set as 0.1",
+                  call. = FALSE)
         }
         loonWidgetsInfo$size[brushId] <- newSize
 

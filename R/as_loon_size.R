@@ -128,31 +128,32 @@ loon_default_size <- function(type = c("points", "texts", "images",
 step_size <- function(pch) {
   vapply(pch,
          function(p) {
-             switch(p,
-                    points = {
-                      1 #pt
-                    },
-                    text = {
-                      1 #pt
-                    },
-                    images = {
-                      pt2mm()
-                    },
-                    radial = {
-                      pt2mm()
-                    },
-                    parallel = {
-                      pt2mm()
-                    },
-                    polygon = {
-                      pt2mm()
-                    },
-                    lines = {
-                      1
-                    }, {
-                      1
-                    }
-             )
+           p <- as.character(p)
+           switch(p,
+                  points = {
+                    1 #pt
+                  },
+                  text = {
+                    1 #pt
+                  },
+                  images = {
+                    pt2mm()
+                  },
+                  radial = {
+                    pt2mm()
+                  },
+                  parallel = {
+                    pt2mm()
+                  },
+                  polygon = {
+                    pt2mm()
+                  },
+                  lines = {
+                    1
+                  }, {
+                    1
+                  }
+           )
          },
          numeric(1L))
 }
