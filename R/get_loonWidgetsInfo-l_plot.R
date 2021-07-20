@@ -43,7 +43,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
                  x[i] <<- point_layer$x
                  y[i] <<- point_layer$y
                  pch[i] <<- point_layer$pch
-                 size[i] <<- point_layer$gp$cex
+                 size[i] <<- point_layer$gp$fontsize
 
                  xyOriginal[[i]] <<-
                    list(
@@ -57,7 +57,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  x[i] <<- imageGrob$x
                  y[i] <<- imageGrob$y
-                 pch[i] <<- "image"
+                 pch[i] <<- "images"
                  size[i] <<- widgetsSize[i]
 
                  glyphArgs[[i]] <<- setNames(
@@ -83,8 +83,8 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  x[i] <<- point_layer$x
                  y[i] <<- point_layer$y
-                 size[i] <<- point_layer$gp$fontsize / loon_default_size()[["adjusted_size"]]
-                 pch[i] <<- "text"
+                 size[i] <<- point_layer$gp$fontsize
+                 pch[i] <<- "texts"
 
                  glyphArgs[[i]] <<- setNames(
                    list(
@@ -131,7 +131,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
 
                  x[i] <<- pointGrob$x
                  y[i] <<- pointGrob$y
-                 size[i] <<- pointGrob$gp$cex
+                 size[i] <<- pointGrob$gp$fontsize
                  pch[i] <<- pointGrob$pch
 
                  glyphArgs[[i]] <<- setNames(
@@ -211,8 +211,8 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
                  y[i] <<- get_unit(serialaxesGrob$y, as.numeric = TRUE)
                  size[i] <<- widgetsSize[i]
                  pch[i] <<- ifelse(grepl(glyphName, pattern = "radial"),
-                                   "serialaxes radial",
-                                   "serialaxes parallel")
+                                   "radial",
+                                   "parallel")
 
                } else stop("this glyph is not implemented")
              }

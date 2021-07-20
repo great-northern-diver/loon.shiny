@@ -51,7 +51,7 @@ set_glyph_grob.l_plot <- function(loon.grob, index, newPch, tmp, color, ...) {
                  gp <- grid::gpar(
                    fill = if(tmp) select_color() else color[i],
                    col = bounder_color(),
-                   cex = size[i],
+                   fontsize = size[i],
                    alpha = alpha[i]
                  )
 
@@ -59,7 +59,7 @@ set_glyph_grob.l_plot <- function(loon.grob, index, newPch, tmp, color, ...) {
 
                  gp <- grid::gpar(
                    col = if(tmp) select_color() else color[i],
-                   cex = size[i],
+                   fontsize = size[i],
                    alpha = alpha[i]
                  )
                }
@@ -91,7 +91,6 @@ set_glyph_grob.l_graph <- function(loon.grob, index, newPch, tmp, color, ...) {
   if(length(index) > 0) {
 
     newGrob <- grid::getGrob(loon.grob, "graph nodes")
-    # point_size <- loon_default_size()[["point_size"]]
 
     lapply(index,
            function(i) {

@@ -46,3 +46,6 @@ shiny.loon <- function(widgets,
              options = options,
              ...)
 }
+
+default_size <- function() 0.6
+default_step_size <- function() 1
