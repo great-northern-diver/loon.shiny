@@ -111,13 +111,18 @@ Interactive \code{loon} widgets displayed in a \code{shiny} app
 \examples{
 ## Only run this example in interactive R sessions
 if(interactive()) {
-  ############### Basic ###############
-  p <- l_plot(iris,
-              color = iris$Species,
-              showGuides = TRUE,
-              showScales = TRUE)
-
-  loon.shiny(p)
+  ############## Querying ##############
+  lp <- with(mpg,
+             l_plot(displ, hwy,
+                    showItemLabels = TRUE,
+                    itemLabel = with(mpg,
+                      paste0("model:", manufacturer, " ",
+                              model, "\n",
+                             "year:", year, "\n",
+                             "drive way:", drv, "\n",
+                             "fuel type:", fl)),
+                    color = "black"))
+  loon.shiny(lp)
 
   ############### Link multiple plots ###############
   p1 <- l_plot(iris,
@@ -134,16 +139,18 @@ if(interactive()) {
   loon.shiny(list(p1, p2, p3),
              layoutMatrix = matrix(c(2,NA,1,3),
              nrow = 2, byrow = TRUE))
-}
 
-\dontrun{
-  if (requireNamespace('loon.ggplot', quietly = TRUE)) {
-      p <- ggplot(mpg, aes(displ, hwy)) +
-        geom_point(data = transform(mpg, class = NULL), colour = 'grey85') +
-        geom_point() +
-        facet_wrap(~class)
-      g <- loon.ggplot(p, activeGeomLayers = 2) # active the second layer
-      loon.shiny(g)
-  }
+if (requireNamespace('loon.ggplot', quietly = TRUE)) {
+    # ggplot -> loon -> shiny
+    p <- ggplot(mpg, aes(displ, hwy)) +
+      geom_point(data = transform(mpg, class = NULL), colour = 'grey85') +
+      geom_point() +
+      facet_wrap(~class)
+    g <- loon.ggplot(p,
+                     activeGeomLayers = 2,
+                     itemLabel = mpg$model) # active the second layer
+    # with facets
+    loon.shiny(g, toolboxWidth = "100px")
+}
 }
 }
