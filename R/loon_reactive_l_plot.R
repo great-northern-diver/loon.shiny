@@ -979,7 +979,8 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
           y = if(swap) loonWidgetsInfo$x else loonWidgetsInfo$y,
           loonColor = loonColor,
           roundings = loonWidgetsInfo$glyphArgs,
-          nonePrimitiveGlyphSettings = loonWidgetsInfo$nonePrimitiveGlyphSettings
+          nonePrimitiveGlyphSettings = loonWidgetsInfo$nonePrimitiveGlyphSettings,
+          oldSize = loonWidgetsInfo$oldSize
         )
 
         output.grob <- set_specifiedGlyph_grob(
@@ -994,7 +995,8 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
           y = if(swap) loonWidgetsInfo$x else loonWidgetsInfo$y,
           loonColor = loonColor,
           roundings = loonWidgetsInfo$glyphArgs,
-          nonePrimitiveGlyphSettings = loonWidgetsInfo$nonePrimitiveGlyphSettings
+          nonePrimitiveGlyphSettings = loonWidgetsInfo$nonePrimitiveGlyphSettings,
+          oldSize = loonWidgetsInfo$oldSize
         )
 
         loonWidgetsInfo$glyphNames <-
@@ -1013,14 +1015,10 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
       if(length(brushId) > 0) {
 
-        if(all(is.numeric(loonWidgetsInfo$pch[brushId]))) {
-
-          oldSize <- loonWidgetsInfo$size
-          minSize <- min(loonWidgetsInfo$size[brushId])
-          newSize <- minSize + step_size(loonWidgetsInfo$pch[brushId])
-          loonWidgetsInfo$size[brushId] <- newSize
-
-        }
+        oldSize <- loonWidgetsInfo$size
+        minSize <- min(loonWidgetsInfo$size[brushId])
+        newSize <- minSize + 1 # 1 fontsize
+        loonWidgetsInfo$size[brushId] <- newSize
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
@@ -1047,10 +1045,10 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
 
         oldSize <- loonWidgetsInfo$size
         minSize <- min(loonWidgetsInfo$size[brushId])
-        newSize <- minSize - step_size(loonWidgetsInfo$pch[brushId])
+        newSize <- minSize - 1 # 1 fontsize
         if(any(newSize <= 0)) {
-          newSize[newSize <= 0] <- 0.1
-          warning("new size is less than 0 and will be set as 0.1",
+          newSize[newSize <= 0] <- 1
+          warning("new size is less than 0 and will be set as 1",
                   call. = FALSE)
         }
         loonWidgetsInfo$size[brushId] <- newSize
@@ -1078,8 +1076,7 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
       if(length(brushId) > 0) {
 
         oldSize <- loonWidgetsInfo$size
-        newSize <- loonWidgetsInfo$size[brushId] +
-          step_size(loonWidgetsInfo$pch[brushId])
+        newSize <- loonWidgetsInfo$size[brushId] + 1 # 1 fontsize
         loonWidgetsInfo$size[brushId] <- newSize
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
@@ -1106,12 +1103,11 @@ loon_reactive.l_plot <- function(loon.grob, output.grob, linkingInfo, buttons, p
       if(length(brushId) > 0) {
 
         oldSize <- loonWidgetsInfo$size
-        newSize <- loonWidgetsInfo$size[brushId] -
-          step_size(loonWidgetsInfo$pch[brushId])
+        newSize <- loonWidgetsInfo$size[brushId] - 1 # 1 fontsize
 
         if(any(newSize <= 0)) {
-          newSize[newSize <= 0] <- 0.1
-          warning("new size is less than 0 and will be set as 0.1",
+          newSize[newSize <= 0] <- 1
+          warning("new size is less than 0 and will be set as 1",
                   call. = FALSE)
         }
         loonWidgetsInfo$size[brushId] <- newSize
