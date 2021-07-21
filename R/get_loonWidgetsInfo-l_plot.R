@@ -20,7 +20,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
   N <- length(points_layer)
   # In loonGrob, selected points will be drawn on top. Hence, we need to reset it and maintain the original order
   displayOrder <- get_display_order(widgets)
-  widgetsSize <- widgets["size"]/as.numeric(loon::l_getOption("size"))
+  widgetsSize <- loon::as_grid_size(widgets["size"], "points")
 
   if(N > 0) {
     lapply(seq(N),
@@ -370,6 +370,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
     y = y,
     linkingStates = loon::l_getLinkedStates(widgets),
     size = size,
+    oldSize = size, # record the original size, never update in the server
     index = index,
     glyphNames = glyphNames,
     pch = pch,
