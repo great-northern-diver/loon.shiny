@@ -27,7 +27,7 @@ get_loonWidgetsInfo.l_graph <- function(widgets, loon.grobs, ...) {
              x[i] <<- node_layer$x
              y[i] <<- node_layer$y
              pch[i] <<- node_layer$pch
-             size[i] <<- node_layer$gp$cex
+             size[i] <<- node_layer$gp$fontsize
            }
            index[i] <<- as.numeric(gsub("\\D", "", node_layer$name))
          }

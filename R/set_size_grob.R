@@ -13,19 +13,18 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
   if(pointsTreeName != "points: missing glyphs" && len > 0) {
 
     roundings <- args$roundings
-    changes <- args$changes
+    oldSize <- args$oldSize
     newGrob <- grid::getGrob(loon.grob, pointsTreeName)
 
     lapply(seq(len),
-           function(k) {
-
-             i <- index[k]
+           function(l) {
+             i <- index[l]
              grobi <- newGrob$children[[i]]
 
              if(grepl(grobi$name, pattern = "primitive_glyph")) {
 
                gp <- grobi$gp
-               gp$cex <- newSize[i]
+               gp$fontsize <- newSize[i]
 
                newGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
@@ -35,7 +34,7 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
 
                pointGrob <- grid::getGrob(grobi, "point")
                gp <- pointGrob$gp
-               gp$cex <- newSize[i]
+               gp$fontsize <- newSize[i]
 
                newGrob$children[[i]] <<- grid::setGrob(
                  gTree = grobi,
@@ -48,7 +47,7 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
              } else if(grepl(grobi$name, pattern = "text_glyph")) {
 
                gp <- grobi$gp
-               gp$fontsize <- newSize[i] * loon_default_size()[["adjusted_size"]]
+               gp$fontsize <- newSize[i]
 
                newGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
@@ -56,7 +55,9 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
                )
              } else if(grepl(grobi$name, pattern = "serialaxes_glyph")) {
 
-               rounding <- roundings[[i]][[1]]
+               # rounding <- roundings[[i]][[1]]
+
+               type <- if(grepl(grobi$name, pattern = "parallel")) "parallel" else "radial"
 
                if(is.na(newSize[i])) stop("wrong size")
                # reset boundary
@@ -65,15 +66,17 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
                  boundaryGrob <- grid::getGrob(grobi, "boundary: polylineGrob arguments")
                }
 
-               xBoundary <- rounding$boundaryGrobRounding$x * sqrt(newSize[i]/default_size())
-               yBoundary <- rounding$boundaryGrobRounding$y * sqrt(newSize[i]/default_size())
+               # xBoundary <- rounding$boundaryGrobRounding$x * newSize[i]/oldSize[i]
+               # yBoundary <- rounding$boundaryGrobRounding$y * newSize[i]/oldSize[i]
+               xBoundary <- get_unit(boundaryGrob$x, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
+               yBoundary <- get_unit(boundaryGrob$y, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
 
                boundaryGrob <- grid::editGrob(
                  grob = boundaryGrob,
                  x = get_unit(boundaryGrob$x, as.numeric = FALSE) +
-                   unit(xBoundary, "mm"),
+                   unit(xBoundary, "cm"),
                  y = get_unit(boundaryGrob$y, as.numeric = FALSE) +
-                   unit(yBoundary, "mm")
+                   unit(yBoundary, "cm")
                )
 
                # axes serialaxes
@@ -85,15 +88,17 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
                  axesGrob_name <- "axes"
                }
 
-               xAxesRounding <- rounding$axesGrobRounding$x * sqrt(newSize[i]/default_size())
-               yAxesRounding <- rounding$axesGrobRounding$y * sqrt(newSize[i]/default_size())
+               xAxesRounding <- get_unit(axesGrob$x, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
+               yAxesRounding <- get_unit(axesGrob$y, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
+               # xAxesRounding <- rounding$axesGrobRounding$x * newSize[i]/oldSize[i]
+               # yAxesRounding <- rounding$axesGrobRounding$y * newSize[i]/oldSize[i]
 
                axesGrob <- grid::editGrob(
                  grob = axesGrob,
                  x = get_unit(axesGrob$x, as.numeric = FALSE) +
-                   unit(xAxesRounding, "mm"),
+                   unit(xAxesRounding, "cm"),
                  y = get_unit(axesGrob$y, as.numeric = FALSE) +
-                   unit(yAxesRounding, "mm")
+                   unit(yAxesRounding, "cm")
                )
 
                serialaxesGrob <- grid::getGrob(grobi, "polyline")
@@ -101,13 +106,15 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
                  serialaxesGrob <- grid::getGrob(grobi, "polyline: showArea")
                }
 
-               xRounding <- rounding$serialaxesGrobRounding$x * sqrt(newSize[i]/default_size())
-               yRounding <- rounding$serialaxesGrobRounding$y * sqrt(newSize[i]/default_size())
+               xRounding <- get_unit(serialaxesGrob$x, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
+               yRounding <- get_unit(serialaxesGrob$y, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
+               # xRounding <- rounding$serialaxesGrobRounding$x * newSize[i]/oldSize[i]
+               # yRounding <- rounding$serialaxesGrobRounding$y * newSize[i]/oldSize[i]
 
                serialaxesGrob <- grid::editGrob(
                  grob = serialaxesGrob,
-                 x = get_unit(serialaxesGrob$x, as.numeric = FALSE) + unit(xRounding, "mm"),
-                 y = get_unit(serialaxesGrob$y, as.numeric = FALSE) + unit(yRounding, "mm")
+                 x = get_unit(serialaxesGrob$x, as.numeric = FALSE) + unit(xRounding, "cm"),
+                 y = get_unit(serialaxesGrob$y, as.numeric = FALSE) + unit(yRounding, "cm")
                )
 
                newGrob$children[[i]] <<- if(grepl(grobi$name,pattern =  "parallel")) {
@@ -131,36 +138,32 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
                }
              } else if(grepl(grobi$name, pattern = "polygon_glyph")) {
 
-               rounding <- roundings[[i]][[1]]
+               # rounding <- roundings[[i]][[1]]
 
-               xRounding <- rounding$x * sqrt(newSize[i])
-               yRounding <- rounding$y * sqrt(newSize[i])
+               xRounding <- get_unit(grobi$x, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
+               yRounding <- get_unit(grobi$y, unit = "cm", as.numeric = TRUE) * newSize[i]/oldSize[i]
 
                newGrob$children[[i]] <<- grid::editGrob(
                  grob = grobi,
-                 x = get_unit(grobi$x, as.numeric = FALSE) + unit(xRounding, "mm"),
-                 y = get_unit(grobi$y, as.numeric = FALSE) + unit(yRounding, "mm")
+                 x = get_unit(grobi$x, as.numeric = FALSE) + unit(xRounding, "cm"),
+                 y = get_unit(grobi$y, as.numeric = FALSE) + unit(yRounding, "cm")
                )
              } else if(grepl(grobi$name, pattern = "image_glyph")) {
 
                # rounding <- roundings[[i]][[1]]
-
                imageBorderGrob <- grid::getGrob(grobi, "image_border")
-
-               # width <- rounding$width * sqrt(newSize[i]/default_size())
-               # height <- rounding$height * sqrt(newSize[i]/default_size())
 
                imageBorderGrob <- grid::editGrob(
                  grob = imageBorderGrob,
-                 width = imageBorderGrob$width + changes[k] * unit(2, "mm"),
-                 height = imageBorderGrob$height + changes[k] * unit(2, "mm")
+                 width = imageBorderGrob$width + (newSize[i] - oldSize[i]) * pt2cm() * unit(2, "cm"),
+                 height = imageBorderGrob$height + (newSize[i] - oldSize[i]) * pt2cm() * unit(2, "cm")
                )
 
                imageGrob <- grid::getGrob(grobi, "image")
                imageGrob <- grid::editGrob(
                  grob = imageGrob,
-                 width = imageGrob$width + changes[k] * unit(2, "mm"),
-                 height = imageGrob$height + changes[k] * unit(2, "mm")
+                 width = imageGrob$width + (newSize[i] - oldSize[i])  * pt2cm() * unit(2, "cm"),
+                 height = imageGrob$height + (newSize[i] - oldSize[i]) * pt2cm() * unit(2, "cm")
                )
 
                newGrob$children[[i]] <<- gTree(
@@ -198,7 +201,7 @@ set_size_grob.l_graph <- function(loon.grob, index, newSize, ...) {
 
              grobi <- newGrob$children[[i]]
              gp <- grobi$gp
-             gp$cex <- newSize[i]
+             gp$fontsize <- newSize[i]
 
              newGrob$children[[i]] <<- grid::editGrob(
                grob = grobi,

@@ -85,20 +85,20 @@ set_linkingInfo.l_graph <- function(loon.grob, output.grob,
 
              if("size" %in% linkedStates) {
                grobi_size <- size[i]
-             } else grobi_size <- grobi$gp$cex
+             } else grobi_size <- grobi$gp$fontsize
 
              grobi <- grid::editGrob(
                grob = grobi,
                gp = if(grobi_pch %in% 21:24) {
                  gpar(
                    fill = grobi_color,
-                   cex = grobi_size,
+                   fontsize = grobi_size,
                    col = bounder_color()
                  )
                } else {
                  gpar(
                    col = grobi_color,
-                   cex = grobi_size
+                   fontsize = grobi_size
                  )
                },
                pch = grobi_pch
@@ -113,13 +113,13 @@ set_linkingInfo.l_graph <- function(loon.grob, output.grob,
                  gp = if(grobi_pch %in% 21:24) {
                    gpar(
                      fill = select_color(),
-                     cex = grobi_size,
+                     fontsize = grobi_size,
                      col = bounder_color()
                    )
                  } else {
                    gpar(
                      col = select_color(),
-                     cex = grobi_size
+                     fontsize = grobi_size
                    )
                  }
                )

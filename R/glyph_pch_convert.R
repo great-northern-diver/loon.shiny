@@ -4,7 +4,7 @@ glyph_to_pch <- function(glyph) {
   vapply(glyph, function(x) {
     switch(
       x,
-      circle = 16,
+      circle = 19,
       ocircle = 1,
       ccircle = 21,
       square = 15,
@@ -16,7 +16,7 @@ glyph_to_pch <- function(glyph) {
       diamond = 18,
       odiamond = 5,
       cdiamond = 23,
-      16
+      19
     )
   }, numeric(1))
 
@@ -28,9 +28,11 @@ pch_to_glyph <- function(pch) {
     unname(
       vapply(pch,
              function(p) {
-               switch(
-                 as.character(p),
-                 "16" = "circle" ,
+
+               p <- as.character(p)
+
+               switch(p,
+                 "19" = "circle" ,
                  "1" = "ocircle",
                  "21" = "ccircle",
                  "15" = "square",

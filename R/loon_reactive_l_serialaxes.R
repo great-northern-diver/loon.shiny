@@ -673,7 +673,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
       buttons["absToPlus"] <- absToPlus
 
       if(length(brushId) > 0) {
-        newSize <- min(loonWidgetsInfo$size[brushId]) + default_step_size(line = TRUE)
+        newSize <- min(loonWidgetsInfo$size[brushId]) + 1
         loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
@@ -696,8 +696,8 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
       buttons["absToMinus"] <- absToMinus
 
       if(length(brushId) > 0) {
-        newSize <- min(loonWidgetsInfo$size[brushId]) - default_step_size(line = TRUE)
-        if(newSize <= 0) newSize <- minimumSize()
+        newSize <- min(loonWidgetsInfo$size[brushId]) - 1
+        if(newSize <= 1) newSize <- 1
         loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
@@ -721,7 +721,7 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
 
       if(length(brushId) > 0) {
 
-        loonWidgetsInfo$size[brushId] <- loonWidgetsInfo$size[brushId] + default_step_size(line = TRUE)
+        loonWidgetsInfo$size[brushId] <- loonWidgetsInfo$size[brushId] + 1
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
@@ -744,8 +744,8 @@ loon_reactive.l_serialaxes <- function(loon.grob, output.grob, linkingInfo, butt
 
       if(length(brushId) > 0) {
 
-        newSize <- loonWidgetsInfo$size[brushId] - default_step_size(line = TRUE)
-        newSize[which(newSize <= 0)] <- minimumSize()
+        newSize <- loonWidgetsInfo$size[brushId] - 1
+        newSize[which(newSize <= 1)] <- 1
         loonWidgetsInfo$size[brushId] <- newSize
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,

@@ -8,7 +8,7 @@
 # }
 #
 # `[.vpStack` <- function(x, i) {
-#   x[[which(names(x) %in% i)]]
+#   x[[which(grepl(i, vpStack_names(x)))]]
 # }
 
 vpStack_names <- function(x) {
@@ -19,5 +19,5 @@ vpStack_names <- function(x) {
 }
 
 get_vp_from_vpStack <- function(x, i) {
-  x[[which(vpStack_names(x) %in% i)]]
+  x[[which(grepl(i, vpStack_names(x)))]]
 }

@@ -910,7 +910,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       buttons["absToPlus"] <- absToPlus
 
       if(length(brushId) > 0) {
-        newSize <- min(loonWidgetsInfo$size[brushId]) + default_step_size()
+        newSize <- min(loonWidgetsInfo$size[brushId]) + 1
         loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
@@ -929,8 +929,8 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
       buttons["absToMinus"] <- absToMinus
 
       if(length(brushId) > 0) {
-        newSize <- min(loonWidgetsInfo$size[brushId]) - default_step_size()
-        if(newSize <= 0) newSize <- minimumSize()
+        newSize <- min(loonWidgetsInfo$size[brushId]) -1
+        if(newSize <= 1) newSize <- 1
         loonWidgetsInfo$size[brushId] <- rep(newSize, length(brushId))
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
@@ -950,7 +950,7 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
       if(length(brushId) > 0) {
 
-        loonWidgetsInfo$size[brushId] <- loonWidgetsInfo$size[brushId] + default_step_size()
+        loonWidgetsInfo$size[brushId] <- loonWidgetsInfo$size[brushId] + 1
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,
                                    index = brushId,
@@ -969,8 +969,8 @@ loon_reactive.l_graph <- function(loon.grob, output.grob, linkingInfo, buttons, 
 
       if(length(brushId) > 0) {
 
-        newSize <- loonWidgetsInfo$size[brushId] - default_step_size()
-        newSize[which(newSize <= 0)] <- minimumSize()
+        newSize <- loonWidgetsInfo$size[brushId] - 1
+        newSize[which(newSize <= 1)] <- 1
         loonWidgetsInfo$size[brushId] <- newSize
 
         loon.grob <- set_size_grob(loon.grob = loon.grob,

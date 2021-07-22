@@ -99,20 +99,20 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                  if("size" %in% linkedStates) {
                    grobi_size <- size[i]
-                 } else grobi_size <- grobi$gp$cex
+                 } else grobi_size <- grobi$gp$fontsize
 
                  grobi <- grid::editGrob(
                    grob = grobi,
                    gp = if(grobi_pch %in% 21:24) {
                      gpar(
                        fill = grobi_color,
-                       cex = grobi_size,
+                       fontsize = grobi_size,
                        col = bounder_color()
                      )
                    } else {
                      gpar(
                        col = grobi_color,
-                       cex = grobi_size
+                       fontsize = grobi_size
                      )
                    },
                    pch = grobi_pch
@@ -136,13 +136,13 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                      gp = if(grobi_pch %in% 21:24) {
                        gpar(
                          fill = select_color(),
-                         cex = grobi_size,
+                         fontsize = grobi_size,
                          col = bounder_color()
                        )
                      } else {
                        gpar(
                          col = select_color(),
-                         cex = grobi_size
+                         fontsize = grobi_size
                        )
                      }
                    )
@@ -179,25 +179,31 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    boundaryGrob <- grid::editGrob(
                      grob = boundaryGrob,
                      x = get_unit(boundaryGrob$x, as.numeric = FALSE) +
-                       unit(rounding$boundaryGrobRounding$x * sqrt(size[i]/default_size()), "mm"),
+                       get_unit(boundaryGrob$x, unit = "cm", as.numeric = FALSE) *
+                       size[i]/loonWidgetsInfo$size[i],
                      y = get_unit(boundaryGrob$y, as.numeric = FALSE) +
-                       unit(rounding$boundaryGrobRounding$y * sqrt(size[i]/default_size()), "mm")
+                       get_unit(boundaryGrob$y, unit = "cm", as.numeric = FALSE) *
+                       size[i]/loonWidgetsInfo$size[i]
                    )
 
                    axesGrob <- grid::editGrob(
                      grob = axesGrob,
                      x = get_unit(axesGrob$x, as.numeric = FALSE) +
-                       unit(rounding$axesGrobRounding$x * sqrt(size[i]/default_size()), "mm"),
+                       get_unit(axesGrob$x, unit = "cm", as.numeric = FALSE) *
+                       size[i]/loonWidgetsInfo$size[i],
                      y = get_unit(axesGrob$y, as.numeric = FALSE) +
-                       unit(rounding$axesGrobRounding$y * sqrt(size[i]/default_size()), "mm")
+                       get_unit(axesGrob$y, unit = "cm", as.numeric = FALSE) *
+                       size[i]/loonWidgetsInfo$size[i]
                    )
 
                    serialaxesGrob <- grid::editGrob(
                      grob = serialaxesGrob,
                      x = get_unit(serialaxesGrob$x, as.numeric = FALSE) +
-                       unit(rounding$serialaxesGrobRounding$x * sqrt(size[i]/default_size()), "mm"),
+                       get_unit(serialaxesGrob$x, unit = "cm", as.numeric = FALSE) *
+                       size[i]/loonWidgetsInfo$size[i],
                      y = get_unit(serialaxesGrob$y, as.numeric = FALSE) +
-                       unit(rounding$serialaxesGrobRounding$y * sqrt(size[i]/default_size()), "mm")
+                       get_unit(serialaxesGrob$y, unit = "cm", as.numeric = FALSE) *
+                       size[i]/loonWidgetsInfo$size[i]
                    )
                  }
 
@@ -309,15 +315,13 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
 
                  # set size
                  if("size" %in% linkedStates) {
-                   rounding <- roundings[[i]][[1]]
-
 
                    grobi <- grid::editGrob(
                      grob = grobi,
                      x = get_unit(grobi$x, as.numeric = FALSE) +
-                       unit(rounding$x * sqrt(size[i]/default_size()), "mm"),
+                       get_unit(grobi$x, unit = "cm", as.numeric = FALSE) * size[i]/loonWidgetsInfo$size[i],
                      y = get_unit(grobi$y, as.numeric = FALSE) +
-                       unit(rounding$y * sqrt(size[i]/default_size()), "mm")
+                       get_unit(grobi$y, unit = "cm", as.numeric = FALSE) * size[i]/loonWidgetsInfo$size[i]
                    )
                  }
 
@@ -411,13 +415,13 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                        gp = if(grobi$pch %in% 21:24) {
                          gpar(
                            fill = grobi$gp$fill,
-                           cex = size[i],
+                           fontsize = size[i],
                            col = grobi$gp$col
                          )
                        } else {
                          gpar(
                            col = grobi$gp$col,
-                           cex = size[i]
+                           fontsize = size[i]
                          )
                        }
                      )
@@ -479,7 +483,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                  }
 
                  if("size" %in% linkedStates) {
-                   grobi_size <- size[i] * loon_default_size()[["adjusted_size"]]
+                   grobi_size <- size[i]
                  } else {
                    grobi_size <- grobi$gp$fontsize
                  }
@@ -507,7 +511,7 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                      grob = grobi,
                      gp = gpar(
                        col = select_color(),
-                       fontsize = size[i] * loon_default_size()[["adjusted_size"]]
+                       fontsize = size[i]
                      )
                    )
                  } else grobi
@@ -538,15 +542,19 @@ set_linkingInfo.l_plot <- function(loon.grob, output.grob,
                    imageBorderGrob <- grid::editGrob(
                      grob = imageBorderGrob,
                      width = get_unit(imageBorderGrob$width, unit = "mm", as.numeric = FALSE) +
-                       unit(rounding$width * sqrt(size[i]/default_size()), "cm"),
+                       get_unit(imageBorderGrob$width, unit = "cm", as.numeric = FALSE) +
+                       unit((size[i] - loonWidgetsInfo$size[i]) * pt2cm(), "cm"),
                      height = get_unit(imageBorderGrob$height, unit = "mm", as.numeric = FALSE) +
-                       unit(rounding$height * sqrt(size[i]/default_size()), "cm")
+                       get_unit(imageBorderGrob$height, unit = "cm", as.numeric = FALSE) +
+                       unit((size[i] - loonWidgetsInfo$size[i]) * pt2cm(), "cm")
                    )
 
                    imageGrob <- grid::editGrob(
                      grob = grid::getGrob(grobi, "image"),
-                     width = unit(rounding$width * sqrt(size[i]/default_size()), "cm"),
-                     height = unit(rounding$height * sqrt(size[i]/default_size()), "cm")
+                     width = get_unit(imageGrob$width, unit = "cm", as.numeric = FALSE) +
+                       unit((size[i] - loonWidgetsInfo$size[i]) * pt2cm(), "cm"),
+                     height = get_unit(imageGrob$height, unit = "cm", as.numeric = FALSE) +
+                       unit((size[i] - loonWidgetsInfo$size[i]) * pt2cm(), "cm")
                    )
 
                    grobi <- gTree(

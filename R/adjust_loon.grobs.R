@@ -33,7 +33,7 @@ pointsGrob_to_gTree.l_plot <- function(loon.grob) {
   scatterplotGrob <- grid::getGrob(loon.grob, "scatterplot")
   childrenName <- scatterplotGrob$childrenOrder
 
-  if(childrenName != "points: mixed glyphs" & childrenName != "points: missing glyphs") {
+  if(childrenName != "points: mixed glyphs" && childrenName != "points: missing glyphs") {
     # extend pointsGrob to gTree
     args <- getGrobArgs(scatterplotGrob$children[[scatterplotGrob$childrenOrder]])
 
@@ -54,12 +54,12 @@ pointsGrob_to_gTree.l_plot <- function(loon.grob) {
                              gpar(
                                fill = args$gp$fill[i],
                                col = args$gp$col,
-                               cex = args$gp$cex[i]
+                               fontsize = args$gp$fontsize[i]
                              )
                            } else {
                              gpar(
                                col = args$gp$col[i],
-                               cex = args$gp$cex[i]
+                               fontsize = args$gp$fontsize[i]
                              )
                            },
                            vp = args$vp
