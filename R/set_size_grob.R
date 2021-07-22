@@ -155,15 +155,15 @@ set_size_grob.l_plot <- function(loon.grob, index, newSize, ...) {
 
                imageBorderGrob <- grid::editGrob(
                  grob = imageBorderGrob,
-                 width = imageBorderGrob$width + (newSize[i] - oldSize[i]) * pt2mm() * unit(2, "mm"),
-                 height = imageBorderGrob$height + (newSize[i] - oldSize[i]) * pt2mm() * unit(2, "mm")
+                 width = imageBorderGrob$width + (newSize[i] - oldSize[i]) * pt2cm() * unit(2, "cm"),
+                 height = imageBorderGrob$height + (newSize[i] - oldSize[i]) * pt2cm() * unit(2, "cm")
                )
 
                imageGrob <- grid::getGrob(grobi, "image")
                imageGrob <- grid::editGrob(
                  grob = imageGrob,
-                 width = imageGrob$width + (newSize[i] - oldSize[i])  * pt2mm() * unit(2, "mm"),
-                 height = imageGrob$height + (newSize[i] - oldSize[i]) * pt2mm() * unit(2, "mm")
+                 width = imageGrob$width + (newSize[i] - oldSize[i])  * pt2cm() * unit(2, "cm"),
+                 height = imageGrob$height + (newSize[i] - oldSize[i]) * pt2cm() * unit(2, "cm")
                )
 
                newGrob$children[[i]] <<- gTree(

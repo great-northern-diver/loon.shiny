@@ -10,6 +10,7 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
     roundings <- args$roundings
     pch <- args$pch
     size <- args$size
+    oldSize <- args$oldSize
     x <- args$x
     y <- args$y
     color <- args$color
@@ -29,8 +30,8 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
 
              if(grepl(glyphNames, pattern = "polygon_glyph")) {
 
-               poly_x <- rounding$x * sqrt(size[i]/loon_default_size("adjust"))
-               poly_y <- rounding$y * sqrt(size[i]/loon_default_size("adjust"))
+               poly_x <- rounding$x * size[i]/oldSize[i]
+               poly_y <- rounding$y * size[i]/oldSize[i]
 
                showArea <- grepl(glyphNames, pattern = "showArea")
                points_grob$children[[i]] <<- if(showArea) {
@@ -55,7 +56,7 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                }
              } else if(grepl(glyphNames, pattern = "serialaxes_glyph")) {
 
-               scale <- sqrt(size[i]/loon_default_size("adjust"))
+               scale <- size[i]/oldSize[i]
                xBoundary <- rounding$boundaryGrobRounding$x * scale
                yBoundary <- rounding$boundaryGrobRounding$y * scale
 
@@ -116,10 +117,8 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
                        test = nonePrimitiveGlyphSettings$showEnclosing,
                        grobFun = grid::polylineGrob,
                        name = "boundary",
-                       x = grid::unit(x[i], "native") +
-                         grid::unit((c(0, 0, 1, 0, 0, 1, 1, 1) - 0.5) * scale, "cm"),
-                       y = grid::unit(y[i], "native") +
-                         grid::unit((c(0, 0, 0, 1, 1, 0, 1, 1) - 0.5) * scale, "cm"),
+                       x = grid::unit(x[i], "native") + grid::unit(xBoundary, "cm"),
+                       y = grid::unit(y[i], "native") + grid::unit(yBoundary, "cm"),
                        id = rep(1:4, 2),
                        gp = grid::gpar(col = box_color)
                      ),
@@ -152,8 +151,8 @@ set_specifiedGlyph_grob <- function(loon.grob, index, tmp, ...) {
 
              }  else if(grepl(glyphNames, pattern = "image_glyph")) {
 
-               width <- rounding$width * sqrt(size[i]/loon_default_size("adjust"))
-               height <- rounding$height * sqrt(size[i]/loon_default_size("adjust"))
+               width <- rounding$width + (size[i] - oldSize[i]) * pt2cm()
+               height <- rounding$height + (size[i] - oldSize[i]) * pt2cm()
 
                points_grob$children[[i]] <<- gTree(
                  children = gList(
