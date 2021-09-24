@@ -1,6 +1,5 @@
 # loon.shiny <img src="man/figures/logo.png" align="right" width="120" />
 
-[![Travis build status](https://travis-ci.com/great-northern-diver/loon.shiny.svg?branch=master)](https://travis-ci.com/great-northern-diver/loon.shiny)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/loon.shiny)](https://cran.r-project.org/package=loon.shiny)
 
 
