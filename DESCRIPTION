@@ -2,7 +2,6 @@ Package: loon.shiny
 Type: Package
 Title: Automatically Create a 'Shiny' App Based on Interactive 'Loon' Widgets
 Version: 1.0.1
-Date: 2021-09-24
 Authors@R: c(
   person('Zehao', 'Xu', email = 'z267xu@uwaterloo.ca', role = c('aut', 'cre')),
   person('R. Wayne', 'Oldford', email = 'rwoldford@uwaterloo.ca', role = c('aut'))
