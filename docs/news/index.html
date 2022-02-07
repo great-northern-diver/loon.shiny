@@ -53,7 +53,7 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.2" id="loonshiny-102">loon.shiny 1.0.2<a class="anchor" aria-label="anchor" href="#loonshiny-102"></a></h2>
-<p>Fix a bug: in <code>loon</code> 1.3.9, as a <code>loon</code> widget is transformed to a <code>grid</code> object (i.e., <code>loonGrob</code>), once all points’ plotting states are the same, they will set as a scalar (e.g., col = “black”), rather a vector (e.g., col = [“black”, “black”, …]), to reduce the memory consumption. However, in the previous <code>loon.shiny</code> versions, we only treat aesthetic attributes as vectors.</p>
+<p>Fix a bug: in <code>loon</code> 1.3.9, as a <code>loon</code> widget is transformed to a <code>grid</code> object (i.e., <code>loonGrob</code>), once all points’ plotting states are the same, they will be set as a scalar (e.g., col = “black”), rather a vector (e.g., col = [“black”, “black”, …]), to reduce the memory consumption. However, in the previous <code>loon.shiny</code> versions, we only treat aesthetic attributes as vectors.</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.1" id="loonshiny-101">loon.shiny 1.0.1<small>2021-09-27</small><a class="anchor" aria-label="anchor" href="#loonshiny-101"></a></h2>

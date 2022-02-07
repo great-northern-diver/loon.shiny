@@ -1,6 +1,6 @@
 # loon.shiny 1.0.2
 
-Fix a bug: in `loon` 1.3.9, as a `loon` widget is transformed to a `grid` object (i.e., `loonGrob`), once all points' plotting states are the same, they will set as a scalar (e.g., col = "black"), rather a vector (e.g., col = ["black", "black", ...]), to reduce the memory consumption. However, in the previous `loon.shiny` versions, we only treat aesthetic attributes as vectors.
+Fix a bug: in `loon` 1.3.9, as a `loon` widget is transformed to a `grid` object (i.e., `loonGrob`), once all points' plotting states are the same, they will be set as a scalar (e.g., col = "black"), rather a vector (e.g., col = ["black", "black", ...]), to reduce the memory consumption. However, in the previous `loon.shiny` versions, we only treat aesthetic attributes as vectors.
 
 # loon.shiny 1.0.1
 
