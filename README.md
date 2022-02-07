@@ -53,11 +53,14 @@ With several plots, linking allows brushing across several plots.
 The code for the three plot shiny app on its own would be (as shown above):
 
 ```r
-p1 <- l_plot(iris, linkingGroup = "iris",
+p1 <- l_plot(x = iris$Sepal.Length, 
+             y = iris$Sepal.Width, 
+             linkingGroup = "iris",
+             color = iris$Species,
              showLabels = FALSE)
 p2 <- l_hist(iris$Sepal.Length, linkingGroup = "iris",
              showLabels = FALSE, showStackedColors = TRUE)
-p3 <- l_hist(iris$Sepal.Length, linkingGroup = "iris",
+p3 <- l_hist(iris$Sepal.Width, linkingGroup = "iris",
              showLabels = FALSE, swapAxes = TRUE,
              showStackedColors = TRUE)
 loon.shiny(list(p1, p2, p3),
