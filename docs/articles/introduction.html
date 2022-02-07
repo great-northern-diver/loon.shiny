@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">loon.shiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -79,13 +75,13 @@
 
       
 
-      </header><script src="introduction_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to loon.shiny</h1>
-                        <h4 class="author">Zehao Xu</h4>
+                        <h4 data-toc-skip class="author">Zehao Xu</h4>
             
-            <h4 class="date">2021-09-24</h4>
+            <h4 data-toc-skip class="date">2022-02-06</h4>
       
       
       <div class="hidden name"><code>introduction.Rmd</code></div>
@@ -94,29 +90,29 @@
 
     
     
-<div id="overview-of-the-three-packages" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview-of-the-three-packages" class="anchor"></a>Overview of the three packages</h2>
+<div class="section level2">
+<h2 id="overview-of-the-three-packages">Overview of the three packages<a class="anchor" aria-label="anchor" href="#overview-of-the-three-packages"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">loon.shiny</span><span class="op">)</span></code></pre></div>
-<div id="shiny" class="section level3">
-<h3 class="hasAnchor">
-<a href="#shiny" class="anchor"></a><code>Shiny</code>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">loon.shiny</span><span class="op">)</span></code></pre></div>
+<div class="section level3">
+<h3 id="shiny">
+<code>Shiny</code><a class="anchor" aria-label="anchor" href="#shiny"></a>
 </h3>
-<p>The <a href="https://shiny.rstudio.com/"><code>shiny</code></a> <code>R</code> package simplifies the creation of interactive analysis web pages.</p>
+<p>The <a href="https://shiny.rstudio.com/" class="external-link"><code>shiny</code></a> <code>R</code> package simplifies the creation of interactive analysis web pages.</p>
 <p>A <code>shiny</code> application is composed of two components, a <code>ui</code> (user interface) and a <code>server</code> function. This <code>ui</code>/<code>server</code> pair are passed as arguments to the <code>shinyApp</code> function that creates a <code>shiny</code> app. The <code>ui</code> (user interface) creates the layout of the app, guiding its users about the analysis by determining the objects that appear and how they can be manipulated on such application. The <code>server</code> function <em>reacts</em> to modifications on the <code>ui</code>, defining the logic of the app. As the user interacts with the page, the <code>server</code> function reacts to make changes in the display.</p>
 </div>
-<div id="loon" class="section level3">
-<h3 class="hasAnchor">
-<a href="#loon" class="anchor"></a><code>Loon</code>
+<div class="section level3">
+<h3 id="loon">
+<code>Loon</code><a class="anchor" aria-label="anchor" href="#loon"></a>
 </h3>
-<p>The <a href="https://great-northern-diver.github.io/loon/"><code>loon</code></a> <code>R</code> package provides an interactive visualization toolkit for unconstrained, unscripted, and open-ended data exploration. It is intended for data analysts themselves.</p>
+<p>The <a href="https://great-northern-diver.github.io/loon/" class="external-link"><code>loon</code></a> <code>R</code> package provides an interactive visualization toolkit for unconstrained, unscripted, and open-ended data exploration. It is intended for data analysts themselves.</p>
 <p>An important part of <code>loon</code>’s interactivity is the <strong>loon inspector</strong> which can can make changes specialized to different <code>loon</code> plots. Typically, the <code>loon</code> inspector has a single instance. The inspector will adapt its display to whichever of the different base <code>loon</code> graphics (scatterplots, graphs, histograms, serial axe plots, etc) is its focus (e.g., the graphic display that last received a mouse or window focus event.</p>
 <p>For <code>loon</code> users, it is a challenge to provide a <em>curated</em> analysis that is still somewhat interactive. Snapshots of different steps of the analysis are easily accommodated via <code>RMarkdown</code>, etc. but interaction is not.</p>
 </div>
-<div id="loon-shiny" class="section level3">
-<h3 class="hasAnchor">
-<a href="#loon-shiny" class="anchor"></a><code>Loon.shiny</code>
+<div class="section level3">
+<h3 id="loon-shiny">
+<code>Loon.shiny</code><a class="anchor" aria-label="anchor" href="#loon-shiny"></a>
 </h3>
 <p><code>Loon.shiny</code> transforms <code>loon</code> widgets to appear (with their inspector) in a <code>shiny</code> web app.</p>
 <ul>
@@ -126,44 +122,44 @@
 <p><strong>The idea behind the implementation:</strong> In <code>loon.shiny</code>, <code>loon</code> widgets are transformed to static <code>loonGrob</code>s created by the <code>R</code> base <code>grid</code> package to provide low-level, general purpose graphics functions. Note that, a <code>loonGrob</code> contains all elements of a <code>loon</code> plot even some not drawn contents, i.e. deactivated elements, hidden layers. All these essential contents are stored inside an empty <code>grob</code> possessing the argument values necessary to draw them. When the <code>server</code> function is fired, the interactivity is realized by editing and redisplaying these <code>loonGrob</code>s.</p>
 </div>
 </div>
-<div id="basic-usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#basic-usage" class="anchor"></a>Basic Usage</h2>
+<div class="section level2">
+<h2 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
+</h2>
 <p>Consider the classic <code>iris</code> data set.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">loon.shiny</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">loon.shiny</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
 <span class="co"># Loon scatterplot</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">iris</span>,
-  <span class="fu">l_plot</span><span class="op">(</span>x <span class="op">=</span> <span class="va">Petal.Width</span>, 
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">iris</span>,
+  <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_plot.html" class="external-link">l_plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Petal.Width</span>, 
          y <span class="op">=</span> <span class="va">Sepal.Width</span>, 
          color <span class="op">=</span> <span class="va">Species</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="co"># Modify glyph to radial axes glyph.</span>
-<span class="va">p</span><span class="op">[</span><span class="st">'glyph'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">l_glyph_add_serialaxes</span><span class="op">(</span><span class="va">p</span>, data <span class="op">=</span> <span class="va">iris</span><span class="op">)</span>
+<span class="va">p</span><span class="op">[</span><span class="st">'glyph'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_glyph_add_serialaxes.html" class="external-link">l_glyph_add_serialaxes</a></span><span class="op">(</span><span class="va">p</span>, data <span class="op">=</span> <span class="va">iris</span><span class="op">)</span>
 <span class="co"># Fit a linear regression on each group (species)</span>
-<span class="kw">for</span><span class="op">(</span><span class="va">s</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<span class="kw">for</span><span class="op">(</span><span class="va">s</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="co"># sub data set</span>
-  <span class="va">subdata</span> <span class="op">&lt;-</span> <span class="va">iris</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Species</span> <span class="op">==</span> <span class="va">s</span><span class="op">)</span>
+  <span class="va">subdata</span> <span class="op">&lt;-</span> <span class="va">iris</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Species</span> <span class="op">==</span> <span class="va">s</span><span class="op">)</span>
   <span class="co"># fitted line</span>
-  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">Sepal.Width</span> <span class="op">~</span> <span class="va">Petal.Width</span>, data <span class="op">=</span> <span class="va">subdata</span><span class="op">)</span>
+  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Sepal.Width</span> <span class="op">~</span> <span class="va">Petal.Width</span>, data <span class="op">=</span> <span class="va">subdata</span><span class="op">)</span>
   <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">subdata</span><span class="op">$</span><span class="va">Petal.Width</span>
-  <span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">fit</span>, interval <span class="op">=</span> <span class="st">"confidence"</span><span class="op">)</span>
-  <span class="va">ord</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
+  <span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, interval <span class="op">=</span> <span class="st">"confidence"</span><span class="op">)</span>
+  <span class="va">ord</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
   <span class="co"># Loon pipe model (connected with %T&gt;%)</span>
   <span class="co"># Check ```help(`%T&gt;%`)``` for more details</span>
-  <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">%T&gt;%</span> 
+  <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/tee.html" class="external-link">%T&gt;%</a></span> 
     <span class="co"># fitted line</span>
-    <span class="fu">l_layer_line</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span>, 
+    <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_layer_line.html" class="external-link">l_layer_line</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span>, 
                  y <span class="op">=</span> <span class="va">pred</span><span class="op">[</span>, <span class="st">"fit"</span><span class="op">]</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span>, 
                  color <span class="op">=</span> <span class="st">"firebrick"</span>,
                  linewidth <span class="op">=</span> <span class="fl">1.5</span>,
-                 index <span class="op">=</span> <span class="st">"end"</span><span class="op">)</span> <span class="op">%T&gt;%</span>
+                 index <span class="op">=</span> <span class="st">"end"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/tee.html" class="external-link">%T&gt;%</a></span>
     <span class="co"># confidence interval</span>
-    <span class="fu">l_layer_line</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">)</span>, <span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
-                 y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">pred</span><span class="op">[</span>, <span class="st">"lwr"</span><span class="op">]</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="va">pred</span><span class="op">[</span>, <span class="st">"upr"</span><span class="op">]</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">)</span>, <span class="va">pred</span><span class="op">[</span>, <span class="st">"lwr"</span><span class="op">]</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
+    <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_layer_line.html" class="external-link">l_layer_line</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">)</span>, <span class="va">x</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
+                 y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">pred</span><span class="op">[</span>, <span class="st">"lwr"</span><span class="op">]</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">pred</span><span class="op">[</span>, <span class="st">"upr"</span><span class="op">]</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">)</span>, <span class="va">pred</span><span class="op">[</span>, <span class="st">"lwr"</span><span class="op">]</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
                  color <span class="op">=</span> <span class="st">"grey50"</span>,
                  linewidth <span class="op">=</span> <span class="fl">2</span>,
                  index <span class="op">=</span> <span class="st">"end"</span><span class="op">)</span>
@@ -176,7 +172,7 @@
 <li>
 <p><code>Plot</code> panel:</p>
 <ul>
-<li><p>Zooming and Panning: In <code>loon</code>, they both are realized by direct manipulation with cooperation of mouse and modifier keys <code>&lt;shift&gt;</code>. While, in <code>shiny</code>, function <code>plotOutput()</code> cannot trace right click and scrolling yet. Hence, we build two slider bars to control <code>x</code> and <code>y</code> limits.</p></li>
+<li><p>Zooming and Panning: In <code>loon</code>, they both are realized by direct manipulation with cooperation of mouse and modifier keys <code>&lt;shift&gt;</code>. While, in <code>shiny</code>, function <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">plotOutput()</a></code> cannot trace right click and scrolling yet. Hence, we build two slider bars to control <code>x</code> and <code>y</code> limits.</p></li>
 <li><p>Axes: channel <code>axes</code> is a central control of non-data elements display, such as turning on/off labels, scales and guides or flipping the horizontal and vertical axes.</p></li>
 <li><p>Scale to: channel <code>scale to</code> re-scales the plot interior to some range: range of <code>selected</code> points, range of all points in the <code>plot</code> and range of all plots objects in all layers (<code>world</code>).</p></li>
 </ul>
@@ -202,8 +198,8 @@
 </ul>
 <p>There are several noticeable difference here:</p>
 <ul>
-<li><p>The <code>select</code> panel in <code>loon.shiny</code> does not involve a <code>by</code> channel. In <code>loon</code>, users can select by either <code>brushing</code> or <code>sweeping</code>. However, in <code>shiny</code>, the mode <code>brushing</code> or <code>sweeping</code> is pre-defined in function <code>plotOutput()</code> and there is no way to update it. Once the app is rendered, the select mode is set and cannot be switched.</p></li>
-<li><p><code>Loon.shiny</code> has a <code>sticky</code> radio box. It is the same with <code>&lt;shift&gt;</code> key in <code>loon</code> (the usage of <code>&lt;shift&gt;</code> key in loon can be found in <a href="https://great-northern-diver.github.io/loon/articles/introduction.html"><code>loon</code> vignette</a> or <a href="https://www.math.uwaterloo.ca/~rwoldfor/talks/loonTutorial/userSlides/Intro.pdf"><code>loon</code> talk</a>). This is because <code>shiny</code> does not include trace functions to record key press so far.</p></li>
+<li><p>The <code>select</code> panel in <code>loon.shiny</code> does not involve a <code>by</code> channel. In <code>loon</code>, users can select by either <code>brushing</code> or <code>sweeping</code>. However, in <code>shiny</code>, the mode <code>brushing</code> or <code>sweeping</code> is pre-defined in function <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html" class="external-link">plotOutput()</a></code> and there is no way to update it. Once the app is rendered, the select mode is set and cannot be switched.</p></li>
+<li><p><code>Loon.shiny</code> has a <code>sticky</code> radio box. It is the same with <code>&lt;shift&gt;</code> key in <code>loon</code> (the usage of <code>&lt;shift&gt;</code> key in loon can be found in <a href="https://great-northern-diver.github.io/loon/articles/introduction.html" class="external-link"><code>loon</code> vignette</a> or <a href="https://www.math.uwaterloo.ca/~rwoldfor/talks/loonTutorial/userSlides/Intro.pdf" class="external-link"><code>loon</code> talk</a>). This is because <code>shiny</code> does not include trace functions to record key press so far.</p></li>
 <li><p><code>by color</code> channel is replaced by check box in <code>shiny</code>, since <code>shiny</code> does not include functions to automatically generate new buttons in <code>server</code> function. However, such changes give an unexpected benefit, color names can be detected easily.</p></li>
 </ul>
 <p><img src="img/introduction/select_panel.PNG" width="30%" style="display: block; margin: auto;"></p>
@@ -213,7 +209,7 @@
 <ul>
 <li><p><code>Color</code>: <code>color</code> buttons are used to modify element colors and the color picker widget provides users more choice.</p></li>
 <li><p><code>Activate</code>: <code>activate</code> helps to deactivate or reactivate elements. <code>Deactivate</code> buttons turn selected objects invisible and <code>reactivate</code> buttons reactivate all deactivated points.</p></li>
-<li><p><code>Move</code>: <code>Move</code> selected points to common horizontal position, to vertical position, and etc (see <a href="https://www.math.uwaterloo.ca/~rwoldfor/talks/loonTutorial/userSlides/Intro.pdf"><code>loon</code> talk</a> for more details).</p></li>
+<li><p><code>Move</code>: <code>Move</code> selected points to common horizontal position, to vertical position, and etc (see <a href="https://www.math.uwaterloo.ca/~rwoldfor/talks/loonTutorial/userSlides/Intro.pdf" class="external-link"><code>loon</code> talk</a> for more details).</p></li>
 <li><p><code>Glyph</code>: Change the shape of the points.</p></li>
 <li><p><code>Size</code>: Decrease or increase point size.</p></li>
 </ul>
@@ -222,7 +218,7 @@
 <p><img src="img/introduction/modify_panel.PNG" width="30%" style="display: block; margin: auto;"></p>
 <ul>
 <li>
-<code>Layer</code> panel: this panel a simplified version of <a href="https://github.com/great-northern-diver/loon.shiny/blob/master/vignettes/img/introduction/inspector_layer.PNG"><code>loon</code> layer tab</a>. The top select box indicates which layer is under activation and the buttons below are used to, move layer up or down a level, make layer visible or invisible, add layer group (deprecated now), delete layer and scale plot region to layer. The last command is to customize the layer label.</li>
+<code>Layer</code> panel: this panel a simplified version of <a href="https://github.com/great-northern-diver/loon.shiny/blob/master/vignettes/img/introduction/inspector_layer.PNG" class="external-link"><code>loon</code> layer tab</a>. The top select box indicates which layer is under activation and the buttons below are used to, move layer up or down a level, make layer visible or invisible, add layer group (deprecated now), delete layer and scale plot region to layer. The last command is to customize the layer label.</li>
 </ul>
 <p><img src="img/introduction/layer_panel.PNG" width="30%" style="display: block; margin: auto;"></p>
 <ul>
@@ -231,33 +227,33 @@
 </ul>
 <p><img src="img/introduction/glyph_panel.PNG" width="30%" style="display: block; margin: auto;"></p>
 </div>
-<div id="compound-plots" class="section level2">
-<h2 class="hasAnchor">
-<a href="#compound-plots" class="anchor"></a>Compound Plots</h2>
+<div class="section level2">
+<h2 id="compound-plots">Compound Plots<a class="anchor" aria-label="anchor" href="#compound-plots"></a>
+</h2>
 <p>Arbitrarily many plots may be created and linked in <code>loon</code>. Package <code>loon.shiny</code> successfully inherits such facility.</p>
 <p>Following graph illustrates compound plots. The three graphs are histogram of variable <code>Sepal.Length</code>, scatterplot of <code>Sepal.Width</code> versus <code>Sepal.Length</code> and swapped histogram of variable <code>Sepal.Width</code> (from top to bottom, from left to right). They are colored by species and linked each other.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">l_plot</span><span class="op">(</span><span class="va">iris</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>, 
+<code class="sourceCode R"><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_plot.html" class="external-link">l_plot</a></span><span class="op">(</span><span class="va">iris</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>, 
              showLabels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">l_hist</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,
+<span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_hist.html" class="external-link">l_hist</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,
              showLabels <span class="op">=</span> <span class="cn">FALSE</span>, 
              showStackedColors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">l_hist</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Width</span>, color <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, 
+<span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_hist.html" class="external-link">l_hist</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Width</span>, color <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, 
              linkingGroup <span class="op">=</span> <span class="st">"iris"</span>, 
              showLabels <span class="op">=</span> <span class="cn">FALSE</span>,  swapAxes <span class="op">=</span> <span class="cn">TRUE</span>, 
              showStackedColors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="../reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>, 
-           layout_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="cn">NA</span>,<span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+<span class="fu"><a href="../reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>, 
+           layout_matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="cn">NA</span>,<span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
            plotRegionWidth <span class="op">=</span> <span class="st">"400px"</span><span class="op">)</span></code></pre></div>
 <p><img src="img/introduction/compound_plot.PNG" width="80%" style="display: block; margin: auto;"></p>
-<div id="inspector-activation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#inspector-activation" class="anchor"></a>Inspector Activation</h3>
+<div class="section level3">
+<h3 id="inspector-activation">Inspector Activation<a class="anchor" aria-label="anchor" href="#inspector-activation"></a>
+</h3>
 <p><code>Loon</code> inspector is a singleton which means there is only one instance of it. Each kind of graphics (scatterplots, graphs, histograms, serial axes plots, etc) has its own specified inspector. The shown one depends on which display receives the last mouse gesture input or window focus event. However, such design in <code>shiny</code> can be very complex. Instead, we build a navigation bar menu. The inspector can be switched by <strong>toggling tabpanel</strong> on the bar menu or the <strong>last mouse gesture (&lt;<code>double click</code>&gt;) input</strong>.</p>
 </div>
-<div id="linking" class="section level3">
-<h3 class="hasAnchor">
-<a href="#linking" class="anchor"></a>Linking</h3>
+<div class="section level3">
+<h3 id="linking">Linking<a class="anchor" aria-label="anchor" href="#linking"></a>
+</h3>
 <p>If we brush on any of these plots, the corresponding elements on the rest will be highlighted instantaneously. Linking status can be checked via <code>linking</code> panel.</p>
 <p><img src="img/introduction/linking_panel.PNG" width="30%" style="display: block; margin: auto;"></p>
 <ul>
@@ -279,11 +275,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Zehao Xu, R. Wayne Oldford.</p>
+  <p></p>
+<p>Developed by Zehao Xu, R. Wayne Oldford.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -291,6 +289,8 @@
 
   
 
+
+  
 
   </body>
 </html>
