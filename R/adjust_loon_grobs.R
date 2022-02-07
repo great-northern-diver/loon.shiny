@@ -1,10 +1,12 @@
-adjust_loon.grobs <- function(loon.grobs, loonWidgetsInfo = NULL) {
+adjust_loon_grobs <- function(loon.grobs, loonWidgetsInfo = NULL) {
 
+  # if the loonGrob is constructed by a "pointsGrob",
+  # we turn the "pointsGrob" to a gTree whose child is a pointsGrob only to draw one point
   loon.grobs <- lapply(loon.grobs, function(loon.grob) pointsGrob_to_gTree(loon.grob))
 
   if(!is.null(loonWidgetsInfo)) {
 
-    loon.grobs <- lapply(1:length(loon.grobs),
+    loon.grobs <- lapply(seq(length(loon.grobs)),
                          function(i) {
 
                            loon.grob <- loon.grobs[[i]]
@@ -36,6 +38,10 @@ pointsGrob_to_gTree.l_plot <- function(loon.grob) {
   if(childrenName != "points: mixed glyphs" && childrenName != "points: missing glyphs") {
     # extend pointsGrob to gTree
     args <- getGrobArgs(scatterplotGrob$children[[scatterplotGrob$childrenOrder]])
+    lenPch <- length(args$pch)
+    lenCol <- length(args$gp$col)
+    lenFontsize <- length(args$gp$fontsize)
+    lenFill <- length(args$gp$fill)
 
     grid::setGrob(loon.grob,
             gPath = scatterplotGrob$childrenOrder,
@@ -44,22 +50,28 @@ pointsGrob_to_gTree.l_plot <- function(loon.grob) {
                 gList,
                 lapply(seq(length(args$x)),
                        function(i) {
+
+                         pch <- ifelse(lenPch == 1, args$pch, args$pch[i])
+                         fill <- ifelse(lenFill == 1, args$gp$fill, args$gp$fill[i])
+                         col <- ifelse(lenCol == 1, args$gp$col, args$gp$col[i])
+                         fontsize <- ifelse(lenFontsize == 1, args$gp$fontsize, args$gp$fontsize[i])
+
                          pointsGrob(
                            x = args$x[i],
                            y = args$y[i],
-                           pch = args$pch[i],
+                           pch = pch,
                            size = args$size,
                            name = paste0("primitive_glyph ", i),
-                           gp = if(args$pch[i] %in% 21:24) {
+                           gp = if(pch %in% 21:24) {
                              gpar(
-                               fill = args$gp$fill[i],
-                               col = args$gp$col,
-                               fontsize = args$gp$fontsize[i]
+                               fill = fill,
+                               col = col,
+                               fontsize = fontsize
                              )
                            } else {
                              gpar(
-                               col = args$gp$col[i],
-                               fontsize = args$gp$fontsize[i]
+                               col = col,
+                               fontsize = fontsize
                              )
                            },
                            vp = args$vp

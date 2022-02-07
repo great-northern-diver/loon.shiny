@@ -12,3 +12,5 @@ pkgdown/*
 ^doc$
 ^Meta$
 .travis.yml
+NEWS.md
+README.md
