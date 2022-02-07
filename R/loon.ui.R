@@ -17,7 +17,7 @@ loon.ui <- function(loon.grobs,
                     envir = parent.frame(),
                     ...) {
 
-  loon.grobs <- adjust_loon.grobs(loon.grobs, loonWidgetsInfo)
+  loon.grobs <- adjust_loon_grobs(loon.grobs, loonWidgetsInfo)
   # update loon.grobs in parent env
   assign("loon.grobs", loon.grobs, envir = envir)
   tabPanelNames <- names(loon.grobs)

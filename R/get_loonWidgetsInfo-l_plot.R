@@ -6,7 +6,7 @@ get_loonWidgetsInfo.l_plot <- function(widgets,
   args <- list(...)
   navbarMenuName <- args$navbarMenuName
 
-  loon.grobs <- adjust_loon.grobs(list(loon.grobs), loonWidgetsInfo = NULL)
+  loon.grobs <- adjust_loon_grobs(list(loon.grobs), loonWidgetsInfo = NULL)
   loon.grob <- loon.grobs[[1L]]
 
   scatterplotGrob <- grid::getGrob(loon.grob, "scatterplot")
