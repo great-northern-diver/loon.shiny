@@ -18,7 +18,7 @@ users to remember, we decide to name the function with the selfsame name, loon.s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">loon.shiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ users to remember, we decide to name the function with the selfsame name, loon.s
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -59,26 +59,26 @@ users to remember, we decide to name the function with the selfsame name, <code>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">shiny.loon</span><span class="op">(</span>
-  <span class="va">widgets</span>,
-  selectBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"byDefault"</span>, <span class="st">"brushing"</span>, <span class="st">"sweeping"</span><span class="op">)</span>,
-  showWorldView <span class="op">=</span> <span class="cn">TRUE</span>,
-  plotRegionWidth <span class="op">=</span> <span class="st">"500px"</span>,
-  plotRegionHeight <span class="op">=</span> <span class="st">"500px"</span>,
-  plotRegionBackground <span class="op">=</span> <span class="st">"gray92"</span>,
-  layoutMatrix <span class="op">=</span> <span class="cn">NULL</span>,
-  nrow <span class="op">=</span> <span class="cn">NULL</span>,
-  ncol <span class="op">=</span> <span class="cn">NULL</span>,
-  widths <span class="op">=</span> <span class="cn">NULL</span>,
-  heights <span class="op">=</span> <span class="cn">NULL</span>,
-  displayedPanel <span class="op">=</span> <span class="st">""</span>,
-  colorList <span class="op">=</span> <span class="fu">loon</span><span class="fu">::</span><span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_getColorList.html" class="external-link">l_getColorList</a></span><span class="op">(</span><span class="op">)</span>,
-  inspectorLocation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"auto"</span>, <span class="st">"60px"</span>, <span class="st">"20px"</span><span class="op">)</span>,
-  inspectorWidth <span class="op">=</span> <span class="st">"350px"</span>,
-  inspectorHeight <span class="op">=</span> <span class="st">"auto"</span>,
-  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shiny.loon</span><span class="op">(</span></span>
+<span>  <span class="va">widgets</span>,</span>
+<span>  selectBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"byDefault"</span>, <span class="st">"brushing"</span>, <span class="st">"sweeping"</span><span class="op">)</span>,</span>
+<span>  showWorldView <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plotRegionWidth <span class="op">=</span> <span class="st">"500px"</span>,</span>
+<span>  plotRegionHeight <span class="op">=</span> <span class="st">"500px"</span>,</span>
+<span>  plotRegionBackground <span class="op">=</span> <span class="st">"gray92"</span>,</span>
+<span>  layoutMatrix <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  widths <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  heights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  displayedPanel <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  colorList <span class="op">=</span> <span class="fu">loon</span><span class="fu">::</span><span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_getColorList.html" class="external-link">l_getColorList</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  inspectorLocation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"auto"</span>, <span class="st">"60px"</span>, <span class="st">"20px"</span><span class="op">)</span>,</span>
+<span>  inspectorWidth <span class="op">=</span> <span class="st">"350px"</span>,</span>
+<span>  inspectorHeight <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -87,47 +87,82 @@ users to remember, we decide to name the function with the selfsame name, <code>
 <dd><p>A <code>loon</code> widget or a list of <code>loon</code> widgets. If the input is a
 <code>ggplot</code> object, the <code>ggplot</code> object will be turned into a <code>loon</code> widget
 via <code><a href="https://rdrr.io/pkg/loon.ggplot/man/ggplot2loon.html" class="external-link">ggplot2loon</a></code>.</p></dd>
+
+
 <dt>selectBy</dt>
 <dd><p>The way to brush, can be 'brushing' (keep the brush whenever the plot is updated),
 'sweeping' (clear the brush whenever the plot is updated) or 'byDefault' (determined by <code>loon</code> widget 'selectBy')</p></dd>
+
+
 <dt>showWorldView</dt>
 <dd><p>Logical; whether to show the world view.</p></dd>
+
+
 <dt>plotRegionWidth</dt>
 <dd><p>Plot region width. Must be a valid <code>CSS</code> unit (like '100<!-- %', '400px') or a number, -->
 which will be coerced to a string and have 'px' appended.</p></dd>
+
+
 <dt>plotRegionHeight</dt>
 <dd><p>Plot region height.</p></dd>
+
+
 <dt>plotRegionBackground</dt>
 <dd><p>Plot region background color</p></dd>
+
+
 <dt>layoutMatrix</dt>
 <dd><p>Optional layout matrix to place <code>loon</code> widgets. See <code>layout_matrix</code> in <code>grid.arrange</code>.</p></dd>
+
+
 <dt>nrow</dt>
 <dd><p>Number of rows, see <code>grid.arrange</code>.</p></dd>
+
+
 <dt>ncol</dt>
 <dd><p>Number of columns, see <code>grid.arrange</code>.</p></dd>
+
+
 <dt>widths</dt>
 <dd><p>A unit vector giving the width of each plot.</p></dd>
+
+
 <dt>heights</dt>
 <dd><p>A unit vector giving the height of each plot.</p></dd>
+
+
 <dt>displayedPanel</dt>
 <dd><p>A string vector. The default is an empty string <code>""</code> so that
 none inspector components (<code>Plot</code>, <code>Linking</code>, <code>Select</code>, etc) are open automatically.
 The available strings are <code>c("Plot", "Select", "Linking", "Modify", "Layer", "Glyph")</code></p></dd>
+
+
 <dt>colorList</dt>
 <dd><p>A list of colors displayed on modify panel.</p></dd>
+
+
 <dt>inspectorLocation</dt>
 <dd><p>A length four vector representing the distance between the
 <code>bottom</code>, <code>left</code>, <code>top</code> and <code>right</code> of the inspector panel
 and the <code>bottom</code>, <code>left</code>, <code>top</code> and <code>right</code> of the page or
 parent container.</p></dd>
+
+
 <dt>inspectorWidth</dt>
 <dd><p>Width of the inspector panel.</p></dd>
+
+
 <dt>inspectorHeight</dt>
 <dd><p>Height of the inspector panel.</p></dd>
+
+
 <dt>options</dt>
 <dd><p><code>shinyApp</code> argument that should be passed to the <code>runApp</code> call, see <code><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html" class="external-link">shinyApp</a></code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Named arguments to modify shiny app.</p></dd>
+
 </dl></div>
 
   </div>
@@ -142,7 +177,7 @@ parent container.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

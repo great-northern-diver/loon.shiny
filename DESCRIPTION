@@ -1,7 +1,7 @@
 Package: loon.shiny
 Type: Package
 Title: Automatically Create a 'Shiny' App Based on Interactive 'Loon' Widgets
-Version: 1.0.2
+Version: 1.0.3
 Authors@R: c(
   person('Zehao', 'Xu', email = 'z267xu@uwaterloo.ca', role = c('aut', 'cre')),
   person('R. Wayne', 'Oldford', email = 'rwoldford@uwaterloo.ca', role = c('aut'))
@@ -33,6 +33,6 @@ Suggests:
     tidyverse,
     covr,
     png
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 VignetteBuilder: knitr

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">loon.shiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -91,57 +91,57 @@
 <hr>
 </div>
 <div class="section level2">
-<h2 id="1-selecting-and-querying-select-and-query-on-a-plot-in-a-shiny-app">1. Selecting and Querying: select and query on a plot in a <code>shiny</code> app<a class="anchor" aria-label="anchor" href="#1-selecting-and-querying-select-and-query-on-a-plot-in-a-shiny-app"></a>
+<h2 id="id_1-selecting-and-querying-select-and-query-on-a-plot-in-a-shiny-app">1. Selecting and Querying: select and query on a plot in a <code>shiny</code> app<a class="anchor" aria-label="anchor" href="#id_1-selecting-and-querying-select-and-query-on-a-plot-in-a-shiny-app"></a>
 </h2>
 <p>Selection can raise the focus of the interest. One can sweep (or brush) to form a region, and then, points inside this region will be highlighted.</p>
 <p>Quering shows detailed information of each point. It is realized by hovering.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">loon.shiny</span><span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">mtcars</span>, 
-          <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_plot.html" class="external-link">l_plot</a></span><span class="op">(</span><span class="va">hp</span>, <span class="va">mpg</span>, 
-                 color <span class="op">=</span> <span class="va">cyl</span>, 
-                 size <span class="op">=</span> <span class="va">wt</span>,
-                 itemLabel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">loon.shiny</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">mtcars</span>, </span>
+<span>          <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_plot.html" class="external-link">l_plot</a></span><span class="op">(</span><span class="va">hp</span>, <span class="va">mpg</span>, </span>
+<span>                 color <span class="op">=</span> <span class="va">cyl</span>, </span>
+<span>                 size <span class="op">=</span> <span class="va">wt</span>,</span>
+<span>                 itemLabel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/loonShiny.gif"></p>
 </div>
 <div class="section level2">
-<h2 id="2-linking-several-linked-plots-in-a-shiny-app">2. Linking: several linked plots in a <code>shiny</code> app<a class="anchor" aria-label="anchor" href="#2-linking-several-linked-plots-in-a-shiny-app"></a>
+<h2 id="id_2-linking-several-linked-plots-in-a-shiny-app">2. Linking: several linked plots in a <code>shiny</code> app<a class="anchor" aria-label="anchor" href="#id_2-linking-several-linked-plots-in-a-shiny-app"></a>
 </h2>
 <p>Here we show three plots appearing as the output of knitting an <code>RMarkdown</code> file. This is the more typical case.</p>
 <p>With several plots, linking allows brushing across several plots.</p>
 <p><img src="reference/figures/shinyDemo.gif"></p>
 <p>The code for the three plot shiny app on its own would be (as shown above):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_plot.html" class="external-link">l_plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, 
-             y <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Width</span>, 
-             linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,
-             color <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Species</span>,
-             showLabels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_hist.html" class="external-link">l_hist</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,
-             showLabels <span class="op">=</span> <span class="cn">FALSE</span>, showStackedColors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_hist.html" class="external-link">l_hist</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Width</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,
-             showLabels <span class="op">=</span> <span class="cn">FALSE</span>, swapAxes <span class="op">=</span> <span class="cn">TRUE</span>,
-             showStackedColors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>,
-           layoutMatrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">NA</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
-           plotRegionWidth <span class="op">=</span> <span class="st">"400px"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_plot.html" class="external-link">l_plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, </span>
+<span>             y <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Width</span>, </span>
+<span>             linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,</span>
+<span>             color <span class="op">=</span> <span class="va">iris</span><span class="op">$</span><span class="va">Species</span>,</span>
+<span>             showLabels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_hist.html" class="external-link">l_hist</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,</span>
+<span>             showLabels <span class="op">=</span> <span class="cn">FALSE</span>, showStackedColors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://great-northern-diver.github.io/loon/reference/l_hist.html" class="external-link">l_hist</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Width</span>, linkingGroup <span class="op">=</span> <span class="st">"iris"</span>,</span>
+<span>             showLabels <span class="op">=</span> <span class="cn">FALSE</span>, swapAxes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>             showStackedColors <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>,</span>
+<span>           layoutMatrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">NA</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>           plotRegionWidth <span class="op">=</span> <span class="st">"400px"</span><span class="op">)</span></span></code></pre></div>
 <p>Note that the plots are linked and the inspector is shared by/addresses all three plots (see tabs on the inspector).</p>
 </div>
 <div class="section level2">
-<h2 id="3-start-with-ggplot--loon--shiny">3. Start with <code>ggplot</code> –&gt; <code>loon</code> –&gt; <code>shiny</code>
-<a class="anchor" aria-label="anchor" href="#3-start-with-ggplot--loon--shiny"></a>
+<h2 id="id_3-start-with-ggplot--loon--shiny">3. Start with <code>ggplot</code> –&gt; <code>loon</code> –&gt; <code>shiny</code>
+<a class="anchor" aria-label="anchor" href="#id_3-start-with-ggplot--loon--shiny"></a>
 </h2>
 <p>Some users may prefer to begin with a <code>ggplot</code> and construct their plots using the <strong>grammar of interactive graphics</strong> provided by <a href="https://great-northern-diver.github.io/loon.ggplot/" class="external-link">loon.ggplot</a>. A simple example follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">loon.ggplot</span><span class="op">)</span>
-<span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mtcars</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">wt</span>, y <span class="op">=</span> <span class="va">hp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
-       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>, se <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> 
-       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">cyl</span><span class="op">)</span>
-       
-<span class="co"># or simply call `loon.shiny(g)`</span>
-<span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/loon.ggplot/man/loon.ggplot.html" class="external-link">loon.ggplot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">loon.ggplot</span><span class="op">)</span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mtcars</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">wt</span>, y <span class="op">=</span> <span class="va">hp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>, se <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">cyl</span><span class="op">)</span></span>
+<span>       </span>
+<span><span class="co"># or simply call `loon.shiny(g)`</span></span>
+<span><span class="fu"><a href="reference/loon.shiny.html">loon.shiny</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/loon.ggplot/man/loon.ggplot.html" class="external-link">loon.ggplot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>which results in</p>
 <p><img src="reference/figures/ggplotLoonShiny.gif"></p>
 <p>Compared to <code>ggplot</code> to <code>shiny</code>, <code>ggplot</code> –&gt; <code>loon</code> –&gt; <code>shiny</code> extends the app to give more interactivity to the user. Users can now direct manipulate plots, such as highlighting points, changing colours and sizes, modifying the points transparency, and more.</p>
@@ -151,12 +151,12 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># From CRAN</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"loon.shiny"</span><span class="op">)</span>
-<span class="co"># Or from github</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"great-northern-diver/loon.shiny"</span><span class="op">)</span>
-<span class="co"># Or as part of the diveR suite of loon related packages</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"diveR"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># From CRAN</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"loon.shiny"</span><span class="op">)</span></span>
+<span><span class="co"># Or from github</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"great-northern-diver/loon.shiny"</span><span class="op">)</span></span>
+<span><span class="co"># Or as part of the diveR suite of loon related packages</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"diveR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="rmarkdown">Rmarkdown<a class="anchor" aria-label="anchor" href="#rmarkdown"></a>
@@ -239,7 +239,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
